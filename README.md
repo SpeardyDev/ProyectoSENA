@@ -1,26 +1,35 @@
-En Marflex S.A.S, nos apasiona crear colchones de la más alta calidad que brinden a nuestros clientes la mejor experiencia de sueño posible.
 
-¿Qué nos hace diferentes?
+# Proyecto Marflex
 
-Materiales de primera calidad: Utilizamos solo los mejores materiales para elaborar nuestros colchones, asegurando que sean duraderos, cómodos y respiren bien.
-Tecnología innovadora: Incorporamos las últimas tecnologías en el diseño de nuestros colchones para ofrecer un soporte y confort óptimos.
-Amplia variedad de opciones: Ofrecemos una amplia gama de colchones para satisfacer las necesidades de cada cliente, desde colchones firmes hasta suaves, pasando por opciones de memoria y de gel.
-Atención al cliente excepcional: Nuestro equipo de expertos está a su disposición para ayudarlo a encontrar el colchón perfecto para usted.
-¿Qué encontrará en este repositorio?
+Este proyecto tiene como objetivo desarrollar una página web que brinde soporte a la empresa Marflex, especializada en la fabricación y venta de colchones. La plataforma integrará funcionalidades tanto para la gestión de ventas a clientes como para el control de inventario en el área de fabricación.
 
-En este repositorio encontrará toda la información que necesita sobre [Nombre de la empresa de colchones], incluyendo:
+Funcionalidades Principales
+Gestión de Ventas para Clientes:
 
-Información sobre la empresa: Nuestra historia, misión, valores y equipo.
-Productos: Una descripción detallada de nuestros colchones, incluyendo sus características, beneficios y precios.
-Guías de compra: Consejos para elegir el colchón perfecto para usted.
-Testimonios: Lo que nuestros clientes dicen sobre nuestros colchones.
-Información de contacto: Cómo ponerse en contacto con nosotros.
-¿Cómo usar este repositorio?
+Registro y autenticación de usuarios (clientes y administradores).
+Catálogo de productos de colchones disponibles.
+Carrito de compras para selección de productos.
+Proceso de pago y confirmación de pedidos.
+Historial de pedidos y seguimiento de estado de entrega.
+Inventario para Fabricación de Colchones:
 
-Puede navegar por este repositorio utilizando los enlaces que encontrará en la parte superior de la página. También puede utilizar la función de búsqueda para encontrar información específica.
+Registro y gestión de materias primas y componentes.
+Control de niveles de inventario.
+Gestión de órdenes de producción.
+Seguimiento de estado de producción y distribución de materiales.
 
-¡Esperamos que este repositorio le sea útil!
+Panel de Administración:
 
-Si tiene alguna pregunta o necesita ayuda, no dude en ponerse en contacto con nosotros.
+Gestión de usuarios y roles.
+Análisis de datos de ventas y producción mediante reportes.
+Configuración de productos y precios.
+Monitoreo en tiempo real de inventarios y órdenes.
+Tecnologías Utilizadas
 
-¡Gracias por elegir Marflex S.A.S!
+Frontend:
+HTML, CSS, JavaScript (para la interfaz de usuario dinámica y responsive).
+Estado del Proyecto:
+Actualmente nos encontramos en la fase de desarrollo inicial, donde se están diseñando los prototipos de la interfaz de usuario y estableciendo la arquitectura del sistema. El cronograma de desarrollo incluye iteraciones regulares para pruebas y retroalimentación, con el objetivo de cumplir con los plazos establecidos por Marflex para la implementación y puesta en marcha del sistema.
+
+![Logo](https://ibb.co/yBsyXvC.png)
+
