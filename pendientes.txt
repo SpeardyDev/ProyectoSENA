@@ -1,0 +1,11 @@
+Falta de backend validaciones de roles !-- Ramon dario --!
+Crud !-- Nicolucas --!
+Conexión a mysql para mostrar tablas  !-- Ramon dario --!
+Recuperar contraseña !-- Don Cangrejo --!
+Frontend navegación de roles jefe-bodega, modista  !-- Nicolucas --!
+Registro  para clientes solamente !-- Don Cangrejo --!
+
+---------Frontend------------
+
+Verificar lo de Login o Log in
+Cerrar sesión y botón arriba a la derecha para las opciones
