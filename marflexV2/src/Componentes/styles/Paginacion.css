@@ -1,0 +1,43 @@
+.contenedor_botones_paginacion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    background-color:  #eef2ff;
+}
+.btn-numero-paginacion {
+    width: 50px;
+    height: 30px;
+    margin: 3px;
+    cursor: pointer;
+    border-radius: 5px;
+    color: rgb(14, 14, 231);
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 600;
+}
+.btn-numero-paginacion:focus {
+    background-color: rgb(59 130 246 );
+    color: #eef2ff;
+    border: none;
+    border-radius: 5px;
+}
+.btn-paginacion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 30px;
+    margin: 5px;
+    border: none;
+    color: rgb(59 130 246 / .5);
+    font-size: 18px;
+    background-color: transparent;
+    cursor: pointer;
+}
+.btn-paginacion:hover {
+     background-color: rgba(52, 116, 219, 0.13);
+     border-radius: 5px;
+}
