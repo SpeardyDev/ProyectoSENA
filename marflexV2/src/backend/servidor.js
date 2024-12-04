@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const mysql = require("mysql");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
+const recoveryRoutes = require("./routes/recoveryRoutes");
 require("dotenv").config();
 const app = express();
 const puerto = 3000;
@@ -19,7 +20,7 @@ mongoose
 
 app.use(cors());
 app.use(express.json());
-app.use("/api", authRoutes);
+app.use("/api", authRoutes, recoveryRoutes);
 
 // Conexión MySQL
 const db = mysql.createConnection({

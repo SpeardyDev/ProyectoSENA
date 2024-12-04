@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import logo from '../img/LogoMarflex.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
-import './styles/Login.css'; // Archivo CSS para estilos específicos de Login
+import './styles/Login.css';
 import axios from 'axios';
 
 
@@ -96,7 +96,7 @@ function Login() {
               </button>
             </span>
             <span className="span">
-              <a href="https://google.com">¿Has olvidado tu contraseña?</a>
+              <Link to='/RecuperarContraseña'>¿Has olvidado tu contraseña?</Link>
             </span>
           </div>
         </div>

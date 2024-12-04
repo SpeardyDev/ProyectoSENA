@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import HomeAdmin from './Componentes/HomeAdmin.js';
 import Login from './Componentes/Login.js'
 import HomeJefeBodega from './Componentes/HomeJefeBodega.js'
+import RecuperarContraseña from './Componentes/RecuperarContraseña.js';
 
 
 
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/login" element={<Login/>} />
         <Route path="/HomeAdmin" element={<HomeAdmin/>} />
         <Route path="/HomeJefeBodega" element={<HomeJefeBodega/>} />
+        <Route path="/RecuperarContraseña" element={<RecuperarContraseña/>} />
       </Routes>
     </Router>
   );
