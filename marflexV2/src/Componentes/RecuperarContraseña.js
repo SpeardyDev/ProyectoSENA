@@ -7,7 +7,7 @@ import axios from 'axios';
 
 function RecuperarContraseña() {
   const [step, setStep] = useState(1);
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -17,30 +17,40 @@ function RecuperarContraseña() {
     setPasswordVisible(!passwordVisible);
   };
 
-  const handleSendCode = async (e) => {
+  const handleGenerateCode = async (e) => {
     e.preventDefault();
+    if (!username || username.trim() === '') {
+      alert('Por favor, ingresa un nombre de usuario válido.');
+      return;
+    }
     try {
-      await axios.post('http://localhost:3000/api/send', { email });
-      alert('Se ha enviado un código a su correo electrónico');
+      // eslint-disable-next-line no-unused-vars
+      const response = await axios.post('http://localhost:3000/api/generate-code', { username });
+      alert('Código de verificación generado. Revisa tu correo electrónico o contacto.');
       setStep(2);
     } catch (error) {
-      console.error('Error al enviar el código:', error);
-      alert('No se pudo enviar el código. Verifique su correo.');
+      console.error('Error al generar el código:', error.response?.data || error.message);
+      alert('Error al generar el código de verificación.');
     }
   };
   
   const handleVerifyCode = async (e) => {
     e.preventDefault();
+    if (!verificationCode || verificationCode.trim() === '') {
+      alert('Por favor, ingresa un código de verificación.');
+      return;
+    }
     try {
-      const response = await axios.post('http://localhost:3000/api/verify', { email, code: verificationCode });
+      const response = await axios.post('http://localhost:3000/api/verify', { username, code: verificationCode.trim() });
       if (response.data.success) {
         alert('Código verificado correctamente');
-        setStep(3);
+        setStep(3); // Avanzar al siguiente paso
       } else {
         alert('El código ingresado es incorrecto');
       }
     } catch (error) {
-      console.error('Error al verificar el código:', error);
+      console.error('Error al verificar el código:', error.response?.data || error.message);
+      alert('Error al verificar el código.');
     }
   };
   
@@ -52,7 +62,7 @@ function RecuperarContraseña() {
     }
   
     try {
-      await axios.post('http://localhost:3000/api/reset-password', { email, newPassword });
+      await axios.post('http://localhost:3000/api/reset-password', { username, newPassword });
       alert('Contraseña actualizada con éxito');
       setStep(1);
     } catch (error) {
@@ -85,13 +95,13 @@ function RecuperarContraseña() {
                     className="input_login"
                     placeholder="Correo electrónico"
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
                   />
                 </span>
                 <span className="span">
-                  <button className="btn-iniciar" type="submit" onClick={handleSendCode}>
+                  <button className="btn-iniciar" type="submit" onClick={handleGenerateCode}>
                     Enviar Código
                   </button>
                 </span>
