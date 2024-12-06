@@ -95,6 +95,7 @@ function Login() {
                 Iniciar Sesión
               </button>
             </span>
+            {/* Se agrega link para dirigir a la recuperación de contraseña */}
             <span className="span">
               <Link to='/RecuperarContraseña'>¿Has olvidado tu contraseña?</Link>
             </span>
