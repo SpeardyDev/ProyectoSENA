@@ -1,0 +1,89 @@
+.Titulo-p-reportes {
+    margin-right: 6px;
+}
+.contenedor-Reportes {
+    width: 100%;
+    height: 69vh;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.conten-ReporteInput{
+    width: 100%;
+    height: 12Vh;
+    display: flex;
+}
+
+.Tabla-reporte {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    display: grid;
+    width: calc(32% - 10px);
+    height: 300px;
+    margin-bottom: 25px;
+    padding: 0px;
+    text-align: center;
+    font-size: 37px;
+    margin: 10px;
+}
+.Reporte-titulo {
+    display: flex;
+    justify-content:start;
+    align-items: center;
+    width: 100%;
+    height: 65px;
+    border-bottom: 2px solid rgba(79, 125, 232, 0.62);
+    padding-left: 15px;
+}
+.Reporte-titulo-usuarios {
+    margin: 3px;
+    margin-left: 10px;
+    color: rgba(0, 0, 0, 0.705);
+}
+.Reporte-content-tabla {
+    width: 100%;
+    height: 24vh;
+}
+
+.icon-text-reporte {
+    margin-left: 30px;
+    cursor: pointer;
+    height: 4.5vh;
+}
+
+.contenedor-Btn {
+    display: flex;
+    justify-content:center ;
+    align-items: center;
+    height: 10vh;
+}
+.btn-descargar{
+    width: 110px;
+    height: 38px;
+    margin-left: 30px;
+    margin-bottom: 10px;
+} 
+
+.contenedor-filtro-reportes {
+    display: flex;
+    width: 100%;
+    height: 10vh;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+.contenedor-inpus-filtro-reportes-1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+    height: 10vh;
+
+}
+.contenedor-inpus-filtro-reportes-2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40%;
+    height: 10vh;
+}
+button.btn-success-reportes {
+    margin: 15px;
+}
