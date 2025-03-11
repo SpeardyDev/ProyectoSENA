@@ -1,0 +1,394 @@
+* {
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+*::selection {
+  background: none;
+}
+*::-moz-selection {
+  background: none;
+}
+.App{
+  font-family:Arial, Helvetica, sans-serif;
+}
+.titulo {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+   user-select: none; /* Standard */
+}
+.item {
+  width: 100%;
+  text-decoration: none;
+  color: #000000;
+  font-size: 15px;
+}
+
+
+.barra-navegacion {
+  display: flex;
+  width: 100%;
+  height: 80px;
+  align-items: center;
+  justify-content: space-around;
+  border-bottom: solid 1px #DBDBDA;
+}
+.logo {
+  display: flex;
+  width: 65%;
+  align-items: center;
+}
+.logo img {
+  width: 85px;
+  height: 65px;
+}
+.h1-nav {
+  margin: 0;
+  font-size: 35px;
+  font-weight: 400;
+  font-style: normal;
+  font-family: "Poetsen One", sans-serif;
+}
+.lista {
+  display: flex;
+  align-items: center;
+}
+.lista img {
+  width: 85px;
+  height: 65px;
+}
+.mayor {
+  display: flex;
+}
+.menu {
+  width: 20%;
+  height: 91vh;
+  box-shadow: 3px 0 6px rgba(0, 0, 0, 0.2);
+}
+.li-desplegable {
+  margin-left: 8px;
+  border-left:solid 1px #00000065 ;
+}
+.contenido-usuario {
+  width: 100%;
+  height: 160px;
+  margin-right: 20px;
+  text-align: center;
+  background: #e2efed;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-pic {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-top: 5px;
+  border: 2px solid #e2e2e2;
+}
+
+#Nombre {
+  font-family: 'Courier New', Courier, monospace;
+}
+.select-perfil:focus {
+  outline: none;
+}
+.texto-menu {
+  display: flex;
+  height: 40px;
+  width: 100%;
+  align-items: center;
+  background: #e2e2e2d5;
+}
+.texto-menu h6 {
+  font-size: 14px;
+  font-weight:  400;
+  margin: 15px;
+  font-family: "Poetsen One", sans-serif;
+}
+/* Estilos del menú lateral */
+.sidebar {
+  color: #000000;
+  width: 100%;
+  height: 65vh;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 20px;
+  transition: color 0.3s, transform 0.2s;
+}
+
+.sidebar li i {
+  margin-right: 10px;
+}
+
+.sidebar button {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.sidebar li:hover {
+  background: #e0e0e056;
+  transform: scale(1.05); /* Efecto de pulsación */
+  cursor: pointer;
+  
+}
+/* Probando*/
+.collapse-content {
+  display: none; /* El contenido está oculto por defecto */
+  margin-top: 10px;
+}
+li.expanded .fa-square-plus {
+  display: none; /* Oculta el ícono de más cuando está expandido */
+}
+
+li.expanded .fa-minus {
+  display: inline; /* Muestra el ícono de menos cuando está expandido */
+}
+
+.fa-minus {
+  display: none; /* Inicialmente oculto */
+  float: right;
+}
+
+.contenedor-universal {
+  height: 89vh;
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  padding-top: 24px;
+  background: #e0e0e056;
+}
+.Dashboard {
+  width: 95%;
+  height: 37vh;
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.titulo {
+  width: 100%;
+  height: 30px;
+  color: #444242f1;
+  font-size: 18px;
+  font-weight: 500;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.card {
+  display: flex;
+  align-items: center;
+  width: calc(25% - 10px);
+  height: 75px;
+  margin-bottom: 25px;
+  padding: 0px;
+  text-align: center;
+  font-size: 37px;
+}
+
+.contenedor-icono {
+  display: flex;
+  width: 35%;
+  height: 75px;
+  justify-content: center;
+  align-items: center;
+}
+/* colores de fondo de el contenedor de los iconos */
+.users {background-color:#3f9642;}
+.dolly{background-color: #e08907;}
+.cajas{background-color: #f02d1f;}
+.Factura{background-color:#625e63;}
+.Caja {background-color: #1b8ae4;}
+.Camion{background-color: #d11855;}
+.Bodega{background-color: #048073;}
+.Cartera{background-color: #f73b2a;}
+.signo-dolar{background-color: #4a8b8a;}
+.Mano{background-color: #b99eaa;}
+.Billete{background-color: #794204;}
+.Monedas{background-color: #03c0c0;}
+
+/* Tamoño y color de los iconos de Dashboard */
+#icono {
+  font-size: 45px;
+  color: #201f1fe1;
+}
+/* Esta caja contiene los 2 span del las card */
+.contenedor-span {
+  display: flex;
+  flex-wrap: wrap;
+  width: 65%;
+  height: 65px;
+}
+
+/* Color de todas las card */
+.green { background-color: #4CAF50; }
+.orange { background-color: #FF9800; }
+.red { background-color: #F44336; }
+.purple { background-color: #706c70; }
+.blue { background-color: #2196F3; }
+.pink { background-color: #E91E63; }
+.teal { background-color: #009688; }
+.brown { background-color: #ff4c3a; }
+.blue-2 {background-color: #559e9d;}
+.pink-2 {background-color: #cca9b8;}
+.teal-2 {background-color: #884902;}
+.blue-cielo {background-color: #05d1d1;}
+/* Estilo de la caja que contiene los numeros del Dashboard */
+.numero {
+  display: flex;
+  padding-bottom: 20px;
+  padding-left: 12px;
+  width: 100%;
+  height: 34px;
+  font-size: 30px;
+  font-weight: bold;
+}
+/* Estilo de la caja que contiene el texto del Dashboard */
+.label {
+  display: flex;
+  width: 100%;
+  height: 33px;
+  font-size: 17px;
+  font-weight: 500;
+  padding-left: 10px;
+  align-items: center;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+/*Estilo de los iconos del + */
+.fa-square-plus {
+  float: right;
+}
+/*Contenedor de todo el contenido de categorías*/
+.cont-categorias{
+  width: 95%;
+  height: 50vh;
+  padding: 10px;
+}
+/*Contenedor de todo el contenido de categorías*/
+.cont-productos{
+  width: 95%;
+  height: 50vh;
+  padding: 10px;
+}
+/*Contenedor de la tabla categoría */
+
+.Tcategoria {
+  height: 45vh;
+  background-color: #ffffff ;
+  box-shadow: 4px 0 7px rgba(0, 0, 0, 0.2);
+}
+.btn-primary {
+  margin: 15px;
+}
+.table {
+  margin: 15px;
+  width: 98%;
+}
+.fa-pen-to-square {
+  font-size: 17px;
+}
+.menu-amburguesa {
+  display: none;
+}
+.Btn_ocultar{
+  display: none;
+}
+
+/* Estilos para pantallas pequeñas (hasta 768px) */
+@media screen and (max-width: 768px) {
+  .menu {
+    display: none;
+  }
+}
+
+
+
+/* Estilos para pantallas medianas (de 769px a 1024px) */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  
+  .menu {
+    display: block;
+    width: 50%;
+    position: absolute;
+    background-color: #e2efed;
+  }
+
+  .contenedor-2 {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 9vh;
+    width: 65%;
+}
+  
+.menu-amburguesa {
+  display: block;
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  right:10px;
+  top: 90px;
+  color: #000000a1;
+ }
+ .Btn_ocultar{
+  display: block;
+  position: absolute;
+  font-size: 2rem;
+  right: 10px;
+  top: 10px;
+}
+  .contenedor-universal {
+    width: 100%;
+  }
+  .Dashboard {
+      width: 80%;
+      height: 85vh;
+  }
+  .card {
+    width: calc(50% - 5px);
+    height: 90px;
+    margin-bottom: 40px;
+    padding: 25px 0px;
+    text-align: center;
+}
+.contenedor-icono {
+  display: flex;
+  width: 40%;
+  height: 90px;
+  justify-content: center;
+  align-items: center;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+  color: #fff;
+  transition: background-color 0.3s;
+}
+  
+}
+
+
+
+/* Estilos para pantallas grandes (más de 1024px) */
+@media screen and (min-width: 1025px) {}

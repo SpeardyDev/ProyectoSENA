@@ -1,0 +1,460 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.contenedor {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: radial-gradient(circle at 50.65% 42.56%, #ffe347 0, #ffcd41 25%, #f2b53c 50%, #e29e38 75%, #d38a36 100%);
+}
+
+.mi-app-formulario {
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(to bottom, rgb(255, 255, 255), rgba(255, 255, 255, 0.430));
+  box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.2);
+  border-bottom-left-radius: 30px;
+  border-top-right-radius: 30px;
+  width: 650px;
+  height: 400px;
+}
+
+.titulo-login {
+  width: 100%;
+  height: 30%;
+  display: flex;
+  margin-top: 1px;
+  align-items: center;
+  justify-content: center;
+  border-bottom: dashed 3px gold;
+}
+
+.h1-login {
+  font-family: "Roboto Condensed", sans-serif;
+  font-weight: 500;
+  font-size: 40px;
+  color: #5a5a59;
+  font-size: 3em;
+  margin: 0 0; 
+
+}
+
+.h1-login:hover {
+  color: #6c6b69;
+}
+
+.img-logo {
+  width: 58px;
+  height: 48px;
+}
+
+.img-presentacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+}
+
+.img_presentacion_login {
+  width: 300px;
+  height: 300px;
+}
+
+.mi-app-formulario .content-input {
+  align-items: center;
+  height: 70%;
+}
+
+.mi-app-formulario .icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 5px;
+}
+
+.mi-app-formulario .span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-top: 15px;
+  font-size: 16px;
+}
+
+.input_login {
+  width: 70%;
+  padding: 10px;
+  height: 30px;
+  margin: 19px 0px;
+  border: solid 1px #F0BE1C;
+  font-size: 14px;
+  border-radius: 8px;
+}
+input[type="text"] {
+  width: 70%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.input_login[type="password"], .input_login[type="text"] {
+  border: solid 1px #F0BE1C;
+  font-size: 14px;
+  border-radius: 8px;
+  padding-left: 25px;
+  width: 70%;
+}
+input[type="text"]:focus{
+  border-color: #F0BE1C;
+}
+
+.mi-app-formulario .span a {
+  text-decoration: none;
+  color: #727271;
+  font-size: 16px;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.mi-app-formulario .span a:hover {
+  color: #494949;
+}
+
+.mi-app-formulario .input-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+
+
+.mi-app-formulario .visibility_off {
+  position: absolute;
+  right: 68%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.mi-app-formulario .btn-iniciar {
+  width: 125px;
+  height: 35px;
+  cursor: pointer;
+  color: #FFFFFF;
+  background: #F5CC48;
+  border-radius: 10px;
+  border: solid 1px;
+  font-weight: 600;
+  font-size: 16px;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+/* Estilos para pantallas pequeñas (hasta 768px) */
+@media screen and (min-width:300px) and (max-width: 539px) {
+  .contenedor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: radial-gradient(circle at 50.65% 42.56%, #ffe347 0, #ffcd41 25%, #f2b53c 50%, #e29e38 75%, #d38a36 100%);
+  }
+  
+  .mi-app-formulario {
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(to bottom, rgb(255, 255, 255), rgba(255, 255, 255, 0.430));
+    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 30px;
+    width: 94%;
+    height: 65%;
+  }
+  
+  .titulo-login {
+    width: 100%;
+    height: 20%;
+    display: flex;
+    margin-top: 1px;
+    align-items: center;
+    justify-content: center;
+    border-bottom: dashed 3px gold;
+  }
+  
+  .h1-login {
+    font-family: "Roboto Condensed", sans-serif;
+    font-weight: 400;
+    color: #5a5a59;
+    font-size: 4em;
+    margin: 0 0; 
+  
+  }
+  
+  .h1-login:hover {
+    color: #6c6b69;
+  }
+  
+  .img-logo {
+    width: 80px;
+    height: 60px;
+  }
+  
+  .img-presentacion {
+    display: none;
+  }
+  
+  .img_presentacion_login {
+    display: none;
+  }
+  .formulario {
+    width: 100%;
+  }
+  .mi-app-formulario .content-input {
+    align-items: center;
+    height: 70%;
+  }
+  
+  .mi-app-formulario .icon {
+    width: 50px;
+    height: 50px;
+    margin-right: 5px;
+  }
+  
+  .mi-app-formulario .span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-top: 30px;
+    font-size: 16px;
+  }
+  
+  .input_login {
+    width: 70%;
+    padding: 10px;
+    height: 45px;
+    margin: 15px 0px;
+    border: solid 1px #F0BE1C;
+    font-size: 18px;
+    border-radius: 8px;
+  }
+  input[type="text"] {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 18px;
+  }
+  .input_login[type="password"], .input_login[type="text"] {
+    border: solid 1px #F0BE1C;
+    font-size: 18px;
+    border-radius: 8px;
+    padding-left: 40px;
+    width: 70%;
+  }
+  input[type="text"]:focus{
+    border-color: #F0BE1C;
+  }
+  
+  .mi-app-formulario .span a {
+    text-decoration: none;
+    color: #727271;
+    font-size: 17px;
+    font-family: 'Times New Roman', Times, serif;
+  }
+  
+  .mi-app-formulario .span a:hover {
+    color: #494949;
+  }
+  
+  .mi-app-formulario .input-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  
+  
+  
+  .mi-app-formulario .visibility_off {
+    position: absolute;
+    right: 68%;
+    top: 50%;
+    transform: translateY(-50% -90%);
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+  }
+  
+  .mi-app-formulario .btn-iniciar {
+    width: 140px;
+    height: 50px;
+    cursor: pointer;
+    color: #FFFFFF;
+    background: #F5CC48;
+    border-radius: 10px;
+    border: solid 1px;
+    font-weight: 600;
+    font-size: 17px;
+    font-family: 'Times New Roman', Times, serif;
+  }
+}
+
+@media screen and (min-width:540px) and (max-width: 600px) {
+  .contenedor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: radial-gradient(circle at 50.65% 42.56%, #ffe347 0, #ffcd41 25%, #f2b53c 50%, #e29e38 75%, #d38a36 100%);
+  }
+  
+  .mi-app-formulario {
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(to bottom, rgb(255, 255, 255), rgba(255, 255, 255, 0.430));
+    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 30px;
+    width: 94%;
+    height: 65%;
+  }
+  
+  .titulo-login {
+    width: 100%;
+    height: 20%;
+    display: flex;
+    margin-top: 1px;
+    align-items: center;
+    justify-content: center;
+    border-bottom: dashed 3px gold;
+  }
+  
+  .h1-login {
+    font-family: "Roboto Condensed", sans-serif;
+    font-weight: 400;
+    color: #5a5a59;
+    font-size: 4em;
+    margin: 0 0; 
+  
+  }
+  
+  .h1-login:hover {
+    color: #6c6b69;
+  }
+  
+  .img-logo {
+    width: 80px;
+    height: 60px;
+  }
+  
+  .img-presentacion {
+    display: none;
+  }
+  
+  .img_presentacion_login {
+    display: none;
+  }
+  .formulario {
+    width: 100%;
+  }
+  .mi-app-formulario .content-input {
+    align-items: center;
+    height: 70%;
+  }
+  
+  .mi-app-formulario .icon {
+    width: 50px;
+    height: 50px;
+    margin-right: 5px;
+  }
+  
+  .mi-app-formulario .span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-top: 30px;
+    font-size: 16px;
+  }
+  
+  .input_login {
+    width: 70%;
+    padding: 10px;
+    height: 45px;
+    margin: 15px 0px;
+    border: solid 1px #F0BE1C;
+    font-size: 18px;
+    border-radius: 8px;
+  }
+  input[type="text"] {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 18px;
+  }
+  .input_login[type="password"], .input_login[type="text"] {
+    border: solid 1px #F0BE1C;
+    font-size: 18px;
+    border-radius: 8px;
+    padding-left: 40px;
+    width: 70%;
+  }
+  input[type="text"]:focus{
+    border-color: #F0BE1C;
+  }
+  
+  .mi-app-formulario .span a {
+    text-decoration: none;
+    color: #727271;
+    font-size: 17px;
+    font-family: 'Times New Roman', Times, serif;
+  }
+  
+  .mi-app-formulario .span a:hover {
+    color: #494949;
+  }
+  
+  .mi-app-formulario .input-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  
+  
+  
+  .mi-app-formulario .visibility_off {
+    position: absolute;
+    right: 72%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+  }
+  
+  .mi-app-formulario .btn-iniciar {
+    width: 140px;
+    height: 50px;
+    cursor: pointer;
+    color: #FFFFFF;
+    background: #F5CC48;
+    border-radius: 10px;
+    border: solid 1px;
+    font-weight: 600;
+    font-size: 17px;
+    font-family: 'Times New Roman', Times, serif;
+  }
+}
+
+
+/* Estilos para pantallas medianas (de 769px a 1024px) */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+ 
+  
+}
+
+
+
+/* Estilos para pantallas grandes (más de 1024px) */
+@media screen and (min-width: 1025px) {}
