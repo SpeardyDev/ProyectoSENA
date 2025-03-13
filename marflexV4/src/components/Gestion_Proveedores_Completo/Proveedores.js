@@ -2,13 +2,10 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import React, { useEffect, useState } from "react";
 import "./styles/Proveedores.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import {
   FormGroup,
   FormField,
   Button,
-  Divider,
   Form,
   Search,
   TableRow,
@@ -17,6 +14,7 @@ import {
   TableCell,
   TableBody,
   Table,
+  Icon
 } from "semantic-ui-react";
 import Pagination from "../Pagination";
 import { InputMask } from "primereact/inputmask";
@@ -27,11 +25,8 @@ function Proveedores() {
   const [proveedorEditando, setProveedorEditando] = useState(null);
   const [formularioDatos, setFormularioDato] = useState({
     Nombre: "",
-    Telefono1: "",
-    Telefono2: "N/A",
+    Telefono: "",
     Direccion: "",
-    Barrio: "",
-    Ciudad: ""
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,7 +38,7 @@ function Proveedores() {
 
   const mostrarProveedores = () => {
     axios
-      .get("http://localhost:3000/api/api/proveedores")
+      .get("http://localhost:3000/proveedores")
       .then((respuesta) => setProveedores(respuesta.data))
       .catch((error) => console.error("Error al obtener los datos:", error));
   };
@@ -57,13 +52,12 @@ function Proveedores() {
     e.preventDefault();
     axios
       .post(
-        "http://localhost:3000/api/api/agregar/proveedores",
+        "http://localhost:3000/agregar/proveedores",
         formularioDatos
       )
       .then(() => {
         setMostrarFormulario(false);
         mostrarProveedores();
-        limpiarFormulario();
         Swal.fire({
           position: "top-center",
           icon: "success",
@@ -75,15 +69,13 @@ function Proveedores() {
       .catch((error) => console.error("Error al insertar los datos:", error));
   };
 
-  const handleEditar = (proveedor) => {
+  const handleEditar = (id) => {
+    const proveedor = proveedores.find(item => item.ID === id);
     setProveedorEditando(proveedor.ID);
     setFormularioDato({
       Nombre: proveedor.Nombre,
-      Telefono1: proveedor.Telefono1,
-      Telefono2: proveedor.Telefono2 || "N/A",
+      Telefono: proveedor.Telefono,
       Direccion: proveedor.Direccion,
-      Barrio: proveedor.Barrio,
-      Ciudad: proveedor.Ciudad,
     });
     setMostrarFormulario(true);
   };
@@ -92,14 +84,13 @@ function Proveedores() {
     e.preventDefault();
     axios
       .put(
-        `http://localhost:3000/api/api/editar/proveedores/${proveedorEditando}`,
+        `http://localhost:3000/actualizar/proveedores/${proveedorEditando}`,
         formularioDatos
       )
       .then(() => {
         setMostrarFormulario(false);
         setProveedorEditando(null);
         mostrarProveedores();
-        limpiarFormulario();
         Swal.fire({
           position: "top-center",
           icon: "success",
@@ -123,7 +114,7 @@ function Proveedores() {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`http://localhost:3000/api/api/eliminar/proveedores/${id}`)
+          .delete(`http://localhost:3000/eliminar/proveedores/${id}`)
           .then(() => {
             mostrarProveedores();
             Swal.fire({
@@ -143,15 +134,12 @@ function Proveedores() {
     setCurrentPage(page);
   };
 
-  /// Limpa los inputs
-  const limpiarFormulario = () => {
+  /// Limpia los inputs
+  const LimpiarFormulario = () => {
     setFormularioDato({
       Nombre: "",
-      Telefono1: "",
-      Telefono2: "",
+      Telefono: "",
       Direccion: "",
-      Barrio: "",
-      Ciudad: "",
     });
   };
 
@@ -161,7 +149,7 @@ function Proveedores() {
 
   return (
     <section>
-      <div className="titulo">
+      <div className="Titulo">
         <p>Proveedores</p>
       </div>
 
@@ -182,27 +170,17 @@ function Proveedores() {
                 required
               />
               <FormField required>
-                <label>Telefono 1</label>
+                <label>Teléfono</label>
                 <InputMask
                   mask="(999) 999-9999"
-                  name="Telefono1"
+                  name="Telefono"
                   placeholder="(999) 999-9999"
-                  value={formularioDatos.Telefono1}
+                  value={formularioDatos.Telefono}
                   onChange={handleChange}
                 />
               </FormField>
             </FormGroup>
             <FormGroup widths="equal">
-              <FormField>
-                <label>Telefono 2</label>
-                <InputMask
-                  mask="(999) 999-9999"
-                  name="Telefono2"
-                  placeholder="(999) 999-9999"
-                  value={formularioDatos.Telefono2}
-                  onChange={handleChange}
-                />
-              </FormField>
               <FormField
                 name="Direccion"
                 value={formularioDatos.Direccion}
@@ -213,53 +191,30 @@ function Proveedores() {
                 required
               />
             </FormGroup>
-            <FormGroup widths="equal">
-              <FormField
-                name="Barrio"
-                value={formularioDatos.Barrio}
-                onChange={handleChange}
-                label="Barrio"
-                control="input"
-                placeholder="Ingrese el barrio"
-                required
-              />
-              <FormField
-                name="Ciudad"
-                value={formularioDatos.Ciudad}
-                onChange={handleChange}
-                label="Ciudad"
-                control="input"
-                placeholder="Ingrese la ciudad"
-                required
-              />
-            </FormGroup>
 
-            <Button type="submit" color={proveedorEditando ? "blue" : "green"}>
-              {proveedorEditando ? "Actualizar" : "Registrar"}
-            </Button>
-            <button
+            <Button type='submit' color='green'>{proveedorEditando ? 'Actualizar' : 'Registrar'}</Button>
+            <Button
               type="button"
-              className="btn btn-danger"
+              className="red"
               onClick={() =>
-                setMostrarFormulario(!mostrarFormulario) + limpiarFormulario()
+                setMostrarFormulario(!mostrarFormulario) + LimpiarFormulario()
               }
             >
               {" "}
               Cancelar{" "}
-            </button>
-            <Divider hidden />
+            </Button>
           </div>
         </Form>
       )}
       <div className="Filtro">
-        <div className="contenedor-1">
+        <div className="Contenedor-1">
           <Search placeholder="Codigo" />
           <span className="icon-text">
             <i className="pi pi-filter" style={{ fontSize: "1.5rem" }}></i>
             <span>Filtro</span>
           </span>
         </div>
-        <div className="contenedor-2">
+        <div className="Contenedor-2">
           <span className="icon-text">
             <i className="pi pi-tag" style={{ fontSize: "1.5rem" }}></i>
             <span>Categorías</span>
@@ -276,17 +231,14 @@ function Proveedores() {
           </Button>
         </div>
       </div>
-      <article className="dasboard-categorias"></article>
+      <article className="Dasboard-Proveedores"></article>
       <Table celled>
         <TableHeader>
           <TableRow>
             <TableHeaderCell>#</TableHeaderCell>
             <TableHeaderCell>Nombre</TableHeaderCell>
-            <TableHeaderCell>Teléfono 1</TableHeaderCell>
-            <TableHeaderCell>Teléfono 2</TableHeaderCell>
+            <TableHeaderCell>Teléfono</TableHeaderCell>
             <TableHeaderCell>Dirección</TableHeaderCell>
-            <TableHeaderCell>Barrio</TableHeaderCell>
-            <TableHeaderCell>Ciudad</TableHeaderCell>
             <TableHeaderCell>Acciones</TableHeaderCell>
           </TableRow>
         </TableHeader>
@@ -296,24 +248,15 @@ function Proveedores() {
             <TableRow key={proveedor.ID}>
               <TableCell>{index + 1 + indexOfFirstItem}</TableCell>
               <TableCell>{proveedor.Nombre}</TableCell>
-              <TableCell>{proveedor.Telefono1}</TableCell>
-              <TableCell>{proveedor.Telefono2}</TableCell>
+              <TableCell>{proveedor.Telefono}</TableCell>
               <TableCell>{proveedor.Direccion}</TableCell>
-              <TableCell>{proveedor.Barrio}</TableCell>
-              <TableCell>{proveedor.Ciudad}</TableCell>
               <TableCell>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => handleEditar(proveedor)}
-                >
-                  <FontAwesomeIcon icon={faPenToSquare} /> Editar
-                </button>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => BtnEliminar(proveedor.ID)}
-                >
-                  <FontAwesomeIcon icon={faTrashCan} /> Eliminar
-                </button>
+              <Button icon color="blue" onClick={() => handleEditar(proveedor.ID)}>
+                  <Icon name='edit' />
+                </Button>
+                <Button icon color="red" onClick={() => BtnEliminar(proveedor.ID)}>
+                  <Icon name='trash' />
+                </Button>
               </TableCell>
             </TableRow>
           ))}

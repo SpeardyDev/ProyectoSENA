@@ -6,23 +6,18 @@ import { useState } from 'react';
 import './styles/HomeAdmin.css'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars,faXmark } from '@fortawesome/free-solid-svg-icons';
-import CategoriaPd from './Gestion_de_productos/CategoriaPd';
-import CategoriaMp from './Gestion_de_productos/CategoriaMp';
-import Productos from './Gestion_de_productos/Productos';
-import Proveedores from './Gestion_de_productos/Proveedores';
+import Proveedores from './Gestion_Proveedores_Completo/Proveedores';
 import Usuarios from './Gestion_de_usuarios/Usuarios'
 import MenuDePerfil from './MenuDePerfil';
-import MateriasPrimas from './Gestion_de_MateriaPrima/MateriasPrimas';
+import MateriasPrimas from './Gestion_MateriaPrima_Completo/MateriaPrima';
 import Reportes from './Gestion_de_Reportes/Reportes';
 
 const HomeAdmin = () => {
-  const [visibleComponents, setVisibleComponents] = useState({dashboard: true,  categorias_pd: false, categorias_mp: false, productos: false, Proveedores: false, Usuarios: false, Mprima: false, Reportes: false });
+  const [visibleComponents, setVisibleComponents] = useState({dashboard: true, Proveedores: false, Usuarios: false, Mprima: false, Reportes: false });
   const handleButtonClick = (componentName) => {
     setVisibleComponents(prevState => ({
       ...prevState,
       dashboard: componentName === 'dashboard',
-      categorias_pd: componentName === 'categorias_pd',
-      categorias_mp: componentName === 'categorias_mp',
       productos: componentName ===  'productos',
       Proveedores: componentName ===  'Proveedores',
       Usuarios: componentName ===  'Usuarios',
@@ -61,18 +56,12 @@ const HomeAdmin = () => {
               <ul>
                   <li onClick={() => handleButtonClick('dashboard')}><i className="fa-solid fa-chart-line"></i>Dashboard</li>
   
-                  <MenuItem title="Gestión de Productos" icon="fas fa-cubes">
-                  <li className="li-desplegable" onClick={() => handleButtonClick('productos')}><a   className="item">Productos</a></li>
-                  <li className="li-desplegable" onClick={() => handleButtonClick('categorias_pd')}><a  className="item">Categorias de Productos</a></li>
-                  </MenuItem>
-  
-                  <li onClick={() => handleButtonClick('Reportes')}><i className="fas fa-chart-bar"></i> Reportes</li>
-
                   <MenuItem title="Gestión de Materias Primas" icon="fas fa-cubes">
                   <li className="li-desplegable" onClick={() => handleButtonClick('Mprima')}><a className="item">Materias Primas</a></li>
                   <li className="li-desplegable" onClick={() => handleButtonClick('Proveedores')}><a className="item">Proveedores</a></li>
-                  <li className="li-desplegable" onClick={() => handleButtonClick('categorias_mp')}><a  className="item">Categorias de Materias Primas</a></li>
                   </MenuItem>
+  
+                  <li onClick={() => handleButtonClick('Reportes')}><i className="fas fa-chart-bar"></i> Reportes</li>
             
                   <MenuItem title="Gestión de usuarios" icon="fas fa-users">
                   <li className="li-desplegable" onClick={() => handleButtonClick('Usuarios')}><a className="item">Usuarios</a></li>
@@ -105,21 +94,6 @@ const HomeAdmin = () => {
               <div className="card teal-2"><div className="contenedor-icono Billete"><i id="icono"className="fa-solid fa-money-bill-1"></i></div><div className="contenedor-span"><span className="label">Beneficio bruto</span><span className="numero">115</span></div></div>
               <div className="card blue-cielo"><div className="contenedor-icono Monedas"><i id="icono"className="fa-solid fa-coins"></i></div><div className="contenedor-span"><span className="label">Beneficio neto</span><span className="numero">$413</span></div></div>
             </article>
-           }
-           {visibleComponents.categorias_pd &&
-            <section className="cont-categorias">
-              <CategoriaPd/>
-            </section>
-           }
-           {visibleComponents.categorias_mp &&
-            <section className="cont-categorias">
-              <CategoriaMp/>
-            </section>
-           }
-           {visibleComponents.productos &&
-           <section className='cont-productos'>
-            <Productos/>
-           </section>
            }
            {visibleComponents.Proveedores &&
            <section className='cont-productos'>
