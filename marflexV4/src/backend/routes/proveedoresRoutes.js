@@ -93,7 +93,7 @@ router.get('/proveedores/:id', (req, res) => {
  */
 
 // Crear un nuevo proveedor
-router.post('/proveedores', (req, res) => {
+router.post('/agregar/proveedores', (req, res) => {
     const { Nombre, Telefono, Direccion } = req.body;
     const query = 'INSERT INTO proveedores (Nombre, Telefono, Direccion) VALUES (?, ?, ?)';
     db.query(query, [Nombre, Telefono, Direccion], (err, result) => {
@@ -140,7 +140,7 @@ router.post('/proveedores', (req, res) => {
  */
 
 // Actualizar un proveedor
-router.put('/proveedores/:id', (req, res) => {
+router.put('/actualizar/proveedores/:id', (req, res) => {
     const { id } = req.params;
     const { Nombre, Telefono, Direccion } = req.body;
     const query = 'UPDATE proveedores SET Nombre = ?, Telefono = ?, Direccion = ? WHERE ID = ?';
@@ -177,7 +177,7 @@ router.put('/proveedores/:id', (req, res) => {
  */
 
 // Eliminar un proveedor
-router.delete('/proveedores/:id', (req, res) => {
+router.delete('/eliminar/proveedores/:id', (req, res) => {
     const { id } = req.params;
     db.query('DELETE FROM proveedores WHERE ID = ?', [id], (err, result) => {
         if (err) {
