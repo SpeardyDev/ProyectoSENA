@@ -90,8 +90,6 @@ router.post("/login", async (req, res) => {
       console.log("Usuario no encontrado");
       return res.status(400).send({ message: "Usuario o contraseña incorrectos" });
     }
-
-    console.log("Contraseña ingresada:", password);
     console.log("Contraseña almacenada:", user.password);
 
     // Comparar la contraseña ingresada con la encriptada en la BD

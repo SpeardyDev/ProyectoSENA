@@ -230,7 +230,6 @@ function Usuarios() {
           </FormGroup>
           <Button type="submit" color="green"> Registrar </Button>
           <Button type="button" color="red" onClick={() => setMostrarFormulario(false)} > Cancelar </Button>
-          <Divider hidden />
         </Form>
       )}
       {/* FORMULARIO QUE PARA EDITAR */}

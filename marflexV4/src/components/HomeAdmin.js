@@ -5,7 +5,7 @@ import icono from '../img/forklift_30dp_DA954B_FILL0_wght400_GRAD0_opsz24.png';
 import { useState } from 'react';
 import './styles/HomeAdmin.css'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars,faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import Proveedores from './Gestion_Proveedores_Completo/Proveedores';
 import Usuarios from './Gestion_de_usuarios/Usuarios'
 import MenuDePerfil from './MenuDePerfil';
