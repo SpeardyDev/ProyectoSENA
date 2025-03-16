@@ -2,19 +2,18 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { Button, Form, Search, Table, Icon } from 'semantic-ui-react';
-import "../Gestion_MateriaPrima_Completo/styles/MateriaPrima.css";
 import axios from 'axios';
 import Pagination from '../Pagination';
-import './styles/MateriaPrima.css'
+import './styles/colchones.css'
 
-const MateriasPrimas = () => {
-  const [materiasp, setMateriasp] = useState([]);
+const Colchones = () => {
+  const [colchones, setColchones] = useState([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [formularioDatos, setFormularioDatos] = useState({
-    Nombre: "",
+    Modelo: "",
     Descripcion: "",
-    Stock: "",
-    Unidad: ""
+    Fecha_Fabricacion: "",
+    Cantidad: ""
   });
   const [editandoID, setEditandoID] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,8 +24,8 @@ const MateriasPrimas = () => {
   }, []);
 
   const mostrarProductos = () => {
-    axios.get('http://localhost:3000/materia_prima')
-      .then(response => setMateriasp(response.data))
+    axios.get('http://localhost:3000/colchones')
+      .then(response => setColchones(response.data))
       .catch(error => console.error('Error al obtener los datos:', error));
   };
 
@@ -38,8 +37,8 @@ const MateriasPrimas = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const url = editandoID
-      ? `http://localhost:3000/actualizar/materia_prima/${editandoID}`
-      : "http://localhost:3000/agregar/materia_prima";
+      ? `http://localhost:3000/actualizar/colchones/${editandoID}`
+      : "http://localhost:3000/agregar/colchones";
 
     const method = editandoID ? axios.put : axios.post;
 
@@ -71,7 +70,7 @@ const MateriasPrimas = () => {
       confirmButtonText: "Sí, eliminar"
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`http://localhost:3000/eliminar/materia_prima/${id}`)
+        axios.delete(`http://localhost:3000/eliminar/colchones/${id}`)
           .then(() => {
             mostrarProductos();
             Swal.fire("Eliminado!", "El registro ha sido eliminado.", "success");
@@ -82,13 +81,13 @@ const MateriasPrimas = () => {
   };
 
   const handleEditar = (id) => {
-    const producto = materiasp.find(item => item.ID === id);
-    if (producto) {
+    const colchon = colchones.find(item => item.ID === id);
+    if (colchon) {
       setFormularioDatos({
-        Nombre: producto.Nombre,
-        Descripcion: producto.Descripcion,
-        Stock: producto.Stock,
-        Unidad: producto.Unidad
+        Modelo: colchon.Modelo,
+        Descripcion: colchon.Descripcion,
+        Fecha_Fabricacion: colchon.Fecha_Fabricacion,
+        Cantidad: colchon.Cantidad
       });
       setEditandoID(id);
       setMostrarFormulario(true);
@@ -97,11 +96,10 @@ const MateriasPrimas = () => {
 
   const LimpiarFormulario = () => {
     setFormularioDatos({
-      Nombre: "",
+      Modelo: "",
       Descripcion: "",
-      Cantidad: "",
-      Categoria: "",
-      Proveedor: ""
+      Fecha_Fabricacion: "",
+      Cantidad: ""
     });
   };
 
@@ -109,23 +107,23 @@ const MateriasPrimas = () => {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = materiasp.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = colchones.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div>
-      <div className='Titulo'><p>Materias Primas</p></div>
+      <div className='Titulo'><p>Colchones</p></div>
       {mostrarFormulario && (
-        <Form className='RegistroNuevo_MateriaPrima' onSubmit={handleSubmit}>
+        <Form className='RegistroNuevo_Colchon' onSubmit={handleSubmit}>
           <Form.Group widths='equal'>
-            <Form.Input label='Nombre' name="Nombre" value={formularioDatos.Nombre} onChange={handleChange} required />
-            <Form.Input label='Stock' name="Stock" value={formularioDatos.Stock} onChange={handleChange} required />
+            <Form.Input label='Modelo' name="Modelo" value={formularioDatos.Modelo} onChange={handleChange} required />
+            <Form.Input label='Cantidad' type='number' name="Cantidad" value={formularioDatos.Cantidad} onChange={handleChange} required />
           </Form.Group>
           <Form.Group widths='equal'>
             <Form.Input label='Descripción' name="Descripcion" value={formularioDatos.Descripcion} onChange={handleChange} required />
-            <Form.Input label='Unidad' name="Unidad" value={formularioDatos.Unidad} onChange={handleChange} required />
+            <Form.Input label='Fecha de Fabricación' type='date' name="Fecha_Fabricacion" value={formularioDatos.Fecha_Fabricacion} onChange={handleChange} required />
           </Form.Group>
           <Button type='submit' color='green'>{editandoID ? 'Actualizar' : 'Registrar'}</Button>
-          <Button type='button' color='red' onClick={() => { setMostrarFormulario(false); setEditandoID(null); LimpiarFormulario();}}>Cancelar</Button>
+          <Button type='button' color='red' onClick={() => { setMostrarFormulario(false); setEditandoID(null); LimpiarFormulario(); }}>Cancelar</Button>
         </Form>
       )}
       
@@ -146,7 +144,7 @@ const MateriasPrimas = () => {
             <i className="pi pi-upload" style={{ fontSize: '1.5rem' }}></i>
             <span>Exportar</span>
           </span>
-          <Button onClick={() => {setMostrarFormulario(!mostrarFormulario); LimpiarFormulario();}} color='green'><i className="pi pi-plus" /> Materia Prima</Button>
+          <Button onClick={() => {setMostrarFormulario(!mostrarFormulario); LimpiarFormulario();}} color='green'><i className="pi pi-plus" /> Colchón</Button>
         </div>
       </div>
       <article className="Dasboard"></article>
@@ -154,26 +152,26 @@ const MateriasPrimas = () => {
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>#</Table.HeaderCell>
-            <Table.HeaderCell>Nombre</Table.HeaderCell>
-            <Table.HeaderCell>Stock</Table.HeaderCell>
-            <Table.HeaderCell>Unidad</Table.HeaderCell>
+            <Table.HeaderCell>Modelo</Table.HeaderCell>
             <Table.HeaderCell>Descripción</Table.HeaderCell>
+            <Table.HeaderCell>Fecha de Fabricación</Table.HeaderCell>
+            <Table.HeaderCell>Cantidad</Table.HeaderCell>
             <Table.HeaderCell>Acciones</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {currentItems.map(producto => (
-            <Table.Row key={producto.ID}>
-              <Table.Cell>{producto.ID}</Table.Cell>
-              <Table.Cell>{producto.Nombre}</Table.Cell>
-              <Table.Cell>{producto.Stock}</Table.Cell>
-              <Table.Cell>{producto.Unidad}</Table.Cell>
-              <Table.Cell>{producto.Descripcion}</Table.Cell>
+          {currentItems.map(colchon => (
+            <Table.Row key={colchon.ID}>
+              <Table.Cell>{colchon.ID}</Table.Cell>
+              <Table.Cell>{colchon.Modelo}</Table.Cell>
+              <Table.Cell>{colchon.Descripcion}</Table.Cell>
+              <Table.Cell>{colchon.Fecha_Fabricacion}</Table.Cell>
+              <Table.Cell>{colchon.Cantidad}</Table.Cell>
               <Table.Cell>
-                <Button icon color="blue" onClick={() => handleEditar(producto.ID)}>
+                <Button icon color="blue" onClick={() => handleEditar(colchon.ID)}>
                   <Icon name='edit' />
                 </Button>
-                <Button icon color="red" onClick={() => handleEliminar(producto.ID)}>
+                <Button icon color="red" onClick={() => handleEliminar(colchon.ID)}>
                   <Icon name='trash' />
                 </Button>
               </Table.Cell>
@@ -183,11 +181,11 @@ const MateriasPrimas = () => {
       </Table>
       <Pagination
         currentPage={currentPage}
-        totalPages={Math.ceil(materiasp.length / itemsPerPage)}
+        totalPages={Math.ceil(colchones.length / itemsPerPage)}
         handlePageChange={handlePageChange}
       />
     </div>
   );
 };
 
-export default MateriasPrimas;
+export default Colchones;

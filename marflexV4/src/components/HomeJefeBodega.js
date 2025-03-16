@@ -6,23 +6,23 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import "./styles/HomeAdmin.css";
-import Inventario from "./Gestion_de_inventario/Inventario.js";
-import Pedidos from "./Gestion_de_pedidos/Pedidos.js";
+import Colchones from "./Gestion_Colchones/Colchones.js";
+import Detalle from "./Gestion_Colchones/Detalle.js";
 import MenuDePerfil from "./MenuDePerfil.js";
 
 const HomeJefeBodega = () => {
   const [visibleComponents, setVisibleComponents] = useState({
     dashboard: true,
-    inventario: false,
-    pedidos: false,
+    colchones: false,
+    detalle: false,
   });
 
   const handleButtonClick = (componentName) => {
     setVisibleComponents((prevState) => ({
       ...prevState,
       dashboard: componentName === "dashboard",
-      inventario: componentName === "inventario",
-      pedidos: componentName === "pedidos",
+      colchones: componentName === "colchones",
+      detalle: componentName === "detalle",
     }));
   };
 
@@ -68,9 +68,24 @@ const HomeJefeBodega = () => {
                 <li onClick={() => handleButtonClick("dashboard")}>
                   <i className="fa-solid fa-chart-line"></i>Dashboard
                 </li>
-                <li onClick={() => handleButtonClick("inventario")}>
-                  <i className="fas fa-cubes"></i> Inventario
-                </li>
+                <MenuItem title="Gestión de Colchones" icon="fas fa-cubes">
+                  <li
+                    className="li-desplegable"
+                    onClick={() => handleButtonClick("colchones")}
+                  >
+                    <a href className="item">
+                      Colchones
+                    </a>
+                  </li>
+                  <li
+                    className="li-desplegable"
+                    onClick={() => handleButtonClick("detalle")}
+                  >
+                    <a href className="item">
+                      Detalle Colchones
+                    </a>
+                  </li>
+                </MenuItem>
                 <li onClick={() => handleButtonClick("pedidos")}>
                   <i className="fa-solid fa-dolly"></i> Pedidos
                 </li>
@@ -122,7 +137,6 @@ const HomeJefeBodega = () => {
                     <span className="numero">$ 413</span>
                   </div>
                 </div>
-
                 <div className="card blue">
                   <div className="contenedor-icono Caja">
                     <i id="icono" className="fa-solid fa-cube"></i>
@@ -159,7 +173,6 @@ const HomeJefeBodega = () => {
                     <span className="numero">$ 413</span>
                   </div>
                 </div>
-
                 <div className="card blue-2">
                   <div className="contenedor-icono signo-dolar">
                     <i id="icono" className="fa-solid fa-dollar-sign"></i>
@@ -201,20 +214,42 @@ const HomeJefeBodega = () => {
                 </div>
               </article>
             )}
-            {visibleComponents.inventario && (
+            {visibleComponents.colchones && (
               <section className="cont-inventario">
-                <Inventario />
+                <Colchones />
               </section>
             )}
-            {visibleComponents.pedidos && (
+            {visibleComponents.detalle && (
               <section className="cont-pedidos">
-                <Pedidos />
+                <Detalle />
               </section>
             )}
           </section>
         </section>
       </div>
     </div>
+  );
+};
+const MenuItem = ({ title, icon, children }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [color, setColor] = useState("");
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+    setColor(isOpen ? "" : "#ff9f00");
+  };
+
+  return (
+    <li onClick={toggleMenu} style={{ color }}>
+      <i className={icon}></i> {title}
+      <i
+        className={`fa-regular ${
+          isOpen ? "fa-square-minus" : "fa-square-plus"
+        }`}
+        style={{ float: "right" }}
+      ></i>
+      {isOpen && <ul className="submenu">{children}</ul>}
+    </li>
   );
 };
 
