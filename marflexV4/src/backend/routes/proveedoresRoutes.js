@@ -68,7 +68,7 @@ router.get('/proveedores/:id', (req, res) => {
 
 /**
  * @swagger
- * /proveedores:
+ * /agregar/proveedores:
  *   post:
  *     summary: Crea un nuevo proveedor
  *     tags: [Proveedores]
@@ -107,7 +107,7 @@ router.post('/agregar/proveedores', (req, res) => {
 
 /**
  * @swagger
- * /proveedores/{id}:
+ * /actualizar/proveedores/{id}:
  *   put:
  *     summary: Actualiza un proveedor existente
  *     tags: [Proveedores]
@@ -157,7 +157,7 @@ router.put('/actualizar/proveedores/:id', (req, res) => {
 
 /**
  * @swagger
- * /proveedores/{id}:
+ * /eliminar/proveedores/{id}:
  *   delete:
  *     summary: Elimina un proveedor por ID
  *     tags: [Proveedores]

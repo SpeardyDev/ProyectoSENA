@@ -147,8 +147,9 @@ router.post('/agregar/colchones', (req, res) => {
 router.put('/actualizar/colchones/:id', (req, res) => {
   const { id } = req.params;
   const { Modelo, Descripcion, Fecha_Fabricacion, Cantidad } = req.body;
+  const fechaFormatoCorrecto = Fecha_Fabricacion ? new Date(Fecha_Fabricacion).toISOString().slice(0, 10) : null;
   const query = 'UPDATE colchones SET Modelo = ?, Descripcion = ?, Fecha_Fabricacion = ?, Cantidad = ? WHERE ID = ?';
-  db.query(query, [Modelo, Descripcion, Fecha_Fabricacion, Cantidad, id], (err, result) => {
+  db.query(query, [Modelo, Descripcion, fechaFormatoCorrecto, Cantidad, id], (err, result) => {
       if (err) {
           res.status(500).json({ error: err.message });
       } else if (result.affectedRows === 0) {

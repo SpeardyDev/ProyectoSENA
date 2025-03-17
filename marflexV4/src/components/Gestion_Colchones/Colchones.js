@@ -12,7 +12,7 @@ const Colchones = () => {
   const [formularioDatos, setFormularioDatos] = useState({
     Modelo: "",
     Descripcion: "",
-    Fecha_Fabricacion: "",
+    Fecha_Fabricacion: new Date().toISOString().slice(0, 10),
     Cantidad: ""
   });
   const [editandoID, setEditandoID] = useState(null);
@@ -86,7 +86,7 @@ const Colchones = () => {
       setFormularioDatos({
         Modelo: colchon.Modelo,
         Descripcion: colchon.Descripcion,
-        Fecha_Fabricacion: colchon.Fecha_Fabricacion,
+        Fecha_Fabricacion: colchon.Fecha_Fabricacion ? new Date(colchon.Fecha_Fabricacion).toISOString().slice(0, 10) : "",
         Cantidad: colchon.Cantidad
       });
       setEditandoID(id);
@@ -120,7 +120,7 @@ const Colchones = () => {
           </Form.Group>
           <Form.Group widths='equal'>
             <Form.Input label='Descripción' name="Descripcion" value={formularioDatos.Descripcion} onChange={handleChange} required />
-            <Form.Input label='Fecha de Fabricación' type='date' name="Fecha_Fabricacion" value={formularioDatos.Fecha_Fabricacion} onChange={handleChange} required />
+            <Form.Input label='Fecha de fabricación' name='Fecha' type='date' value={formularioDatos.Fecha_Fabricacion} onChange={(e) => setFormularioDatos({ ...formularioDatos, Fecha_Fabricacion: e.target.value })} required />
           </Form.Group>
           <Button type='submit' color='green'>{editandoID ? 'Actualizar' : 'Registrar'}</Button>
           <Button type='button' color='red' onClick={() => { setMostrarFormulario(false); setEditandoID(null); LimpiarFormulario(); }}>Cancelar</Button>
@@ -165,7 +165,7 @@ const Colchones = () => {
               <Table.Cell>{colchon.ID}</Table.Cell>
               <Table.Cell>{colchon.Modelo}</Table.Cell>
               <Table.Cell>{colchon.Descripcion}</Table.Cell>
-              <Table.Cell>{colchon.Fecha_Fabricacion}</Table.Cell>
+              <Table.Cell>{new Date(colchon.Fecha_Fabricacion).toISOString().slice(0, 10)}</Table.Cell>
               <Table.Cell>{colchon.Cantidad}</Table.Cell>
               <Table.Cell>
                 <Button icon color="blue" onClick={() => handleEditar(colchon.ID)}>

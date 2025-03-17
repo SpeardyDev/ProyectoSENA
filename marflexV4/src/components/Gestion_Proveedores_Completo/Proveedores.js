@@ -2,20 +2,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import React, { useEffect, useState } from "react";
 import "./styles/Proveedores.css";
-import {
-  FormGroup,
-  FormField,
-  Button,
-  Form,
-  Search,
-  TableRow,
-  TableHeaderCell,
-  TableHeader,
-  TableCell,
-  TableBody,
-  Table,
-  Icon
-} from "semantic-ui-react";
+import { Button, Form, Table, Search, Icon } from 'semantic-ui-react';
 import Pagination from "../Pagination";
 import { InputMask } from "primereact/inputmask";
 
@@ -134,7 +121,6 @@ function Proveedores() {
     setCurrentPage(page);
   };
 
-  /// Limpia los inputs
   const LimpiarFormulario = () => {
     setFormularioDato({
       Nombre: "",
@@ -154,13 +140,10 @@ function Proveedores() {
       </div>
 
       {mostrarFormulario && (
-        <Form
-          className="RegistroNuevoProveedor"
-          onSubmit={proveedorEditando ? handleActualizar : handleSubmit}
-        >
+        <Form className="RegistroNuevoProveedor" onSubmit={proveedorEditando ? handleActualizar : handleSubmit}>
           <div className="contenedor_formulario_Proveedores">
-            <FormGroup widths="equal">
-              <FormField
+            <Form.Group widths="equal">
+              <Form.Field
                 value={formularioDatos.Nombre}
                 onChange={handleChange}
                 placeholder="Nombre"
@@ -169,7 +152,7 @@ function Proveedores() {
                 name="Nombre"
                 required
               />
-              <FormField required>
+              <Form.Field required>
                 <label>Teléfono</label>
                 <InputMask
                   mask="(999) 999-9999"
@@ -178,10 +161,10 @@ function Proveedores() {
                   value={formularioDatos.Telefono}
                   onChange={handleChange}
                 />
-              </FormField>
-            </FormGroup>
-            <FormGroup widths="equal">
-              <FormField
+              </Form.Field>
+            </Form.Group>
+            <Form.Group widths="equal">
+              <Form.Field
                 name="Direccion"
                 value={formularioDatos.Direccion}
                 onChange={handleChange}
@@ -190,19 +173,10 @@ function Proveedores() {
                 placeholder="Dirección"
                 required
               />
-            </FormGroup>
+            </Form.Group>
 
             <Button type='submit' color='green'>{proveedorEditando ? 'Actualizar' : 'Registrar'}</Button>
-            <Button
-              type="button"
-              className="red"
-              onClick={() =>
-                setMostrarFormulario(!mostrarFormulario) + LimpiarFormulario()
-              }
-            >
-              {" "}
-              Cancelar{" "}
-            </Button>
+            <Button type='button' color='red' onClick={() => { setMostrarFormulario(false); setProveedorEditando(null); LimpiarFormulario();}}>Cancelar</Button>
           </div>
         </Form>
       )}
@@ -233,34 +207,34 @@ function Proveedores() {
       </div>
       <article className="Dasboard-Proveedores"></article>
       <Table celled>
-        <TableHeader>
-          <TableRow>
-            <TableHeaderCell>#</TableHeaderCell>
-            <TableHeaderCell>Nombre</TableHeaderCell>
-            <TableHeaderCell>Teléfono</TableHeaderCell>
-            <TableHeaderCell>Dirección</TableHeaderCell>
-            <TableHeaderCell>Acciones</TableHeaderCell>
-          </TableRow>
-        </TableHeader>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>#</Table.HeaderCell>
+            <Table.HeaderCell>Nombre</Table.HeaderCell>
+            <Table.HeaderCell>Teléfono</Table.HeaderCell>
+            <Table.HeaderCell>Dirección</Table.HeaderCell>
+            <Table.HeaderCell>Acciones</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
 
-        <TableBody>
+        <Table.Body>
           {currentItems.map((proveedor, index) => (
-            <TableRow key={proveedor.ID}>
-              <TableCell>{index + 1 + indexOfFirstItem}</TableCell>
-              <TableCell>{proveedor.Nombre}</TableCell>
-              <TableCell>{proveedor.Telefono}</TableCell>
-              <TableCell>{proveedor.Direccion}</TableCell>
-              <TableCell>
+            <Table.Row key={proveedor.ID}>
+              <Table.Cell>{index + 1 + indexOfFirstItem}</Table.Cell>
+              <Table.Cell>{proveedor.Nombre}</Table.Cell>
+              <Table.Cell>{proveedor.Telefono}</Table.Cell>
+              <Table.Cell>{proveedor.Direccion}</Table.Cell>
+              <Table.Cell>
               <Button icon color="blue" onClick={() => handleEditar(proveedor.ID)}>
                   <Icon name='edit' />
                 </Button>
                 <Button icon color="red" onClick={() => BtnEliminar(proveedor.ID)}>
                   <Icon name='trash' />
                 </Button>
-              </TableCell>
-            </TableRow>
+              </Table.Cell>
+            </Table.Row>
           ))}
-        </TableBody>
+        </Table.Body>
       </Table>
       <Pagination
         currentPage={currentPage}
