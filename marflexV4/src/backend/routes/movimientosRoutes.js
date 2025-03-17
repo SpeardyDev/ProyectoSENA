@@ -146,9 +146,10 @@ router.post('/agregar/movimientos', (req, res) => {
 // Actualizar un movimiento
 router.put('/actualizar/movimientos/:id', (req, res) => {
   const { id } = req.params;
-  const { ID_MateriaPrima, Tipo, Cantidad, ID_Proveedor } = req.body;
-  const query = 'UPDATE movimientos SET ID_MateriaPrima = ?, Tipo = ?, Cantidad = ?, ID_Proveedor = ? WHERE ID = ?';
-  db.query(query, [ID_MateriaPrima, Tipo, Cantidad, ID_Proveedor, id], (err, result) => {
+  const { ID_MateriaPrima, Tipo, Cantidad, Fecha, ID_Proveedor } = req.body;
+  const fechaFormatoCorrecto = Fecha ? new Date(Fecha).toISOString().slice(0, 10) : null;
+  const query = 'UPDATE movimientos SET ID_MateriaPrima = ?, Tipo = ?, Cantidad = ?, Fecha = ?, ID_Proveedor = ? WHERE ID = ?';
+  db.query(query, [ID_MateriaPrima, Tipo, Cantidad, fechaFormatoCorrecto, ID_Proveedor, id], (err, result) => {
       if (err) {
           res.status(500).json({ error: err.message });
       } else if (result.affectedRows === 0) {

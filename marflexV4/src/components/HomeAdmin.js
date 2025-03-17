@@ -7,10 +7,11 @@ import './styles/HomeAdmin.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import Proveedores from './Gestion_Proveedores_Completo/Proveedores';
-import Usuarios from './Gestion_de_usuarios/Usuarios'
+import Usuarios from './Gestion_Usuarios/Usuarios'
 import MenuDePerfil from './MenuDePerfil';
 import MateriasPrimas from './Gestion_MateriaPrima_Completo/MateriaPrima';
 import Reportes from './Gestion_de_Reportes/Reportes';
+import Movimientos from './Gestion_Movimientos/Movimientos'
 
 const HomeAdmin = () => {
   const [visibleComponents, setVisibleComponents] = useState({dashboard: true, Proveedores: false, Usuarios: false, Mprima: false, Reportes: false });
@@ -18,12 +19,11 @@ const HomeAdmin = () => {
     setVisibleComponents(prevState => ({
       ...prevState,
       dashboard: componentName === 'dashboard',
-      productos: componentName ===  'productos',
       Proveedores: componentName ===  'Proveedores',
       Usuarios: componentName ===  'Usuarios',
-      menu: componentName === 'menu',
       Mprima: componentName === 'Mprima',
-      Reportes: componentName === 'Reportes'
+      Reportes: componentName === 'Reportes',
+      Movimientos: componentName === 'Movimientos'
     }));
   };
  const [BtnMenu,setBtnMenu]=useState(false);
@@ -55,15 +55,18 @@ const HomeAdmin = () => {
           <div className="sidebar">                                
               <ul>
                   <li onClick={() => handleButtonClick('dashboard')}><i className="fa-solid fa-chart-line"></i>Dashboard</li>
-  
+                  <li onClick={() => handleButtonClick('Reportes')}><i className="fas fa-chart-bar"></i> Reportes</li>
+
                   <MenuItem title="Gestión de Materias Primas" icon="fas fa-cubes">
                   <li className="li-desplegable" onClick={() => handleButtonClick('Mprima')}><a className="item">Materias Primas</a></li>
                   <li className="li-desplegable" onClick={() => handleButtonClick('Proveedores')}><a className="item">Proveedores</a></li>
                   </MenuItem>
-  
-                  <li onClick={() => handleButtonClick('Reportes')}><i className="fas fa-chart-bar"></i> Reportes</li>
+                  
+                  <MenuItem title="Gestión de Movimientos" icon="fas fa-down-left-and-up-right-to-center">
+                  <li className="li-desplegable" onClick={() => handleButtonClick('Movimientos')}><a className="item">Movimientos</a></li>
+                  </MenuItem>
             
-                  <MenuItem title="Gestión de usuarios" icon="fas fa-users">
+                  <MenuItem title="Gestión de Usuarios" icon="fas fa-users">
                   <li className="li-desplegable" onClick={() => handleButtonClick('Usuarios')}><a className="item">Usuarios</a></li>
                   </MenuItem>
   
@@ -113,6 +116,11 @@ const HomeAdmin = () => {
            {visibleComponents.Mprima &&
            <section className='cont-productos'>
             <MateriasPrimas/>
+           </section>
+           }
+           {visibleComponents.Movimientos &&
+           <section className='cont-productos'>
+            <Movimientos/>
            </section>
            }
           </section>
