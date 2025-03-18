@@ -23,12 +23,12 @@ function Login() {
       const { token, rol } = response.data;
       localStorage.setItem('token', token);
 
-      if (rol === 'administrador') {
-        alert("Login exitoso");
+      if (rol === 'Administrador') {
+        alert("Login exitoso administrador");
         navigate("/HomeAdmin");
-      } else if (rol === 'Jefe de Bodega') {
-        alert("Login exitoso jefe de bodega");
-        navigate("/HomeJefeBodega");
+      } else if (rol === 'Empleado') {
+        alert("Login exitoso empleado");
+        navigate("/HomeEmpleado");
       }
     } catch (error) {
       console.error("Error en el login:", error);
