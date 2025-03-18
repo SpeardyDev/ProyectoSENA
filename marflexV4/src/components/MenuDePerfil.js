@@ -12,8 +12,8 @@ const MenuDePerfil = () => {
   const toggleDropdown = (dropdown) => {
     setActiveDropdown(activeDropdown === dropdown ? "" : dropdown);
   };
-  const CerarSesion = async () => {
-    alert('seguro');
+  const CerrarSesion = async () => {
+    alert('Saliendo de la sesión');
     try {
       const response = await fetch('http://localhost:3000/cerrarsesion', {
         method: 'POST',
@@ -24,7 +24,6 @@ const MenuDePerfil = () => {
   
       console.log('Response:', response);
   
-      // Verificar si response.json es una función
       if (typeof response.json !== 'function') {
         throw new Error('La respuesta no es un objeto JSON válido');
       }
@@ -86,7 +85,7 @@ const MenuDePerfil = () => {
             </div>
           )}
 
-          <div className="menu-item" onClick={CerarSesion}>
+          <div className="menu-item" onClick={CerrarSesion}>
             <FiLogOut className="menu-icon" />
             Cerrar sesión
           </div>

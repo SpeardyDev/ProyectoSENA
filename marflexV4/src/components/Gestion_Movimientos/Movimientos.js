@@ -132,7 +132,7 @@ const Movimientos = () => {
 
   return (
     <div>
-      <div className='Titulo'><p>Materias Primas</p></div>
+      <div className='Titulo'><p>Movimientos</p></div>
       {mostrarFormulario && (
         <Form className='RegistroNuevo_Movimiento' onSubmit={handleSubmit}>
         <Form.Group widths='equal'>

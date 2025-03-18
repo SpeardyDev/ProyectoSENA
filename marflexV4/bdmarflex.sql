@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-03-2025 a las 20:28:57
+-- Tiempo de generación: 18-03-2025 a las 01:54:11
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -204,24 +204,7 @@ INSERT INTO `detalle_colchon` (`ID`, `ID_Colchon`, `ID_MateriaPrima`, `Cantidad_
 (5, 2, 1, 5),
 (6, 2, 2, 15),
 (7, 2, 4, 3),
-(8, 3, 1, 15),
-(9, 3, 2, 15);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `empleados`
---
-
-CREATE TABLE `empleados` (
-  `ID` int(11) NOT NULL,
-  `Nombre` varchar(100) NOT NULL,
-  `Apellido` varchar(100) NOT NULL,
-  `Usuario` varchar(50) NOT NULL,
-  `Password` varchar(255) NOT NULL,
-  `Rol` enum('admin','empleado') NOT NULL DEFAULT 'empleado',
-  `ID_Estado` tinyint(4) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+(8, 3, 1, 15);
 
 -- --------------------------------------------------------
 
@@ -261,7 +244,7 @@ CREATE TABLE `materia_prima` (
 --
 
 INSERT INTO `materia_prima` (`ID`, `Nombre`, `Descripcion`, `Stock`, `Unidad`) VALUES
-(1, 'Espuma HR 30', 'Espuma de alta resiliencia para colchones', 130, 'kg'),
+(1, 'Espuma HR 30', 'Espuma de alta resiliencia para colchones', 137, 'kg'),
 (2, 'Tela Jacquard', 'Tela premium para forro de colchones', 300, 'metros'),
 (3, 'Resortes Bonnell', 'Resortes de acero para colchón ortopédico', 185, 'unidades'),
 (4, 'Pegamento PU', 'Pegamento de poliuretano para colchones', 65, 'litros');
@@ -286,16 +269,18 @@ CREATE TABLE `movimientos` (
 --
 
 INSERT INTO `movimientos` (`ID`, `ID_MateriaPrima`, `Tipo`, `Cantidad`, `Fecha`, `ID_Proveedor`) VALUES
-(1, 1, 'entrada', 50, '2025-03-01 15:00:00', 1),
-(2, 2, 'entrada', 100, '2025-03-02 16:00:00', 2),
-(3, 3, 'entrada', 75, '2025-03-03 14:30:00', 3),
-(4, 4, 'entrada', 25, '2025-03-04 19:00:00', 4),
-(5, 1, 'salida', 20, '2025-03-05 13:00:00', NULL),
-(6, 2, 'salida', 50, '2025-03-06 14:00:00', NULL),
-(7, 3, 'salida', 40, '2025-03-07 15:30:00', NULL),
-(8, 4, 'salida', 10, '2025-03-07 16:00:00', NULL),
-(9, 2, 'salida', 50, '2025-03-08 17:02:54', NULL),
-(10, 2, 'entrada', 100, '2025-03-08 17:04:05', 2);
+(1, 1, 'entrada', 50, '2025-03-01 20:00:00', 1),
+(2, 2, 'entrada', 100, '2025-03-02 21:00:00', 2),
+(3, 3, 'entrada', 75, '2025-03-03 19:30:00', 3),
+(4, 4, 'entrada', 25, '2025-03-05 00:00:00', 4),
+(5, 1, 'salida', 20, '2025-03-05 18:00:00', NULL),
+(6, 2, 'salida', 50, '2025-03-06 19:00:00', NULL),
+(7, 3, 'salida', 40, '2025-03-07 20:30:00', NULL),
+(8, 4, 'salida', 10, '2025-03-07 21:00:00', NULL),
+(9, 2, 'salida', 50, '2025-03-08 22:02:54', NULL),
+(10, 2, 'entrada', 100, '2025-03-08 22:04:05', 2),
+(11, 2, 'entrada', 50, '2025-03-10 21:08:39', 2),
+(12, 2, 'salida', 50, '2025-03-10 21:09:34', 2);
 
 --
 -- Disparadores `movimientos`
@@ -342,13 +327,45 @@ INSERT INTO `proveedores` (`ID`, `Nombre`, `Telefono`, `Direccion`) VALUES
 
 CREATE TABLE `solicitudes_materia_prima` (
   `ID` int(11) NOT NULL,
-  `ID_Empleado` int(11) NOT NULL,
+  `ID_Usuario` int(11) NOT NULL,
   `ID_Materiaprima` int(11) NOT NULL,
   `Cantidad_Solicitada` int(11) NOT NULL,
   `Fecha_Solicitud` timestamp NOT NULL DEFAULT current_timestamp(),
   `Estado` enum('pendiente','aprobada','rechazada') DEFAULT 'pendiente',
   `Motivo_Rechazo` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitudes_materia_prima`
+--
+
+INSERT INTO `solicitudes_materia_prima` (`ID`, `ID_Usuario`, `ID_Materiaprima`, `Cantidad_Solicitada`, `Fecha_Solicitud`, `Estado`, `Motivo_Rechazo`) VALUES
+(1, 4, 1, 10, '2025-03-18 00:32:16', 'pendiente', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios`
+--
+
+CREATE TABLE `usuarios` (
+  `ID` int(11) NOT NULL,
+  `Nombre` varchar(100) NOT NULL,
+  `Usuario` varchar(50) NOT NULL,
+  `Password` varchar(255) NOT NULL,
+  `Rol` enum('Adminitrador','Empleado') NOT NULL DEFAULT 'Empleado',
+  `ID_Estado` tinyint(4) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `usuarios`
+--
+
+INSERT INTO `usuarios` (`ID`, `Nombre`, `Usuario`, `Password`, `Rol`, `ID_Estado`) VALUES
+(1, 'Admin', 'admin@gmail.com', '$2b$10$zESD.e.fq4MoMzd2UIFCW.UXA1.rAb8u3AFvmdkr.W1m5EQtiHm1u', 'Adminitrador', 2),
+(2, 'José', 'frbsfrbs1@gmail.com', '$2b$10$JY3x80dKB6PQxYp65NM0yuC2u4W1quQhmvKWllKA6fCqgjDBm8.v6', 'Empleado', 2),
+(3, 'Reynaldo', 'rey@gmail.com', '$2b$10$dK5Jxq6FZRiMB7ztRAMOLuavfdv.Jm0YqMXeUqbrYYy8MIxqAup72', 'Adminitrador', 1),
+(4, 'Sandra', 'sandritha1000@gmail.com', '$2b$10$b5If9zeS.f2evu1edlBq0ezs2e1MveiokJrlRgONMhgPvRYOD0Mge', 'Empleado', 1);
 
 --
 -- Índices para tablas volcadas
@@ -367,14 +384,6 @@ ALTER TABLE `detalle_colchon`
   ADD PRIMARY KEY (`ID`),
   ADD KEY `ID_Colchon` (`ID_Colchon`),
   ADD KEY `ID_MateriaPrima` (`ID_MateriaPrima`);
-
---
--- Indices de la tabla `empleados`
---
-ALTER TABLE `empleados`
-  ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `usuario` (`Usuario`),
-  ADD KEY `estado_id` (`ID_Estado`);
 
 --
 -- Indices de la tabla `estados`
@@ -408,7 +417,15 @@ ALTER TABLE `proveedores`
 ALTER TABLE `solicitudes_materia_prima`
   ADD PRIMARY KEY (`ID`),
   ADD KEY `id_materia_prima` (`ID_Materiaprima`),
-  ADD KEY `solicitudes_materia_prima_ibfk_1` (`ID_Empleado`);
+  ADD KEY `solicitudes_materia_prima_ibfk_1` (`ID_Usuario`);
+
+--
+-- Indices de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `usuario` (`Usuario`),
+  ADD KEY `estado_id` (`ID_Estado`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -418,43 +435,43 @@ ALTER TABLE `solicitudes_materia_prima`
 -- AUTO_INCREMENT de la tabla `colchones`
 --
 ALTER TABLE `colchones`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_colchon`
 --
 ALTER TABLE `detalle_colchon`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
--- AUTO_INCREMENT de la tabla `empleados`
---
-ALTER TABLE `empleados`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `materia_prima`
 --
 ALTER TABLE `materia_prima`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `movimientos`
 --
 ALTER TABLE `movimientos`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitudes_materia_prima`
 --
 ALTER TABLE `solicitudes_materia_prima`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Restricciones para tablas volcadas
@@ -468,12 +485,6 @@ ALTER TABLE `detalle_colchon`
   ADD CONSTRAINT `detalle_colchon_ibfk_2` FOREIGN KEY (`ID_MateriaPrima`) REFERENCES `materia_prima` (`ID`);
 
 --
--- Filtros para la tabla `empleados`
---
-ALTER TABLE `empleados`
-  ADD CONSTRAINT `empleados_ibfk_1` FOREIGN KEY (`ID_Estado`) REFERENCES `estados` (`ID`);
-
---
 -- Filtros para la tabla `movimientos`
 --
 ALTER TABLE `movimientos`
@@ -484,8 +495,14 @@ ALTER TABLE `movimientos`
 -- Filtros para la tabla `solicitudes_materia_prima`
 --
 ALTER TABLE `solicitudes_materia_prima`
-  ADD CONSTRAINT `solicitudes_materia_prima_ibfk_1` FOREIGN KEY (`ID_Empleado`) REFERENCES `empleados` (`ID`),
-  ADD CONSTRAINT `solicitudes_materia_prima_ibfk_2` FOREIGN KEY (`ID_Materiaprima`) REFERENCES `materia_prima` (`ID`);
+  ADD CONSTRAINT `solicitudes_materia_prima_ibfk_1` FOREIGN KEY (`ID_Materiaprima`) REFERENCES `materia_prima` (`ID`),
+  ADD CONSTRAINT `solicitudes_materia_prima_ibfk_2` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuarios` (`ID`);
+
+--
+-- Filtros para la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`ID_Estado`) REFERENCES `estados` (`ID`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

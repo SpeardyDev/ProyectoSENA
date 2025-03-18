@@ -33,7 +33,7 @@ const HomeJefeBodega = () => {
           <nav className="barra-navegacion">
             <div className="logo">
               <img src={icono} alt="Logo de marflex" />
-              <h1 className="h1-nav">Bodega</h1>
+              <h1 className="h1-nav">Inventario</h1>
             </div>
             <div className="lista">
               <img src={logo} alt="Logo de marflex" />
