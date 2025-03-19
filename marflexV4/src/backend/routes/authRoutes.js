@@ -1,6 +1,7 @@
 //authRoutes.js
 const express = require("express");
 const router = express.Router();
+const db = require("../config/dbMysql");
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -50,6 +51,17 @@ router.post("/registrar", async (req, res) => {
     res.status(400).send(error);
     console.log('Error al agregar Usuario',error)
   }
+});
+
+router.post('/agregar/usuarios', async (req, res) => {
+  const { Nombre, Usuario, Password, Rol, ID_Estado } = req.body;
+  const hashedPassword = await bcrypt.hash(Password, 10);
+  
+  const newUser = { Nombre, Usuario, Password: hashedPassword, Rol, ID_Estado };
+  db.query('INSERT INTO usuarios SET ?', newUser, (err, result) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'Usuario creado', id: result.insertId });
+  });
 });
 
 /**

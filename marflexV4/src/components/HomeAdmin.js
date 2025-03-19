@@ -6,15 +6,16 @@ import { useState } from 'react';
 import './styles/HomeAdmin.css'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
-import Proveedores from './Gestion_Proveedores_Completo/Proveedores';
+import Proveedores from './Gestion_Proveedores/Proveedores';
 import Usuarios from './Gestion_Usuarios/Usuarios'
 import MenuDePerfil from './MenuDePerfil';
-import MateriasPrimas from './Gestion_MateriaPrima_Completo/MateriaPrima';
+import MateriasPrimas from './Gestion_MateriaPrima/MateriaPrima';
 import Reportes from './Gestion_de_Reportes/Reportes';
 import Movimientos from './Gestion_Movimientos/Movimientos'
+import Solicitudes from './Gestion_Solicitudes/solicitudesAdmin'
 
 const HomeAdmin = () => {
-  const [visibleComponents, setVisibleComponents] = useState({dashboard: true, Proveedores: false, Usuarios: false, Mprima: false, Reportes: false });
+  const [visibleComponents, setVisibleComponents] = useState({dashboard: true, Proveedores: false, Usuarios: false, Mprima: false, Reportes: false, Movimientos: false, Solicitudes: false});
   const handleButtonClick = (componentName) => {
     setVisibleComponents(prevState => ({
       ...prevState,
@@ -23,7 +24,8 @@ const HomeAdmin = () => {
       Usuarios: componentName ===  'Usuarios',
       Mprima: componentName === 'Mprima',
       Reportes: componentName === 'Reportes',
-      Movimientos: componentName === 'Movimientos'
+      Movimientos: componentName === 'Movimientos',
+      Solicitudes: componentName === 'Solicitudes de Materia Prima'
     }));
   };
  const [BtnMenu,setBtnMenu]=useState(false);
@@ -64,6 +66,10 @@ const HomeAdmin = () => {
                   
                   <MenuItem title="Gestión de Movimientos" icon="fas fa-down-left-and-up-right-to-center">
                   <li className="li-desplegable" onClick={() => handleButtonClick('Movimientos')}><a className="item">Movimientos</a></li>
+                  </MenuItem>
+
+                  <MenuItem title="Gestión de Solicitudes" icon="fas fa-users">
+                  <li className="li-desplegable" onClick={() => handleButtonClick('Solicitudes de Materia Prima')}><a className="item">Solicitudes de Materia Prima</a></li>
                   </MenuItem>
             
                   <MenuItem title="Gestión de Usuarios" icon="fas fa-users">
@@ -121,6 +127,11 @@ const HomeAdmin = () => {
            {visibleComponents.Movimientos &&
            <section className='cont-productos'>
             <Movimientos/>
+           </section>
+           }
+           {visibleComponents.Solicitudes &&
+           <section className='cont-productos'>
+            <Solicitudes/>
            </section>
            }
           </section>

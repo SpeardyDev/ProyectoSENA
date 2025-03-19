@@ -16,7 +16,7 @@ function Login() {
     e.preventDefault();
     try {
       const response = await axios.post("http://localhost:3000/login", {
-        username: username.trim().toLowerCase(), // Asegura que no tenga espacios
+        username: username.trim().toLowerCase(),
         password
       });
 
@@ -94,7 +94,6 @@ function Login() {
               </button>
             </span>
 
-            {/* Enlace corregido para recuperar contraseña */}
             <span className="span">
               <button 
                 type="button" 

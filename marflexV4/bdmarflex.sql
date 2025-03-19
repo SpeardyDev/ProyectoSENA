@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 18-03-2025 a las 01:54:11
+-- Tiempo de generación: 19-03-2025 a las 04:41:36
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -44,7 +44,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `AprobarSolicitud` (IN `p_id_solicit
         
         -- Actualizar el estado de la solicitud
         UPDATE solicitudes_materia_prima 
-        SET estado = 'aprobada'
+        SET estado = 'Aprobada'
         WHERE id_solicitud = p_id_solicitud;
     ELSE
         SIGNAL SQLSTATE '45000'
@@ -328,10 +328,10 @@ INSERT INTO `proveedores` (`ID`, `Nombre`, `Telefono`, `Direccion`) VALUES
 CREATE TABLE `solicitudes_materia_prima` (
   `ID` int(11) NOT NULL,
   `ID_Usuario` int(11) NOT NULL,
-  `ID_Materiaprima` int(11) NOT NULL,
+  `ID_MateriaPrima` int(11) NOT NULL,
   `Cantidad_Solicitada` int(11) NOT NULL,
   `Fecha_Solicitud` timestamp NOT NULL DEFAULT current_timestamp(),
-  `Estado` enum('pendiente','aprobada','rechazada') DEFAULT 'pendiente',
+  `Estado` enum('Pendiente','Aprobada','Rechazada') DEFAULT 'Pendiente',
   `Motivo_Rechazo` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -339,8 +339,8 @@ CREATE TABLE `solicitudes_materia_prima` (
 -- Volcado de datos para la tabla `solicitudes_materia_prima`
 --
 
-INSERT INTO `solicitudes_materia_prima` (`ID`, `ID_Usuario`, `ID_Materiaprima`, `Cantidad_Solicitada`, `Fecha_Solicitud`, `Estado`, `Motivo_Rechazo`) VALUES
-(1, 4, 1, 10, '2025-03-18 00:32:16', 'pendiente', NULL);
+INSERT INTO `solicitudes_materia_prima` (`ID`, `ID_Usuario`, `ID_MateriaPrima`, `Cantidad_Solicitada`, `Fecha_Solicitud`, `Estado`, `Motivo_Rechazo`) VALUES
+(2, 4, 1, 10, '2025-03-19 03:39:06', 'Pendiente', '');
 
 -- --------------------------------------------------------
 
@@ -416,7 +416,7 @@ ALTER TABLE `proveedores`
 --
 ALTER TABLE `solicitudes_materia_prima`
   ADD PRIMARY KEY (`ID`),
-  ADD KEY `id_materia_prima` (`ID_Materiaprima`),
+  ADD KEY `id_materia_prima` (`ID_MateriaPrima`),
   ADD KEY `solicitudes_materia_prima_ibfk_1` (`ID_Usuario`);
 
 --
@@ -465,7 +465,7 @@ ALTER TABLE `proveedores`
 -- AUTO_INCREMENT de la tabla `solicitudes_materia_prima`
 --
 ALTER TABLE `solicitudes_materia_prima`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
@@ -495,7 +495,7 @@ ALTER TABLE `movimientos`
 -- Filtros para la tabla `solicitudes_materia_prima`
 --
 ALTER TABLE `solicitudes_materia_prima`
-  ADD CONSTRAINT `solicitudes_materia_prima_ibfk_1` FOREIGN KEY (`ID_Materiaprima`) REFERENCES `materia_prima` (`ID`),
+  ADD CONSTRAINT `solicitudes_materia_prima_ibfk_1` FOREIGN KEY (`ID_MateriaPrima`) REFERENCES `materia_prima` (`ID`),
   ADD CONSTRAINT `solicitudes_materia_prima_ibfk_2` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuarios` (`ID`);
 
 --

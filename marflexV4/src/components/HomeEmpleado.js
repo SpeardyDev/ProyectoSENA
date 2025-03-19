@@ -7,14 +7,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import "./styles/HomeAdmin.css";
 import Colchones from "./Gestion_Colchones/Colchones.js";
-import Detalle from "./Gestion_Colchones/Detalle.js";
-import MenuDePerfil from "./MenuDePerfil.js";
+import Detalle from "./Gestion_Detalles/Detalle.js";
+import MenuDePerfil from './MenuDePerfil.js';
+import Solicitud from './Gestion_Solicitudes/solicitudesEmp.js'
+import Reportes from "./Gestion_de_Reportes/Reportes.js";
 
-const HomeJefeBodega = () => {
+const HomeEmpleado = () => {
   const [visibleComponents, setVisibleComponents] = useState({
     dashboard: true,
     colchones: false,
     detalle: false,
+    solicitud: false
   });
 
   const handleButtonClick = (componentName) => {
@@ -23,6 +26,8 @@ const HomeJefeBodega = () => {
       dashboard: componentName === "dashboard",
       colchones: componentName === "colchones",
       detalle: componentName === "detalle",
+      solicitud: componentName === "solicitud",
+      reportes: componentName === "reportes"
     }));
   };
 
@@ -86,9 +91,17 @@ const HomeJefeBodega = () => {
                     </a>
                   </li>
                 </MenuItem>
-                <li onClick={() => handleButtonClick("pedidos")}>
-                  <i className="fa-solid fa-dolly"></i> Pedidos
-                </li>
+                <MenuItem title="Gestión de Solicitudes" icon="fa-solid fa-bullhorn">
+                  <li
+                    className="li-desplegable"
+                    onClick={() => handleButtonClick("solicitud")}
+                  >
+                    <a href className="item">
+                      Mis Solicitudes
+                    </a>
+                  </li>
+                </MenuItem>
+                <li onClick={() => handleButtonClick('reportes')}><i className="fas fa-chart-bar"></i> Reportes</li>
               </ul>
             </div>
           </section>
@@ -224,6 +237,16 @@ const HomeJefeBodega = () => {
                 <Detalle />
               </section>
             )}
+            {visibleComponents.solicitud && (
+              <section className="cont-pedidos">
+                <Solicitud />
+              </section>
+            )}
+            {visibleComponents.reportes && (
+              <section className="cont-pedidos">
+                <Reportes />
+              </section>
+            )}
           </section>
         </section>
       </div>
@@ -253,4 +276,4 @@ const MenuItem = ({ title, icon, children }) => {
   );
 };
 
-export default HomeJefeBodega;
+export default HomeEmpleado;

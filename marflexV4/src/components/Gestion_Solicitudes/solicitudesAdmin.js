@@ -4,9 +4,8 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { Button, Form, Table, Icon, Dropdown, Search } from "semantic-ui-react";
 import axios from "axios";
 import Pagination from "../Pagination";
-import "./styles/colchones.css";
 
-const Detalle = () => {
+const Solicitud = () => {
   const [detalles, setDetalles] = useState([]);
   const [colchones, setColchones] = useState([]);
   const [materiasPrimas, setMateriasPrimas] = useState([]);
@@ -149,7 +148,7 @@ const Detalle = () => {
   return (
     <div>
       <div className="Titulo">
-        <p>Detalles</p>
+        <p>Solicitudes de Materia Prima</p>
       </div>
       {mostrarFormulario && (
         <Form className="RegistroNuevo_Colchon" onSubmit={handleSubmit}>
@@ -267,4 +266,4 @@ const Detalle = () => {
   );
 };
 
-export default Detalle;
+export default Solicitud;

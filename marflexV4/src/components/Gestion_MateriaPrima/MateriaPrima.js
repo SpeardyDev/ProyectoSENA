@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { Button, Form, Search, Table, Icon } from 'semantic-ui-react';
-import "../Gestion_MateriaPrima_Completo/styles/MateriaPrima.css";
+import "../Gestion_MateriaPrima/styles/MateriaPrima.css";
 import axios from 'axios';
 import Pagination from '../Pagination';
 import './styles/MateriaPrima.css'
@@ -99,9 +99,8 @@ const MateriasPrimas = () => {
     setFormularioDatos({
       Nombre: "",
       Descripcion: "",
-      Cantidad: "",
-      Categoria: "",
-      Proveedor: ""
+      Stock: "",
+      Unidad: ""
     });
   };
 
@@ -128,7 +127,6 @@ const MateriasPrimas = () => {
           <Button type='button' color='red' onClick={() => { setMostrarFormulario(false); setEditandoID(null); LimpiarFormulario();}}>Cancelar</Button>
         </Form>
       )}
-      
       <div className="Filtro">
         <div className="Contenedor-1">
           <Search placeholder="Código" />
