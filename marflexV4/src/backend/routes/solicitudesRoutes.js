@@ -108,17 +108,17 @@ router.get("/solicitudes_materia_prima/:id", (req, res) => {
 // Crear una nueva solicitud
 router.post("/agregar/solicitudes_materia_prima", (req, res) => {
   const {
-    ID_Empleado,
-    ID_Materiaprima,
+    ID_Usuario,
+    ID_MateriaPrima,
     Cantidad_Solicitada,
     Estado,
     Motivo_Rechazo,
   } = req.body;
   const query =
-    "INSERT INTO solicitudes_materia_prima (ID_Empleado, ID_Materiaprima, Cantidad_Solicitada, Estado, Motivo_Rechazo) VALUES (?, ?, ?, ?, ?)";
+    "INSERT INTO solicitudes_materia_prima (ID_Usuario, ID_Materiaprima, Cantidad_Solicitada, Estado, Motivo_Rechazo) VALUES (?, ?, ?, ?, ?)";
   db.query(
     query,
-    [ID_Empleado, ID_Materiaprima, Cantidad_Solicitada, Estado, Motivo_Rechazo],
+    [ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo],
     (err, result) => {
       if (err) {
         res.status(500).json({ error: err.message });
@@ -127,8 +127,8 @@ router.post("/agregar/solicitudes_materia_prima", (req, res) => {
           .status(201)
           .json({
             id: result.insertId,
-            ID_Empleado,
-            ID_Materiaprima,
+            ID_Usuario,
+            ID_MateriaPrima,
             Cantidad_Solicitada,
             Estado,
             Motivo_Rechazo,
@@ -137,6 +137,8 @@ router.post("/agregar/solicitudes_materia_prima", (req, res) => {
     }
   );
 });
+
+
 
 /**
  * @swagger
@@ -180,19 +182,19 @@ router.post("/agregar/solicitudes_materia_prima", (req, res) => {
 router.put("/actualizar/solicitudes_materia_prima/:id", (req, res) => {
   const { id } = req.params;
   const {
-    ID_Empleado,
-    ID_Materiaprima,
+    ID_Usuario,
+    ID_MateriaPrima,
     Cantidad_Solicitada,
     Estado,
     Motivo_Rechazo,
   } = req.body;
   const query =
-    "UPDATE solicitudes_materia_prima SET ID_Empleado = ?, ID_Materiaprima = ?, Cantidad_Solicitada = ?, Estado = ?, Motivo_Rechazo = ? WHERE ID = ?";
+    "UPDATE solicitudes_materia_prima SET ID_Usuario = ?, ID_MateriaPrima = ?, Cantidad_Solicitada = ?, Estado = ?, Motivo_Rechazo = ? WHERE ID = ?";
   db.query(
     query,
     [
-      ID_Empleado,
-      ID_Materiaprima,
+      ID_Usuario,
+      ID_MateriaPrima,
       Cantidad_Solicitada,
       Estado,
       Motivo_Rechazo,

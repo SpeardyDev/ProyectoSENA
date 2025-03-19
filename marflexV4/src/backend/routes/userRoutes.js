@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
+const db = require("../config/dbMysql");
 const models = require("../models/User");
 
 /**
@@ -32,6 +33,14 @@ router.get("/api/usuarios", async (req, res) => {
     res.status(500).json({ message: "Error al obtener los usuarios", error });
   }
 });
+
+router.get('/usuarios', (req, res) => {
+  db.query('SELECT * FROM usuarios', (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json(results);
+  });
+});
+
 
 /**
  * @swagger
@@ -92,6 +101,21 @@ router.put("/api/editar/usuarios/:id", async (req, res) => {
   }
 });
 
+router.put('/actualizar/usuarios/:id', async (req, res) => {
+  const { id } = req.params;
+  const { Nombre, Usuario, Password, Rol, ID_Estado } = req.body;
+  let updateUser = { Nombre, Usuario, Rol, ID_Estado };
+  
+  if (Password) {
+      updateUser.Password = await bcrypt.hash(Password, 10);
+  }
+  
+  db.query('UPDATE usuarios SET ? WHERE ID = ?', [updateUser, id], (err, result) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'Usuario actualizado' });
+  });
+});
+
 /**
  * @swagger
  * /api/eliminar/usuarios/{id}:
@@ -126,6 +150,14 @@ router.delete("/api/eliminar/usuarios/:id", async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar el usuario", error });
   }
+});
+
+router.delete('/eliminar/usuarios/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM usuarios WHERE ID = ?', [id], (err, result) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'Usuario eliminado' });
+  });
 });
 
 module.exports = router;
