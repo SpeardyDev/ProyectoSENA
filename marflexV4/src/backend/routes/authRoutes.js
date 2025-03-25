@@ -100,11 +100,15 @@ router.post("/login", async (req, res) => {
 
     if (!user) {
       console.log("Usuario no encontrado");
-      return res.status(400).send({ message: "Usuario o contraseña incorrectos" });
+      return res.status(400).send({
+        success: false,
+        message: "Usuario o contraseña incorrectos"
+      });
     }
+
+    console.log("Contraseña ingresada:", password);
     console.log("Contraseña almacenada:", user.password);
 
-    // Comparar la contraseña ingresada con la encriptada en la BD
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
