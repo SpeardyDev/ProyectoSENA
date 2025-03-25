@@ -304,13 +304,13 @@ router.get('/solicitudes/pendientes', (req, res) => {
 // Endpoint para aprobar solicitudes de los empleados
 router.post("/aprobar-solicitud", async (req, res) => {
   try {
-    const { id_solicitud } = req.body;
+    const { ID } = req.body;
 
-    if (!id_solicitud) {
+    if (!ID) {
       return res.status(400).json({ error: "ID de solicitud requerido" });
     }
 
-    const [result] = await db.query("CALL AprobarSolicitud(?)", [id_solicitud]);
+    const [result] = await db.query("CALL AprobarSolicitud(?)", [ID]);
 
     res.json({
       message: "Solicitud aprobada correctamente",
@@ -350,18 +350,19 @@ router.post("/aprobar-solicitud", async (req, res) => {
 
 // Endpoint para rechazar solicitudes de los empleados
 router.post("/rechazar-solicitud", async (req, res) => {
-  const { id_solicitud, motivo } = req.body;
+  const { ID, Motivo_Rechazo } = req.body;
 
-  if (!id_solicitud || !motivo) {
-    return res
-      .status(400)
-      .json({ error: "ID de solicitud y motivo son requeridos" });
+  console.log("Datos recibidos:", req.body); // 🔍 Verifica qué datos llegan
+
+  if (!ID || !Motivo_Rechazo) {
+    return res.status(400).json({ error: "ID de solicitud y motivo son requeridos" });
   }
 
   try {
-    await db.query("CALL RechazarSolicitud(?, ?)", [id_solicitud, motivo]);
+    await db.query("CALL RechazarSolicitud(?, ?)", [ID, Motivo_Rechazo]);
     res.json({ message: "Solicitud rechazada correctamente" });
   } catch (error) {
+    console.error("Error en la consulta:", error);
     res.status(500).json({ error: error.sqlMessage || "Error en el servidor" });
   }
 });

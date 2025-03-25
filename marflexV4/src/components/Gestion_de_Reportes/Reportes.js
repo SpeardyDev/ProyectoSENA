@@ -15,7 +15,7 @@ import "./styles/Reportes.css";
 function ReportesCombinados() {
   const [codigoProveedor, setCodigoProveedor] = useState("");
   const [TProveedores, setProveedores] = useState([]);
-  const [TProductos, setTProductos] = useState([]);
+  const [TMaterias, setTMaterias] = useState([]);
   const [Usuarios, setUsuarios] = useState([])
   const [codigodeptos, setCodigoDeptos] = useState("");
   const [selectCiu, setSelectCiu] = useState(null);
@@ -25,19 +25,21 @@ function ReportesCombinados() {
   const [loading, setLoading] = useState(false);
 
   const Filtro = [
-    { value: "api/api/usuarios", text: "Usuarios" },
-    { value: "api/api/ultimos/proveedores", text: "Proveedores" },
-    { value: "api/api/ultimos/productos", text: "Productos" },
-    { value: "Todos", text: "Generar todos" },
+    { value: "api/reporte-entradas-materia-prima", text: "Entradas Materia Prima" },
+    { value: "api/reporte-inventario-stock-actual", text: "Inventario Stock Actual" },
+    { value: "api/reporte-materia-prima-usada", text: "Materia Prima Usada" },
+    { value: "api/reporte-salidas-materia-prima", text: "Salidas Materia Prima" },
+    { value: "api/reporte-ultima-compra-proveedores", text: "Ultima Compra Proveedores" },
+    { value: "Todos", text: "Generar todos" }
   ];
   useEffect(() => {
     const generarTodos = async () => {
       if (selectCiu?.value === "Todos") {
         try {
           const [ResUsuarios, ResProveedores, ResProductos] = await Promise.all([
-            axios.get("http://localhost:3000/api/api/usuarios"),
-            axios.get("http://localhost:3000/api/api/ultimos/proveedores"),
-            axios.get("http://localhost:3000/api/api/ultimos/productos"),
+            axios.get("http://localhost:3000/api/usuarios"),
+            axios.get("http://localhost:3000/proveedores"),
+            axios.get("http://localhost:3000/materia_prima"),
           ]);
   
           setCiudadesNombre(ResUsuarios.data);
@@ -51,14 +53,15 @@ function ReportesCombinados() {
 
     MostrarUsuarios();
     MostrarProveedores();
-    MostrarProductos();
+    MostrarMateriaPrima();
     generarTodos(); 
   }, [selectCiu]);
+
 ///MOSTRAR ULTIMOS 4 PROVEEDORES
   const MostrarProveedores = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/api/ultimos/proveedores"
+        "http://localhost:3000/proveedores"
       );
       setProveedores(response.data);
     } catch (error) {
@@ -69,22 +72,22 @@ function ReportesCombinados() {
   const MostrarUsuarios = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/api/usuarios"
+        "http://localhost:3000/api/usuarios"
       );
       
       setUsuarios(response.data);
     } catch (error) {
-      console.error("Error Mostrar productos:", error);
+      console.error("Error fetching usuarios:", error);
     }
   };
 
 ///MOSTRAR ULTIMOS 4 PRODUCTOS
-const MostrarProductos = async () => {
+const MostrarMateriaPrima = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/api/api/ultimos/productos");
-    setTProductos(response.data);
+    const response = await axios.get("http://localhost:3000/materia_prima");
+    setTMaterias(response.data);
   } catch (error) {
-    console.error("Error fetching proveedores:", error);
+    console.error("Error fetching materias primas:", error);
   }
 };
 ///BTN BUSCAR 
@@ -96,7 +99,7 @@ const MostrarProductos = async () => {
       if (codigoProveedor) {
         // Buscar por código de proveedor
         const ResCiudad = await axios.get(
-          `http://localhost:3000/api/api/proveedores/consultar/${codigoProveedor}`
+          `http://localhost:3000/proveedores/${codigoProveedor}`
         );
         data = ResCiudad.data;
         setCiudades(data);
@@ -106,9 +109,9 @@ const MostrarProductos = async () => {
           `http://localhost:3000/${selectCiu.value}`
         );
         data = ResciudadNombre.data;
-        if (selectCiu.value==='api/api/usuarios' ) {
+        if (selectCiu.value==='api/usuarios' ) {
           setCiudadesNombre(data);
-        } else if (selectCiu.value==='api/api/ultimos/proveedores') {
+        } else if (selectCiu.value==='proveedores') {
           setReporProveedores(data);
         }else{
           setCiudades(data);
@@ -169,26 +172,27 @@ const MostrarProductos = async () => {
 
   return (
     <section>
-      <div className="titulo">
-        <p>
-          <i className="fas fa-chart-bar Titulo-p-reportes"></i>Reportes
+      <div className="reportes-container">
+        <p className="reportes-titulo">
+          <i className="icono-reporte"></i>Reportes
         </p>
       </div>
-
-      <div className="contenedor-filtro-reportes">
-        <div className="contenedor-inpus-filtro-reportes-1">
+  
+      <div className="formulario-container">
+        <div className="formulario">
           <Form>
-            <FormGroup widths="equal">
+            <FormGroup className="formulario-grupo">
               <Select
                 placeholder="Nombre"
                 options={Filtro}
                 name="Nombre"
                 onChange={(e, { value }) =>
-                  setSelectCiu(Filtro.find((n) => n.value === value))}
+                  setSelectCiu(Filtro.find((n) => n.value === value))
+                }
                 id="codigoCiudad"
                 value={selectCiu?.value}
               />
-            
+  
               <FormField
                 name="Direccion"
                 value={codigoProveedor}
@@ -204,123 +208,94 @@ const MostrarProductos = async () => {
                 control="input"
                 placeholder="Nombre"
               />
+              
+              {/* Contenedor de los botones alineados */}
+              <div className="botones-container">
+                <span
+                  className="boton-reporte"
+                  onClick={GenerateReport}
+                  disabled={loading}
+                >
+                  <i className="icono-generar" style={{ fontSize: "1.5rem" }}></i>
+                  <span>Generar Reporte</span>
+                </span>
+  
+                <PDFDownloadLink
+                  document={
+                    <MyDocument
+                      ciudades={ciudades}
+                      ciudadesNombre={ciudadesNombre}
+                      ReportesProveedores={ReportesProveedores}
+                    />
+                  }
+                  fileName="primer_reporte.pdf"
+                  className="link-descarga"
+                >
+                  {({ loading }) =>
+                    loading ? (
+                      <Button label="Generando Reporte..." severity="info" disabled />
+                    ) : (
+                      <Button label="Descargar" severity="success" className="boton-descarga" />
+                    )
+                  }
+                </PDFDownloadLink>
+              </div>
             </FormGroup>
           </Form>
-          <span
-            className="icon-text-reporte"
-            onClick={GenerateReport}
-            disabled={loading}
-          >
-            <i className="pi pi-upload" style={{ fontSize: "1.5rem" }}></i>
-            <span>Generar Reporte</span>
-          </span>
-        </div>
-        <div className="contenedor-inpus-filtro-reportes-2">
-          <div className="contenedor-Btn">
-            {loading ? (
-              <Button label="Cargando..." severity="info" disabled />
-            ) : (
-              <PDFDownloadLink
-                document={
-                  <MyDocument
-                    ciudades={ciudades}
-                    ciudadesNombre={ciudadesNombre}
-                    ReportesProveedores={ReportesProveedores}
-                  />
-                }
-                fileName="primer_reporte.pdf"
-                className="Btn"
-              >
-                {({ loading }) =>
-                  loading ? (
-                    <Button label="Generando Reporte..." severity="info" disabled/>
-                  ) : (
-                    <Button label="Descargar" severity="success" className="btn-descargar"/>)}
-              </PDFDownloadLink>
-            )}
-          </div>
         </div>
       </div>
-      <article className="dasboard-productos">Novedades</article>
-
-      <div className="contenedor-Reportes">
-        <div className="Tabla-reporte">
-          <div className="Reporte-titulo">
-            <FontAwesomeIcon icon={faUsersGear} style={{ color: "#2196F3" }} />
-            <h3 className="Reporte-titulo-usuarios">Usuarios</h3>
+  
+      <article className="Dasboard">Novedades</article>
+      
+      <div className="tablas-container">
+        {/* Usuarios */}
+        <div className="tabla-card">
+          <div className="tabla-header">
+            <FontAwesomeIcon icon={faUsersGear} className="icono-usuarios" />
+            <h3 className="tabla-titulo">Usuarios</h3>
           </div>
-          <div className="Reporte-content-tabla">
-            <DataTable
-              value={Usuarios}
-              rows={4}
-              tableStyle={{ minWidth: "30rem" }}
-            >
+          <div className="tabla-contenido">
+            <DataTable value={Usuarios} rows={4} tableStyle={{ minWidth: "30rem" }}>
               <Column field="nombre" header="Nombre"></Column>
               <Column field="username" header="Usuario"></Column>
               <Column field="rol" header="Rol"></Column>
             </DataTable>
           </div>
         </div>
-        <div className="Tabla-reporte">
-          <div className="Reporte-titulo">
-            <FontAwesomeIcon icon={faTruck} style={{ color: "#FF9800" }} />
-            <h3 className="Reporte-titulo-usuarios">Proveedores</h3>
+  
+        {/* Proveedores */}
+        <div className="tabla-card">
+          <div className="tabla-header">
+            <FontAwesomeIcon icon={faTruck} className="icono-proveedores" />
+            <h3 className="tabla-titulo">Proveedores</h3>
           </div>
-          <div className="Reporte-content-tabla">
-            <DataTable
-              value={TProveedores}
-              rows={4}
-              tableStyle={{ minWidth: "30rem" }}
-            >
+          <div className="tabla-contenido">
+            <DataTable value={TProveedores} rows={4} tableStyle={{ minWidth: "30rem" }}>
               <Column field="ID" header="#"></Column>
               <Column field="Nombre" header="Nombre"></Column>
-              <Column field="Telefono1" header="Teléfono"></Column>
-              <Column field="Ciudad" header="Ciudad"></Column>
+              <Column field="Telefono" header="Telefono"></Column>
             </DataTable>
           </div>
         </div>
-        <div className="Tabla-reporte">
-          <div className="Reporte-titulo">
-            <FontAwesomeIcon
-              icon={faCartFlatbed}
-              style={{ color: "#F44336" }}
-            />
-            <h3 className="Reporte-titulo-usuarios">Productos</h3>
+  
+        {/* Productos */}
+        <div className="tabla-card">
+          <div className="tabla-header">
+            <FontAwesomeIcon icon={faCartFlatbed} className="icono-productos" />
+            <h3 className="tabla-titulo">Productos</h3>
           </div>
-          <div className="Reporte-content-tabla">
-            <DataTable
-              value={TProductos}
-              rows={4}
-              tableStyle={{ minWidth: "30rem" }}
-            >
+          <div className="tabla-contenido">
+            <DataTable value={TMaterias} rows={4} tableStyle={{ minWidth: "30rem" }}>
               <Column field="ID" header="#"></Column>
               <Column field="Nombre" header="Nombre"></Column>
-              <Column field="Cantidad" header="Stock"></Column>
-              <Column field="FechaIngreso" header="Fecha In"></Column>
+              <Column field="Stock" header="Stock"></Column>
+              <Column field="Unidad" header="Unidad"></Column>
             </DataTable>
-          </div>
-        </div>
-        <div className="Tabla-reporte">
-          <div className="Reporte-titulo">
-            <FontAwesomeIcon icon={faCartFlatbed} />
-            <h3 className="Reporte-titulo-usuarios">XXXXX</h3>
-          </div>
-        </div>
-        <div className="Tabla-reporte">
-          <div className="Reporte-titulo">
-            <FontAwesomeIcon icon={faCartFlatbed} />
-            <h3 className="Reporte-titulo-usuarios">XXXXX</h3>
-          </div>
-        </div>
-        <div className="Tabla-reporte">
-          <div className="Reporte-titulo">
-            <FontAwesomeIcon icon={faCartFlatbed} />
-            <h3 className="Reporte-titulo-usuarios">XXXXX</h3>
           </div>
         </div>
       </div>
     </section>
-  );
+  );  
 }
 
 export default ReportesCombinados;

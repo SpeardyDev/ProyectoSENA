@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 19-03-2025 a las 04:41:36
+-- Tiempo de generación: 25-03-2025 a las 19:23:13
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -30,10 +30,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `AprobarSolicitud` (IN `p_id_solicit
     DECLARE v_cantidad INT;
     
     -- Obtener datos de la solicitud
-    SELECT id_materia_prima, cantidad_solicitada 
+    SELECT ID_MateriaPrima, Cantidad_Solicitada 
     INTO v_id_materia, v_cantidad
     FROM solicitudes_materia_prima
-    WHERE id_solicitud = p_id_solicitud;
+    WHERE ID = p_id_solicitud;
 
     -- Verificar si hay suficiente stock
     IF (SELECT Stock FROM materia_prima WHERE ID = v_id_materia) >= v_cantidad THEN
@@ -45,7 +45,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `AprobarSolicitud` (IN `p_id_solicit
         -- Actualizar el estado de la solicitud
         UPDATE solicitudes_materia_prima 
         SET estado = 'Aprobada'
-        WHERE id_solicitud = p_id_solicitud;
+        WHERE ID = p_id_solicitud;
     ELSE
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Stock insuficiente';
@@ -56,7 +56,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `RechazarSolicitud` (IN `p_id_solici
     -- Actualizar la solicitud con estado rechazado y agregar el motivo
     UPDATE solicitudes_materia_prima 
     SET estado = 'rechazada', motivo_rechazo = p_motivo
-    WHERE id_solicitud = p_id_solicitud;
+    WHERE ID = p_id_solicitud;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ReporteBajoStock` ()   BEGIN
@@ -269,18 +269,18 @@ CREATE TABLE `movimientos` (
 --
 
 INSERT INTO `movimientos` (`ID`, `ID_MateriaPrima`, `Tipo`, `Cantidad`, `Fecha`, `ID_Proveedor`) VALUES
-(1, 1, 'entrada', 50, '2025-03-01 20:00:00', 1),
-(2, 2, 'entrada', 100, '2025-03-02 21:00:00', 2),
-(3, 3, 'entrada', 75, '2025-03-03 19:30:00', 3),
-(4, 4, 'entrada', 25, '2025-03-05 00:00:00', 4),
-(5, 1, 'salida', 20, '2025-03-05 18:00:00', NULL),
-(6, 2, 'salida', 50, '2025-03-06 19:00:00', NULL),
-(7, 3, 'salida', 40, '2025-03-07 20:30:00', NULL),
-(8, 4, 'salida', 10, '2025-03-07 21:00:00', NULL),
-(9, 2, 'salida', 50, '2025-03-08 22:02:54', NULL),
-(10, 2, 'entrada', 100, '2025-03-08 22:04:05', 2),
-(11, 2, 'entrada', 50, '2025-03-10 21:08:39', 2),
-(12, 2, 'salida', 50, '2025-03-10 21:09:34', 2);
+(1, 1, 'entrada', 50, '2025-03-02 01:00:00', 1),
+(2, 2, 'entrada', 100, '2025-03-03 02:00:00', 2),
+(3, 3, 'entrada', 75, '2025-03-04 00:30:00', 3),
+(4, 4, 'entrada', 25, '2025-03-05 05:00:00', 4),
+(5, 1, 'salida', 20, '2025-03-05 23:00:00', NULL),
+(6, 2, 'salida', 50, '2025-03-07 00:00:00', NULL),
+(7, 3, 'salida', 40, '2025-03-08 01:30:00', NULL),
+(8, 4, 'salida', 10, '2025-03-08 02:00:00', NULL),
+(9, 2, 'salida', 50, '2025-03-09 03:02:54', NULL),
+(10, 2, 'entrada', 100, '2025-03-09 03:04:05', 2),
+(11, 2, 'entrada', 50, '2025-03-11 02:08:39', 2),
+(12, 2, 'salida', 50, '2025-03-11 02:09:34', 2);
 
 --
 -- Disparadores `movimientos`
@@ -340,7 +340,10 @@ CREATE TABLE `solicitudes_materia_prima` (
 --
 
 INSERT INTO `solicitudes_materia_prima` (`ID`, `ID_Usuario`, `ID_MateriaPrima`, `Cantidad_Solicitada`, `Fecha_Solicitud`, `Estado`, `Motivo_Rechazo`) VALUES
-(2, 4, 1, 10, '2025-03-19 03:39:06', 'Pendiente', '');
+(1, 2, 1, 15, '2025-03-25 18:21:36', 'Pendiente', NULL),
+(2, 3, 4, 30, '2025-03-25 18:21:55', 'Pendiente', NULL),
+(3, 4, 3, 35, '2025-03-25 18:22:08', 'Pendiente', NULL),
+(4, 4, 2, 10, '2025-03-25 18:22:32', 'Pendiente', NULL);
 
 -- --------------------------------------------------------
 
@@ -465,7 +468,7 @@ ALTER TABLE `proveedores`
 -- AUTO_INCREMENT de la tabla `solicitudes_materia_prima`
 --
 ALTER TABLE `solicitudes_materia_prima`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`

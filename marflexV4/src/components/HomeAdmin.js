@@ -12,6 +12,7 @@ import MenuDePerfil from './MenuDePerfil';
 import MateriasPrimas from './Gestion_MateriaPrima/MateriaPrima';
 import Reportes from './Gestion_de_Reportes/Reportes';
 import Movimientos from './Gestion_Movimientos/Movimientos'
+import SolicitudesP from './Gestion_Solicitudes/solicitudesPendientes'
 import Solicitudes from './Gestion_Solicitudes/solicitudesAdmin'
 
 const HomeAdmin = () => {
@@ -25,6 +26,7 @@ const HomeAdmin = () => {
       Mprima: componentName === 'Mprima',
       Reportes: componentName === 'Reportes',
       Movimientos: componentName === 'Movimientos',
+      SolicitudesP: componentName === 'Solicitudes Pendientes',
       Solicitudes: componentName === 'Solicitudes de Materia Prima'
     }));
   };
@@ -69,6 +71,7 @@ const HomeAdmin = () => {
                   </MenuItem>
 
                   <MenuItem title="Gestión de Solicitudes" icon="fas fa-users">
+                  <li className="li-desplegable" onClick={() => handleButtonClick('Solicitudes Pendientes')}><a className="item">Solicitudes Pendientes</a></li>
                   <li className="li-desplegable" onClick={() => handleButtonClick('Solicitudes de Materia Prima')}><a className="item">Solicitudes de Materia Prima</a></li>
                   </MenuItem>
             
@@ -127,6 +130,11 @@ const HomeAdmin = () => {
            {visibleComponents.Movimientos &&
            <section className='cont-productos'>
             <Movimientos/>
+           </section>
+           }
+           {visibleComponents.SolicitudesP &&
+           <section className='cont-productos'>
+            <SolicitudesP/>
            </section>
            }
            {visibleComponents.Solicitudes &&
