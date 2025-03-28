@@ -1,6 +1,5 @@
 import React from "react";
 import logo from "../img/LogoMarflex.png";
-import avatar from "../img/jefe.jpg";
 import icono from "../img/forklift_30dp_DA954B_FILL0_wght400_GRAD0_opsz24.png";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,6 +30,21 @@ const HomeEmpleado = () => {
     }));
   };
 
+  const [avatar, setAvatar] = useState(
+    require("../img/foto-perfil.jpg")
+  );
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setAvatar(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="App">
       <div className="App-body">
@@ -53,12 +67,14 @@ const HomeEmpleado = () => {
           <FontAwesomeIcon className="menu-amburguesa" icon={faBars} />
           <section className="menu">
             <div className="contenido-usuario">
-              <img
-                id="profile-pic"
-                src={avatar}
-                alt="Foto de perfil"
+              <img 
+                id="profile-pic" 
+                src={avatar} 
+                alt="Foto de perfil" 
                 className="profile-pic"
               />
+              <input type="file" id="fileInput" accept="image/*" style={{ display: 'none' }} onChange={handleImageChange} />
+              <button onClick={() => document.getElementById('fileInput').click()} className="btn-upload"><i class="fa-solid fa-camera"></i></button>
               <div className="perfil-nombre">
                 <p id="Nombre">SANDRA VIVIANA RUIZ MENESES</p>
               </div>
