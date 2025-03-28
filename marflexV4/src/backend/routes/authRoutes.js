@@ -123,7 +123,7 @@ router.post("/login", async (req, res) => {
     );
 
     console.log("Token generado:", token);
-    res.send({ token, rol: user.rol });
+    res.send({ message: "Ingreso exitoso", success: true, token, rol: user.rol });
 
   } catch (error) {
     console.error("Error en el servidor:", error);
