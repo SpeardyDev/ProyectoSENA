@@ -21,17 +21,32 @@ const Movimientos = () => {
   const [editandoID, setEditandoID] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     mostrarMovimientos();
     obtenerMateriasPrimas();
     obtenerProveedores();
-  }, []);
+  });
 
   const mostrarMovimientos = () => {
-    axios.get('http://localhost:3000/movimientos')
-      .then(response => setMovimientos(response.data))
-      .catch(error => console.error('Error al obtener los movimientos:', error));
+    axios
+      .get("http://localhost:3000/movimientos")
+      .then((response) => {
+        const movimientosConNombres = response.data.map(movimiento => {
+          const materiaPrima = materiasPrimas.find(mp => mp.value === movimiento.ID_MateriaPrima);
+          const proveedor = proveedores.find(p => p.value === movimiento.ID_Proveedor);
+  
+          return {
+            ...movimiento,
+            NombreMateriaPrima: materiaPrima ? materiaPrima.text : "Desconocido",
+            NombreProveedor: proveedor ? proveedor.text : "Desconocido"
+          };
+        });
+  
+        setMovimientos(movimientosConNombres);
+      })
+      .catch((error) => console.error("Error al obtener los movimientos:", error));
   };
 
   const obtenerMateriasPrimas = () => {
@@ -123,11 +138,21 @@ const Movimientos = () => {
     });
   };
 
+  const handleSearchChange = (e, { value }) => {
+    setSearchTerm(value.toLowerCase());
+  };
+
+  const filteredItems = movimientos.filter(item =>
+    item.ID.toString().includes(searchTerm) ||
+    item.NombreMateriaPrima.toLowerCase().includes(searchTerm) || // Buscar por nombre de materia prima
+    item.Tipo.toLowerCase().includes(searchTerm) ||
+    item.NombreProveedor.toLowerCase().includes(searchTerm) // Buscar por nombre del proveedor
+  );
 
   const handlePageChange = (page) => setCurrentPage(page);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = movimientos.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
 
   return (
@@ -171,7 +196,7 @@ const Movimientos = () => {
             placeholder='Selecciona Proveedor'
             fluid
             selection
-            options={proveedores.map(prov => ({ key: prov.ID, text: prov.Nombre, value: prov.ID }))}
+            options={proveedores.map(p => ({ key: p.ID, text: p.Nombre, value: p.ID }))}
             name='ID_Proveedor'
             onChange={handleChange}
             value={formularioDatos.ID_Proveedor}
@@ -188,7 +213,11 @@ const Movimientos = () => {
       
       <div className="Filtro">
         <div className="Contenedor-1">
-          <Search placeholder="Código" />
+          <Search
+            placeholder="Buscar"
+            onSearchChange={handleSearchChange}
+            showNoResults={false}
+          />
           <span className="icon-text">
             <i className="pi pi-filter" style={{ fontSize: '1.5rem' }}></i>
             <span>Filtro</span>

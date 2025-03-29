@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/dbMysql"); // Conexión a la base de datos
-const fs = require("fs");
-const path = require("path");
+// const fs = require("fs");
+// const path = require("path");
 
 // Endpoint para obtener el reporte de última compra por proveedor
 router.get("/reporte-ultima-compra-proveedores", async (req, res) => {
@@ -127,36 +127,36 @@ router.post("/reporte-produccion-fechas", async (req, res) => {
   }
 });
 
-router.post("/generar-reporte", async (req, res) => {
-  try {
-      const { tipoReporte } = req.body;
-      const doc = new PDFDocument();
-      const fileName = `reporte-${tipoReporte}.pdf`;
-      const filePath = path.join(__dirname, `../public/reportes/${fileName}`);
+// router.post("/generar-reporte", async (req, res) => {
+//   try {
+//       const { tipoReporte } = req.body;
+//       const doc = new PDFDocument();
+//       const fileName = `reporte-${tipoReporte}.pdf`;
+//       const filePath = path.join(__dirname, `../public/reportes/${fileName}`);
 
-      // Asegurar que la carpeta "public/reportes" existe
-      if (!fs.existsSync(path.join(__dirname, "../public/reportes"))) {
-          fs.mkdirSync(path.join(__dirname, "../public/reportes"), { recursive: true });
-      }
+//       // Asegurar que la carpeta "public/reportes" existe
+//       if (!fs.existsSync(path.join(__dirname, "../public/reportes"))) {
+//           fs.mkdirSync(path.join(__dirname, "../public/reportes"), { recursive: true });
+//       }
 
-      // Crear el PDF y guardarlo
-      const writeStream = fs.createWriteStream(filePath);
-      doc.pipe(writeStream);
+//       // Crear el PDF y guardarlo
+//       const writeStream = fs.createWriteStream(filePath);
+//       doc.pipe(writeStream);
 
-      doc.fontSize(18).text(`Reporte: ${tipoReporte}`, { align: "center" });
-      doc.moveDown();
-      doc.fontSize(14).text("Aquí irían los datos del reporte seleccionado...");
+//       doc.fontSize(18).text(`Reporte: ${tipoReporte}`, { align: "center" });
+//       doc.moveDown();
+//       doc.fontSize(14).text("Aquí irían los datos del reporte seleccionado...");
 
-      doc.end();
+//       doc.end();
 
-      writeStream.on("finish", () => {
-          res.json({ success: true, filePath: `/reportes/${fileName}` });
-      });
+//       writeStream.on("finish", () => {
+//           res.json({ success: true, filePath: `/reportes/${fileName}` });
+//       });
 
-  } catch (error) {
-      console.error("Error generando el reporte:", error);
-      res.status(500).json({ success: false, message: "Error generando el reporte" });
-  }
-});
+//   } catch (error) {
+//       console.error("Error generando el reporte:", error);
+//       res.status(500).json({ success: false, message: "Error generando el reporte" });
+//   }
+// });
 
 module.exports = router;

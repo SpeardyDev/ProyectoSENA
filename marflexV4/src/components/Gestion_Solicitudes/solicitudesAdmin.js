@@ -10,22 +10,34 @@ const SolicitudAdmin = () => {
     const [materiasPrimas, setMateriasPrimas] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(8);
+    const [searchTerm, setSearchTerm] = useState("");
   
     useEffect(() => {
-      mostrarSolicitudes();
-      obtenerUsuarios();
-      obtenerMateriasPrimas();
-    }, []);
+      Promise.all([obtenerUsuarios(), obtenerMateriasPrimas()]).then(() => mostrarSolicitudes());
+    });
   
     const mostrarSolicitudes = () => {
       axios
         .get("http://localhost:3000/solicitudes_materia_prima")
-        .then((response) => setSolicitudes(response.data))
+        .then((response) => {
+          const solicitudesConNombres = response.data.map(solicitud => {
+            const usuario = usuarios.find(u => u.value === solicitud.ID_Usuario);
+            const materiaPrima = materiasPrimas.find(mp => mp.value === solicitud.ID_MateriaPrima);
+    
+            return {
+              ...solicitud,
+              NombreUsuario: usuario ? usuario.text : "Desconocido",
+              NombreMateriaPrima: materiaPrima ? materiaPrima.text : "Desconocido"
+            };
+          });
+    
+          setSolicitudes(solicitudesConNombres);
+        })
         .catch((error) => console.error("Error al obtener las solicitudes:", error));
     };
   
     const obtenerUsuarios = () => {
-      axios
+      return axios
         .get("http://localhost:3000/usuarios")
         .then((response) => {
           const opciones = response.data.map((usuario) => ({
@@ -39,7 +51,7 @@ const SolicitudAdmin = () => {
     };
   
     const obtenerMateriasPrimas = () => {
-      axios
+      return axios
         .get("http://localhost:3000/materia_prima")
         .then((response) => {
           const opciones = response.data.map((materia) => ({
@@ -52,11 +64,22 @@ const SolicitudAdmin = () => {
         .catch((error) => console.error("Error al obtener las materias primas:", error));
     };
   
+    const handleSearchChange = (e, { value }) => {
+      setSearchTerm(value.toLowerCase());
+    };
+  
+    const filteredItems = solicitudes.filter(item =>
+      item.ID.toString().includes(searchTerm) ||
+      item.NombreUsuario.toLowerCase().includes(searchTerm) || // Buscar por nombre de usuario
+      item.NombreMateriaPrima.toLowerCase().includes(searchTerm) || // Buscar por nombre de materia prima
+      item.Estado.toLowerCase().includes(searchTerm)
+    );
+
     const handlePageChange = (page) => setCurrentPage(page);
   
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = solicitudes.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div>
@@ -65,7 +88,11 @@ const SolicitudAdmin = () => {
       </div>
       <div className="Filtro">
         <div className="Contenedor-1">
-          <Search placeholder="Código" />
+          <Search
+            placeholder="Buscar"
+            onSearchChange={handleSearchChange}
+            showNoResults={false}
+          />
           <span className="icon-text">
             <i className="pi pi-filter" style={{ fontSize: "1.5rem" }}></i>
             <span>Filtro</span>

@@ -19,22 +19,34 @@ const Detalle = () => {
   const [editandoID, setEditandoID] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    mostrarDetalles();
-    obtenerColchones();
-    obtenerMateriasPrimas();
-  }, []);
+    Promise.all([obtenerColchones(), obtenerMateriasPrimas()]).then(() => mostrarDetalles());
+  });
 
   const mostrarDetalles = () => {
     axios
       .get("http://localhost:3000/detalle_colchon")
-      .then((response) => setDetalles(response.data))
+      .then((response) => {
+        const detallesConNombres = response.data.map(detalle => {
+          const materiaPrima = materiasPrimas.find(mp => mp.value === detalle.ID_MateriaPrima);
+          const colchon = colchones.find(c => c.value === detalle.ID_Colchon);
+  
+          return {
+            ...detalle,
+            NombreMateriaPrima: materiaPrima ? materiaPrima.text : "Desconocido",
+            NombreColchon: colchon ? colchon.text : "Desconocido"
+          };
+        });
+  
+        setDetalles(detallesConNombres);
+      })
       .catch((error) => console.error("Error al obtener los detalles:", error));
   };
 
   const obtenerColchones = () => {
-    axios
+    return axios
       .get("http://localhost:3000/colchones")
       .then((response) => {
         const opciones = response.data.map((colchon) => ({
@@ -44,13 +56,11 @@ const Detalle = () => {
         }));
         setColchones(opciones);
       })
-      .catch((error) =>
-        console.error("Error al obtener los colchones:", error)
-      );
+      .catch((error) => console.error("Error al obtener los colchones:", error));
   };
 
   const obtenerMateriasPrimas = () => {
-    axios
+    return axios
       .get("http://localhost:3000/materia_prima")
       .then((response) => {
         const opciones = response.data.map((materia) => ({
@@ -60,9 +70,7 @@ const Detalle = () => {
         }));
         setMateriasPrimas(opciones);
       })
-      .catch((error) =>
-        console.error("Error al obtener las materias primas:", error)
-      );
+      .catch((error) => console.error("Error al obtener las materias primas:", error));
   };
 
   const handleChange = (e, { name, value }) => {
@@ -140,11 +148,21 @@ const Detalle = () => {
     });
   };
 
+  const handleSearchChange = (e, { value }) => {
+    setSearchTerm(value.toLowerCase());
+  };
+
+  const filteredItems = detalles.filter(item =>
+    item.ID.toString().includes(searchTerm) ||
+    item.NombreColchon.toLowerCase().includes(searchTerm) ||
+    item.NombreMateriaPrima.toLowerCase().includes(searchTerm)
+  );
+
   const handlePageChange = (page) => setCurrentPage(page);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = detalles.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div>
@@ -209,7 +227,11 @@ const Detalle = () => {
       )}
       <div className="Filtro">
         <div className="Contenedor-1">
-          <Search placeholder="Código" />
+          <Search
+            placeholder="Buscar"
+            onSearchChange={handleSearchChange}
+            showNoResults={false}
+          />
           <span className="icon-text">
             <i className="pi pi-filter" style={{ fontSize: "1.5rem" }}></i>
             <span>Filtro</span>

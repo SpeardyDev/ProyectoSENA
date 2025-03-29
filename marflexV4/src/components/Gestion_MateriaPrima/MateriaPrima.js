@@ -140,7 +140,7 @@ const MateriasPrimas = () => {
       )}
       <div className="Filtro">
         <div className="Contenedor-1">
-        <Search
+          <Search
             placeholder="Buscar"
             onSearchChange={handleSearchChange}
             showNoResults={false}

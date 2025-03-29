@@ -18,6 +18,7 @@ const Colchones = () => {
   const [editandoID, setEditandoID] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     mostrarProductos();
@@ -103,11 +104,21 @@ const Colchones = () => {
     });
   };
 
+  const handleSearchChange = (e, { value }) => {
+    setSearchTerm(value.toLowerCase());
+  };
+
+  const filteredItems = colchones.filter(item =>
+    item.ID.toString().includes(searchTerm) ||
+    item.Modelo.toLowerCase().includes(searchTerm) ||
+    item.Descripcion.toLowerCase().includes(searchTerm)
+  );
+
   const handlePageChange = (page) => setCurrentPage(page);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = colchones.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div>
@@ -129,7 +140,11 @@ const Colchones = () => {
       
       <div className="Filtro">
         <div className="Contenedor-1">
-          <Search placeholder="Código" />
+          <Search
+            placeholder="Buscar"
+            onSearchChange={handleSearchChange}
+            showNoResults={false}
+          />
           <span className="icon-text">
             <i className="pi pi-filter" style={{ fontSize: '1.5rem' }}></i>
             <span>Filtro</span>
