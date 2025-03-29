@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import logo from '../img/LogoMarflex.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
 import './styles/Login.css'; // Archivo CSS para estilos específicos de Login
 import axios from 'axios';
@@ -95,13 +95,7 @@ function Login() {
             </span>
 
             <span className="span">
-              <button 
-                type="button" 
-                className="btn-iniciar" 
-                onClick={() => navigate("/RecuperarContraseña")}
-              >
-                ¿Has olvidado tu contraseña?
-              </button>
+            <Link to="/RecuperarContraseña">¿Has olvidado tu contraseña?</Link>
             </span>
           </div>
         </div>
