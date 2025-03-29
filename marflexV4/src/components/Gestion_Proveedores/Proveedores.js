@@ -18,6 +18,7 @@ function Proveedores() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     mostrarProveedores();
@@ -129,9 +130,18 @@ function Proveedores() {
     });
   };
 
+  const handleSearchChange = (e, { value }) => {
+    setSearchTerm(value.toLowerCase());
+  };
+
+  const filteredItems = proveedores.filter(item =>
+    item.ID.toString().includes(searchTerm) ||
+    item.Nombre.toLowerCase().includes(searchTerm) 
+  );
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = proveedores.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <section>
@@ -182,7 +192,11 @@ function Proveedores() {
       )}
       <div className="Filtro">
         <div className="Contenedor-1">
-          <Search placeholder="Codigo" />
+          <Search
+            placeholder="Buscar"
+            onSearchChange={handleSearchChange}
+            showNoResults={false}
+          />
           <span className="icon-text">
             <i className="pi pi-filter" style={{ fontSize: "1.5rem" }}></i>
             <span>Filtro</span>
