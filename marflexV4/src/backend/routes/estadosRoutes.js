@@ -23,14 +23,13 @@ const router = express.Router();
  */
 
 // Obtener todos los estados
-router.get('/estados', (req, res) => {
-  db.query('SELECT * FROM estados', (err, results) => {
-      if (err) {
-          res.status(500).json({ error: err.message });
-      } else {
-          res.json(results);
-      }
-  });
+router.get('/estados', async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM estados');
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message || 'Error en el servidor' });
+    }
 });
 
 module.exports = router;

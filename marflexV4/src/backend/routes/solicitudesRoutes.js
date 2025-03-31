@@ -25,14 +25,13 @@ router.use(bodyParser.json());
  */
 
 // Obtener todas las solicitudes
-router.get("/solicitudes_materia_prima", (req, res) => {
-  db.query("SELECT * FROM solicitudes_materia_prima", (err, results) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.json(results);
-    }
-  });
+router.get("/solicitudes_materia_prima", async (req, res) => {
+  try {
+    const [results] = await db.query("SELECT * FROM solicitudes_materia_prima");
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -58,21 +57,17 @@ router.get("/solicitudes_materia_prima", (req, res) => {
  */
 
 // Obtener una solicitud por ID
-router.get("/solicitudes_materia_prima/:id", (req, res) => {
+router.get("/solicitudes_materia_prima/:id", async (req, res) => {
   const { id } = req.params;
-  db.query(
-    "SELECT * FROM solicitudes_materia_prima WHERE ID = ?",
-    [id],
-    (err, result) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-      } else if (result.length === 0) {
-        res.status(404).json({ message: "Solicitud no encontrada" });
-      } else {
-        res.json(result[0]);
-      }
+  try {
+    const [result] = await db.query("SELECT * FROM solicitudes_materia_prima WHERE ID = ?", [id]);
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Solicitud no encontrada" });
     }
-  );
+    res.json(result[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -106,36 +101,17 @@ router.get("/solicitudes_materia_prima/:id", (req, res) => {
  */
 
 // Crear una nueva solicitud
-router.post("/agregar/solicitudes_materia_prima", (req, res) => {
-  const {
-    ID_Usuario,
-    ID_MateriaPrima,
-    Cantidad_Solicitada,
-    Estado,
-    Motivo_Rechazo,
-  } = req.body;
-  const query =
-    "INSERT INTO solicitudes_materia_prima (ID_Usuario, ID_Materiaprima, Cantidad_Solicitada, Estado, Motivo_Rechazo) VALUES (?, ?, ?, ?, ?)";
-  db.query(
-    query,
-    [ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo],
-    (err, result) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-      } else {
-        res
-          .status(201)
-          .json({
-            id: result.insertId,
-            ID_Usuario,
-            ID_MateriaPrima,
-            Cantidad_Solicitada,
-            Estado,
-            Motivo_Rechazo,
-          });
-      }
-    }
-  );
+router.post("/agregar/solicitudes_materia_prima", async (req, res) => {
+  const { ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo } = req.body;
+  try {
+    const [result] = await db.query(
+      "INSERT INTO solicitudes_materia_prima (ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo) VALUES (?, ?, ?, ?, ?)",
+      [ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo]
+    );
+    res.status(201).json({ id: result.insertId, ...req.body });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 
@@ -179,37 +155,21 @@ router.post("/agregar/solicitudes_materia_prima", (req, res) => {
  */
 
 // Actualizar una solicitud
-router.put("/actualizar/solicitudes_materia_prima/:id", (req, res) => {
+router.put("/actualizar/solicitudes_materia_prima/:id", async (req, res) => {
   const { id } = req.params;
-  const {
-    ID_Usuario,
-    ID_MateriaPrima,
-    Cantidad_Solicitada,
-    Estado,
-    Motivo_Rechazo,
-  } = req.body;
-  const query =
-    "UPDATE solicitudes_materia_prima SET ID_Usuario = ?, ID_MateriaPrima = ?, Cantidad_Solicitada = ?, Estado = ?, Motivo_Rechazo = ? WHERE ID = ?";
-  db.query(
-    query,
-    [
-      ID_Usuario,
-      ID_MateriaPrima,
-      Cantidad_Solicitada,
-      Estado,
-      Motivo_Rechazo,
-      id,
-    ],
-    (err, result) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-      } else if (result.affectedRows === 0) {
-        res.status(404).json({ message: "Solicitud no encontrada" });
-      } else {
-        res.json({ message: "Solicitud actualizada correctamente" });
-      }
+  const { ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo } = req.body;
+  try {
+    const [result] = await db.query(
+      "UPDATE solicitudes_materia_prima SET ID_Usuario = ?, ID_MateriaPrima = ?, Cantidad_Solicitada = ?, Estado = ?, Motivo_Rechazo = ? WHERE ID = ?",
+      [ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo, id]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Solicitud no encontrada" });
     }
-  );
+    res.json({ message: "Solicitud actualizada correctamente" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -234,21 +194,17 @@ router.put("/actualizar/solicitudes_materia_prima/:id", (req, res) => {
  */
 
 // Eliminar una solicitud
-router.delete("/eliminar/solicitudes_materia_prima/:id", (req, res) => {
+router.delete("/eliminar/solicitudes_materia_prima/:id", async (req, res) => {
   const { id } = req.params;
-  db.query(
-    "DELETE FROM solicitudes_materia_prima WHERE ID = ?",
-    [id],
-    (err, result) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-      } else if (result.affectedRows === 0) {
-        res.status(404).json({ message: "Solicitud no encontrada" });
-      } else {
-        res.json({ message: "Solicitud eliminada correctamente" });
-      }
+  try {
+    const [result] = await db.query("DELETE FROM solicitudes_materia_prima WHERE ID = ?", [id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Solicitud no encontrada" });
     }
-  );
+    res.json({ message: "Solicitud eliminada correctamente" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -265,16 +221,13 @@ router.delete("/eliminar/solicitudes_materia_prima/:id", (req, res) => {
  */
 
 // Endpoint para obtener solicitudes pendientes
-router.get('/solicitudes/pendientes', (req, res) => {
-    const query = "SELECT * FROM solicitudes_materia_prima WHERE Estado = 'pendiente'";
-    
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Error en la consulta:', err);
-            return res.status(500).json({ error: 'Error en el servidor' });
-        }
-        res.json(results);
-    });
+router.get("/solicitudes/pendientes", async (req, res) => {
+  try {
+    const [results] = await db.query("SELECT * FROM solicitudes_materia_prima WHERE Estado = 'pendiente'");
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: "Error en el servidor" });
+  }
 });
 
 /**
@@ -301,26 +254,44 @@ router.get('/solicitudes/pendientes', (req, res) => {
  *         description: Error en el servidor
  */
 
-// Endpoint para aprobar solicitudes de los empleados
 router.post("/aprobar-solicitud", async (req, res) => {
+  const { ID } = req.body;
+
+  if (!ID || isNaN(ID)) {
+      return res.status(400).json({ error: "ID de solicitud inválido" });
+  }
+
   try {
-    const { ID } = req.body;
+      await db.query("CALL AprobarSolicitud(?)", [ID]);
 
-    if (!ID) {
-      return res.status(400).json({ error: "ID de solicitud requerido" });
-    }
+      return res.json({ success: true, message: "Solicitud aprobada correctamente" });
 
-    const [result] = await db.query("CALL AprobarSolicitud(?)", [ID]);
-
-    res.json({
-      message: "Solicitud aprobada correctamente",
-      result,
-    });
   } catch (error) {
-    console.error("Error en la aprobación:", error);
-    res.status(500).json({ error: error.message || "Error en el servidor" });
+      console.error("Error al aprobar solicitud:", error);
+
+      if (error.code === "ER_SIGNAL_EXCEPTION") {
+          const errorMessage = error.sqlMessage || "";
+
+          if (errorMessage.includes("Stock insuficiente")) {
+              const match = errorMessage.match(/Stock disponible: (\d+)/);
+              const stockDisponible = match ? parseInt(match[1]) : 0;
+
+              return res.status(400).json({ 
+                  error: "Stock insuficiente", 
+                  stockDisponible 
+              });
+          }
+
+          return res.status(400).json({ error: errorMessage });
+      }
+
+      res.status(500).json({ error: "Error en el servidor" });
   }
 });
+
+
+
+
 
 /**
  * @swagger

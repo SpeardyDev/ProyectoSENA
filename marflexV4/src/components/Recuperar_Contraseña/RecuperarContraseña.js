@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faUsers, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import "../styles/Login.css";
 import "../styles/Recuperar_contraseña.css";
 
@@ -32,7 +32,13 @@ function RecuperarContraseña() {
   return (
     <div className="contenedor">
       <form className="mi-app-formulario" onSubmit={handleEnviarCodigo}>
-        <div className="img-presentacion">
+        <div className="img-presentacion-recuperarContraseña">
+        <FontAwesomeIcon 
+              icon={faArrowLeft} 
+              className="icon-regresar" 
+              onClick={() => navigate("/login")} 
+              style={{ cursor: "pointer", marginRight: "10px", height:"25px", position:"absolute", left:"0px",top:"13px",color: "#5a5a59" }}
+            />
           <img
             className="img_presentacion_login"
             src="/img/persona-que-relaja-casa.png"
@@ -42,15 +48,16 @@ function RecuperarContraseña() {
 
         <div className="formulario">
           <div className="titulo-login">
-            <h1 className="h1-Rcontraseña ">Recuperar Contraseña</h1>
+            
+            <h1 className="h1-Rcontraseña">Recuperar Contraseña</h1>
           </div>
 
           <div className="content-input">
-            <span className="span">
+            <span className="span-R">
               <FontAwesomeIcon
                 className="icon"
                 icon={faUsers}
-                size="xl"
+                size="sm"
                 style={{ color: "#646973" }}
               />
               <input
