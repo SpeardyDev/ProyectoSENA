@@ -3,6 +3,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { Button, Table, Icon, Dropdown, Input, Search} from "semantic-ui-react";
 import axios from "axios";
 import Pagination from "../Pagination";
+import Swal from "sweetalert2"; 
 
 const SolicitudPendientes = () => {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -63,23 +64,71 @@ const SolicitudPendientes = () => {
 
   const handleSaveClick = async (id) => {
     try {
-      if (newEstado === "Aprobada") {
-        await axios.post("http://localhost:3000/aprobar-solicitud", {
-          ID: id,
-        });
-      } else if (newEstado === "Rechazada" && motivoRechazo.trim()) {
-        await axios.post("http://localhost:3000/rechazar-solicitud", {
-          ID: id,
-          Motivo_Rechazo: motivoRechazo,
-        });
-      }
+        if (newEstado === "Aprobada") {
+            const response = await axios.post("http://localhost:3000/aprobar-solicitud", { ID: id });
 
-      obtenerSolicitudesPendientes();
-      setEditingSolicitud(null);
+            await Swal.fire({
+                title: "Solicitud aprobada",
+                text: "La solicitud ha sido aprobada con éxito.",
+                icon: "success",
+                confirmButtonText: "OK"
+            });
+
+            console.log("Solicitud aprobada:", response.data);
+        } else if (newEstado === "Rechazada" && motivoRechazo.trim()) {
+            const response = await axios.post("http://localhost:3000/rechazar-solicitud", {
+                ID: id,
+                Motivo_Rechazo: motivoRechazo.trim(),
+            });
+
+            await Swal.fire({
+                title: "Solicitud rechazada",
+                text: "Motivo: " + motivoRechazo.trim(),
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+
+            console.log("Solicitud rechazada:", response.data);
+        } else {
+            console.warn("Estado inválido o motivo de rechazo vacío.");
+            return;
+        }
+
+        obtenerSolicitudesPendientes();
+        setEditingSolicitud(null);
     } catch (error) {
-      console.error("Error al actualizar la solicitud:", error);
+        console.error("Error al actualizar la solicitud:", error);
+
+        if (error.response?.data) {
+            const { error: errorMessage, stockDisponible } = error.response.data;
+
+            if (errorMessage === "Stock insuficiente") {
+                await Swal.fire({
+                    title: "Stock insuficiente",
+                    text: `No hay suficiente stock para aprobar esta solicitud. Stock disponible: ${stockDisponible}`,
+                    icon: "warning",
+                    confirmButtonText: "OK"
+                });
+            } else {
+                await Swal.fire({
+                    title: "Error",
+                    text: errorMessage || "Algo salió mal",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+            }
+        } else {
+            await Swal.fire({
+                title: "Error",
+                text: "No se recibió respuesta del servidor. Intenta nuevamente.",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+        }
     }
-  };
+};
+
+
 
   const handlePageChange = (page) => setCurrentPage(page);
 

@@ -23,14 +23,13 @@ const router = express.Router();
  */
 
 // Obtener todos los colchones
-router.get('/colchones', (req, res) => {
-  db.query('SELECT * FROM colchones', (err, results) => {
-      if (err) {
-          res.status(500).json({ error: err.message });
-      } else {
-          res.json(results);
-      }
-  });
+router.get('/colchones', async (req, res) => {
+  try {
+    const [results] = await db.query('SELECT * FROM colchones');
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -53,17 +52,17 @@ router.get('/colchones', (req, res) => {
  */
 
 // Obtener un colchón por ID
-router.get('/colchones/:id', (req, res) => {
+router.get('/colchones/:id', async (req, res) => {
   const { id } = req.params;
-  db.query('SELECT * FROM colchones WHERE ID = ?', [id], (err, result) => {
-      if (err) {
-          res.status(500).json({ error: err.message });
-      } else if (result.length === 0) {
-          res.status(404).json({ message: 'Colchón no encontrado' });
-      } else {
-          res.json(result[0]);
-      }
-  });
+  try {
+    const [result] = await db.query('SELECT * FROM colchones WHERE ID = ?', [id]);
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'Colchón no encontrado' });
+    }
+    res.json(result[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -95,16 +94,15 @@ router.get('/colchones/:id', (req, res) => {
  */
 
 // Crear un nuevo colchón
-router.post('/agregar/colchones', (req, res) => {
+router.post('/agregar/colchones', async (req, res) => {
   const { Modelo, Descripcion, Fecha_Fabricacion, Cantidad } = req.body;
-  const query = 'INSERT INTO colchones (Modelo, Descripcion, Fecha_Fabricacion, Cantidad) VALUES (?, ?, ?, ?)';
-  db.query(query, [Modelo, Descripcion, Fecha_Fabricacion, Cantidad], (err, result) => {
-      if (err) {
-          res.status(500).json({ error: err.message });
-      } else {
-          res.status(201).json({ id: result.insertId, Modelo, Descripcion, Fecha_Fabricacion, Cantidad });
-      }
-  });
+  try {
+    const query = 'INSERT INTO colchones (Modelo, Descripcion, Fecha_Fabricacion, Cantidad) VALUES (?, ?, ?, ?)';
+    const [result] = await db.query(query, [Modelo, Descripcion, Fecha_Fabricacion, Cantidad]);
+    res.status(201).json({ id: result.insertId, Modelo, Descripcion, Fecha_Fabricacion, Cantidad });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -144,20 +142,24 @@ router.post('/agregar/colchones', (req, res) => {
  */
 
 // Actualizar un colchón
-router.put('/actualizar/colchones/:id', (req, res) => {
+router.put('/actualizar/colchones/:id', async (req, res) => {
   const { id } = req.params;
   const { Modelo, Descripcion, Fecha_Fabricacion, Cantidad } = req.body;
+  
   const fechaFormatoCorrecto = Fecha_Fabricacion ? new Date(Fecha_Fabricacion).toISOString().slice(0, 10) : null;
-  const query = 'UPDATE colchones SET Modelo = ?, Descripcion = ?, Fecha_Fabricacion = ?, Cantidad = ? WHERE ID = ?';
-  db.query(query, [Modelo, Descripcion, fechaFormatoCorrecto, Cantidad, id], (err, result) => {
-      if (err) {
-          res.status(500).json({ error: err.message });
-      } else if (result.affectedRows === 0) {
-          res.status(404).json({ message: 'Colchón no encontrado' });
-      } else {
-          res.json({ message: 'Colchón actualizado correctamente' });
-      }
-  });
+  
+  try {
+    const query = 'UPDATE colchones SET Modelo = ?, Descripcion = ?, Fecha_Fabricacion = ?, Cantidad = ? WHERE ID = ?';
+    const [result] = await db.query(query, [Modelo, Descripcion, fechaFormatoCorrecto, Cantidad, id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Colchón no encontrado' });
+    }
+
+    res.json({ message: 'Colchón actualizado correctamente' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -182,17 +184,19 @@ router.put('/actualizar/colchones/:id', (req, res) => {
  */
 
 // Eliminar un colchón
-router.delete('/eliminar/colchones/:id', (req, res) => {
+router.delete('/eliminar/colchones/:id', async (req, res) => {
   const { id } = req.params;
-  db.query('DELETE FROM colchones WHERE ID = ?', [id], (err, result) => {
-      if (err) {
-          res.status(500).json({ error: err.message });
-      } else if (result.affectedRows === 0) {
-          res.status(404).json({ message: 'Colchón no encontrado' });
-      } else {
-          res.json({ message: 'Colchón eliminado correctamente' });
-      }
-  });
+  try {
+    const [result] = await db.query('DELETE FROM colchones WHERE ID = ?', [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Colchón no encontrado' });
+    }
+
+    res.json({ message: 'Colchón eliminado correctamente' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

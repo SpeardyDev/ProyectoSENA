@@ -24,7 +24,7 @@ const models = require("../models/User");
  *         description: Error en el servidor
  */
 
-// Obtener todos los usuarios
+// Obtener todos los usuarios (MongoDB)
 router.get("/api/usuarios", async (req, res) => {
   try {
     const usuarios = await models.find();
@@ -34,13 +34,15 @@ router.get("/api/usuarios", async (req, res) => {
   }
 });
 
-router.get('/usuarios', (req, res) => {
-  db.query('SELECT * FROM usuarios', (err, results) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json(results);
-  });
+// Obtener todos los usuarios (MySQL)
+router.get('/usuarios', async (req, res) => {
+  try {
+    const [results] = await db.query('SELECT * FROM usuarios');
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
-
 
 /**
  * @swagger
@@ -77,7 +79,7 @@ router.get('/usuarios', (req, res) => {
  *         description: Error en el servidor
  */
 
-// Actualizar usuario
+// Actualizar usuario (MongoDB)
 router.put("/api/editar/usuarios/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -101,19 +103,27 @@ router.put("/api/editar/usuarios/:id", async (req, res) => {
   }
 });
 
+// Actualizar usuario (MySQL)
 router.put('/actualizar/usuarios/:id', async (req, res) => {
-  const { id } = req.params;
-  const { Nombre, Usuario, Password, Rol, ID_Estado } = req.body;
-  let updateUser = { Nombre, Usuario, Rol, ID_Estado };
-  
-  if (Password) {
+  try {
+    const { id } = req.params;
+    const { Nombre, Usuario, Password, Rol, ID_Estado } = req.body;
+    
+    let updateUser = { Nombre, Usuario, Rol, ID_Estado };
+    if (Password) {
       updateUser.Password = await bcrypt.hash(Password, 10);
+    }
+
+    const [result] = await db.query('UPDATE usuarios SET ? WHERE ID = ?', [updateUser, id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.json({ message: 'Usuario actualizado' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-  
-  db.query('UPDATE usuarios SET ? WHERE ID = ?', [updateUser, id], (err, result) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ message: 'Usuario actualizado' });
-  });
 });
 
 /**
@@ -138,26 +148,36 @@ router.put('/actualizar/usuarios/:id', async (req, res) => {
  *         description: Error en el servidor
  */
 
-// Eliminar usuario
+// Eliminar usuario (MongoDB)
 router.delete("/api/eliminar/usuarios/:id", async (req, res) => {
   try {
     const { id } = req.params; 
     const usuarioEliminado = await models.findByIdAndDelete(id);
+
     if (!usuarioEliminado) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
+
     res.json({ message: "Usuario eliminado con éxito" });
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar el usuario", error });
   }
 });
 
-router.delete('/eliminar/usuarios/:id', (req, res) => {
-  const { id } = req.params;
-  db.query('DELETE FROM usuarios WHERE ID = ?', [id], (err, result) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ message: 'Usuario eliminado' });
-  });
+// Eliminar usuario (MySQL)
+router.delete('/eliminar/usuarios/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [result] = await db.query('DELETE FROM usuarios WHERE ID = ?', [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.json({ message: 'Usuario eliminado' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = router;

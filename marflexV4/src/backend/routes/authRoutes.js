@@ -1,4 +1,3 @@
-//authRoutes.js
 const express = require("express");
 const router = express.Router();
 const db = require("../config/dbMysql");
@@ -44,24 +43,23 @@ const otpStore = {}; // Guardará los códigos temporalmente
 // Registro de usuario
 router.post("/registrar", async (req, res) => {
   try {
-    const user = new User(req.body);
-    await user.save();
+    const { username, password } = req.body;
+
+    // Verifica si el usuario ya existe
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).send({ message: "El usuario ya existe." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ ...req.body, password: hashedPassword });
+
+    await newUser.save();
     res.status(201).send({ message: "Usuario registrado exitosamente" });
   } catch (error) {
-    res.status(400).send(error);
-    console.log('Error al agregar Usuario',error)
+    console.error("Error al registrar usuario:", error);
+    res.status(400).send({ message: "Error al registrar usuario", error });
   }
-});
-
-router.post('/agregar/usuarios', async (req, res) => {
-  const { Nombre, Usuario, Password, Rol, ID_Estado } = req.body;
-  const hashedPassword = await bcrypt.hash(Password, 10);
-  
-  const newUser = { Nombre, Usuario, Password: hashedPassword, Rol, ID_Estado };
-  db.query('INSERT INTO usuarios SET ?', newUser, (err, result) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ message: 'Usuario creado', id: result.insertId });
-  });
 });
 
 /**
@@ -94,25 +92,14 @@ router.post('/agregar/usuarios', async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
-    console.log("Intentando iniciar sesión con:", username);
 
     const user = await User.findOne({ username });
-
     if (!user) {
-      console.log("Usuario no encontrado");
-      return res.status(400).send({
-        success: false,
-        message: "Usuario o contraseña incorrectos"
-      });
+      return res.status(400).send({ message: "Usuario o contraseña incorrectos" });
     }
 
-    console.log("Contraseña ingresada:", password);
-    console.log("Contraseña almacenada:", user.password);
-
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
-      console.log("Contraseña incorrecta");
       return res.status(400).send({ message: "Usuario o contraseña incorrectos" });
     }
 
@@ -122,9 +109,7 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    console.log("Token generado:", token);
     res.send({ message: "Ingreso exitoso", success: true, token, rol: user.rol });
-
   } catch (error) {
     console.error("Error en el servidor:", error);
     res.status(500).send({ message: "Error en el servidor" });
@@ -144,15 +129,14 @@ router.post("/login", async (req, res) => {
  *         description: Error en el servidor
  */
 
-// Cerrar sesion de usuario
+// Cerrar sesión de usuario
 router.post("/cerrarsesion", (req, res) => {
   try {
-    // Aquí va donde voy  eliminar el token del lado del cliente (falta codigo)
-    console.log("Cerrando sesión del usuario");
+    // Aquí falta código para manejar la eliminación del token del cliente
     res.send({ message: "Sesión cerrada exitosamente" });
   } catch (error) {
-    console.error("Error en el servidor:", error);
-    res.status(500).send({ message: "Server error", error });
+    console.error("Error al cerrar sesión:", error);
+    res.status(500).send({ message: "Error en el servidor" });
   }
 });
 
@@ -252,25 +236,18 @@ router.post('/reset-password', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // Buscar usuario en la base de datos
     const usuario = await User.findOne({ username });
 
     if (!usuario) {
       return res.status(400).json({ message: "Usuario no encontrado." });
     }
 
-    // Verifica si la contraseña ya está encriptada
-    if (!usuario.password.startsWith("$2b$")) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      usuario.password = hashedPassword;
-    } else {
-      usuario.password = password;
-    }
+    // Encriptar la nueva contraseña si no está encriptada
+    const hashedPassword = await bcrypt.hash(password, 10);
+    usuario.password = hashedPassword;
 
     // Guardar en la base de datos
     await usuario.save();
-    console.log("Nueva contraseña encriptada guardada:", usuario.password);
-
     res.json({ message: "Contraseña restablecida con éxito." });
   } catch (error) {
     console.error("Error al actualizar la contraseña:", error);
