@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/dbMysql"); // Conexión a la base de datos
-const fs = require("fs");
-const path = require("path");
+// const fs = require("fs");
+// const path = require("path");
 
 // Endpoint para obtener el reporte de última compra por proveedor
 router.get("/reporte-ultima-compra-proveedores", async (req, res) => {

@@ -32,6 +32,7 @@ function Usuarios() {
   const [formularioDatos, setFormularioDatos] = useState(initialFormState);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [editarUsuario, setEditarUsuario] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     obtenerUsuarios();
@@ -131,9 +132,21 @@ function Usuarios() {
     });
   };
 
+  const handleSearchChange = (e, { value }) => {
+    setSearchTerm(value.toLowerCase());
+  };
+
+  const filteredItems = usuarios.filter(item =>
+    item.documento.toString().includes(searchTerm) ||
+    item.nombre.toString().includes(searchTerm) ||
+    item.username.toString().includes(searchTerm) ||
+    item.estado.toString().includes(searchTerm) ||
+    item.rol.toString().includes(searchTerm)
+  );
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = usuarios.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <section>
@@ -221,7 +234,11 @@ function Usuarios() {
       )}
       <div className="Filtro">
         <div className="Contenedor-1">
-          <Search placeholder="Código" />
+          <Search
+            placeholder="Buscar"
+            onSearchChange={handleSearchChange}
+            showNoResults={false}
+          />
           <span className="icon-text">
             <i className="pi pi-filter" style={{ fontSize: "1.5rem" }}></i>
             <span>Filtro</span>
