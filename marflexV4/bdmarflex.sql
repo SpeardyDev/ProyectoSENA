@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-03-2025 a las 19:23:13
+-- Tiempo de generación: 01-04-2025 a las 00:35:12
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Versión de PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,16 +28,37 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `AprobarSolicitud` (IN `p_id_solicitud` INT)   BEGIN
     DECLARE v_id_materia INT;
     DECLARE v_cantidad INT;
-    
+    DECLARE v_stock INT;
+    DECLARE v_mensaje_error VARCHAR(255); -- Variable para el mensaje dinámico
+
+    -- Iniciar una transacción para evitar inconsistencias
+    START TRANSACTION;
+
     -- Obtener datos de la solicitud
     SELECT ID_MateriaPrima, Cantidad_Solicitada 
     INTO v_id_materia, v_cantidad
     FROM solicitudes_materia_prima
     WHERE ID = p_id_solicitud;
 
+    -- Si no se encontró la solicitud, lanzar error y cancelar transacción
+    IF v_id_materia IS NULL THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Solicitud no encontrada';
+    END IF;
+
+    -- Obtener el stock actual
+    SELECT Stock INTO v_stock FROM materia_prima WHERE ID = v_id_materia;
+
     -- Verificar si hay suficiente stock
-    IF (SELECT Stock FROM materia_prima WHERE ID = v_id_materia) >= v_cantidad THEN
-        -- Descontar la materia prima
+    IF v_cantidad > v_stock THEN
+        -- Construir el mensaje de error correctamente
+        SET v_mensaje_error = CONCAT('Stock insuficiente. Stock disponible: ', v_stock);
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = v_mensaje_error;
+    ELSE
+        -- Si hay suficiente stock, descontarlo
         UPDATE materia_prima 
         SET Stock = Stock - v_cantidad 
         WHERE ID = v_id_materia;
@@ -46,9 +67,9 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `AprobarSolicitud` (IN `p_id_solicit
         UPDATE solicitudes_materia_prima 
         SET estado = 'Aprobada'
         WHERE ID = p_id_solicitud;
-    ELSE
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Stock insuficiente';
+        
+        -- Confirmar cambios
+        COMMIT;
     END IF;
 END$$
 
@@ -244,10 +265,10 @@ CREATE TABLE `materia_prima` (
 --
 
 INSERT INTO `materia_prima` (`ID`, `Nombre`, `Descripcion`, `Stock`, `Unidad`) VALUES
-(1, 'Espuma HR 30', 'Espuma de alta resiliencia para colchones', 137, 'kg'),
-(2, 'Tela Jacquard', 'Tela premium para forro de colchones', 300, 'metros'),
-(3, 'Resortes Bonnell', 'Resortes de acero para colchón ortopédico', 185, 'unidades'),
-(4, 'Pegamento PU', 'Pegamento de poliuretano para colchones', 65, 'litros');
+(1, 'Espuma HR 30', 'Espuma de alta resiliencia para colchones', 14, 'kg'),
+(2, 'Tela Jacquard', 'Tela premium para forro de colchones', 210, 'metros'),
+(3, 'Resortes Bonnell', 'Resortes de acero para colchón ortopédico', 160, 'unidades'),
+(4, 'Pegamento PU', 'Pegamento de poliuretano para colchones', 50, 'litros');
 
 -- --------------------------------------------------------
 
@@ -340,10 +361,10 @@ CREATE TABLE `solicitudes_materia_prima` (
 --
 
 INSERT INTO `solicitudes_materia_prima` (`ID`, `ID_Usuario`, `ID_MateriaPrima`, `Cantidad_Solicitada`, `Fecha_Solicitud`, `Estado`, `Motivo_Rechazo`) VALUES
-(1, 2, 1, 15, '2025-03-25 18:21:36', 'Pendiente', NULL),
-(2, 3, 4, 30, '2025-03-25 18:21:55', 'Pendiente', NULL),
-(3, 4, 3, 35, '2025-03-25 18:22:08', 'Pendiente', NULL),
-(4, 4, 2, 10, '2025-03-25 18:22:32', 'Pendiente', NULL);
+(1, 2, 1, 15, '2025-03-25 18:21:36', 'Rechazada', 'No Stock'),
+(2, 3, 4, 30, '2025-03-25 18:21:55', 'Aprobada', NULL),
+(3, 4, 3, 35, '2025-03-25 18:22:08', 'Aprobada', ''),
+(4, 4, 2, 10, '2025-03-25 18:22:32', 'Rechazada', 'No quiero');
 
 -- --------------------------------------------------------
 
