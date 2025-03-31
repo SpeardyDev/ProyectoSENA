@@ -9,11 +9,12 @@ const SolicitudPendientes = () => {
   const [solicitudes, setSolicitudes] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
   const [materiasPrimas, setMateriasPrimas] = useState([]);
-  const [editingSolicitud, setEditingSolicitud] = useState(null); // ID de la solicitud en edición
-  const [newEstado, setNewEstado] = useState(""); // Nuevo estado seleccionado
-  const [motivoRechazo, setMotivoRechazo] = useState(""); // Motivo del rechazo
+  const [editingSolicitud, setEditingSolicitud] = useState(null);
+  const [newEstado, setNewEstado] = useState("");
+  const [motivoRechazo, setMotivoRechazo] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     obtenerSolicitudesPendientes();
@@ -130,11 +131,19 @@ const SolicitudPendientes = () => {
 
 
 
+  const handleSearchChange = (e, { value }) => {
+    setSearchTerm(value.toLowerCase());
+  };
+
+  const filteredItems = solicitudes.filter(item =>
+    item.ID.toString().includes(searchTerm)
+  );
+
   const handlePageChange = (page) => setCurrentPage(page);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = solicitudes.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div>
@@ -143,7 +152,11 @@ const SolicitudPendientes = () => {
       </div>
       <div className="Filtro">
         <div className="Contenedor-1">
-          <Search placeholder="Código" />
+          <Search
+            placeholder="Buscar"
+            onSearchChange={handleSearchChange}
+            showNoResults={false}
+          />
           <span className="icon-text">
             <i className="pi pi-filter" style={{ fontSize: "1.5rem" }}></i>
             <span>Filtro</span>
