@@ -1,21 +1,27 @@
+// ReportesCombinados.jsx
 import React, { useState, useEffect } from "react";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import MyDocument from "./DocumentoReportes/MyDocument";
 import { Button } from "primereact/button";
 import { FormGroup, FormField, Form, Select } from "semantic-ui-react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUsersGear,
-  faTruck,
-  faCartFlatbed,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUsersGear, faTruck, faCartFlatbed } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import Swal from "sweetalert2";
 import "./styles/Reportes.css";
 import { pdf } from "@react-pdf/renderer";
 import FileSaver from "file-saver";
+
+// Documentos PDF específicos por tipo de reporte
+import EntradasPorFechaPDF from "./DocumentoReportes/EntradasPorFechaPDF";
+import InventarioStockPDF from "./DocumentoReportes/InventarioStockPDF";
+import MateriaUsadaPDF from "./DocumentoReportes/MateriaUsadaPDF";
+import MovimientosMateriaPDF from "./DocumentoReportes/MovimientosMateriaPDF";
+import ProduccionFechaPDF from "./DocumentoReportes/ProduccionFechaPDF";
+import SalidasFechaPDF from "./DocumentoReportes/SalidasFechaPDF";
+import UltimaCompraPDF from "./DocumentoReportes/UltimaCompraPDF";
+import TodosPDF from "./DocumentoReportes/TodosPDF";
 
 function ReportesCombinados() {
   const [productos, setProductos] = useState([]);
@@ -25,196 +31,139 @@ function ReportesCombinados() {
   const [loading, setLoading] = useState(false);
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
-  const [nombreMateria, setNombreMateria] = useState("");
+  const [ID, setNombreMateria] = useState("");
   const [inputsVisibles, setInputsVisibles] = useState([]);
+  const [datosReporte, setDatosReporte] = useState(null);
 
   const Filtro = [
-    {
-      value: "reporte-entradas-por-fecha",
-      text: "Entradas materia prima por fecha",
-      requires: ["fechaInicio", "fechaFin"],
-    },
-    {
-      value: "reporte-inventario-stock",
-      text: "Inventario Stock Actual",
-      requires: [],
-    },
-    {
-      value: "reporte-materia-prima-usada",
-      text: "Materia Prima Usada",
-      requires: [],
-    },
-    {
-      value: "reporte-movimientos-materia-prima",
-      text: "Movimientos por materia prima",
-      requires: ["nombreMateria"],
-    },
-    {
-      value: "reporte-produccion-fechas",
-      text: "Produccion por fecha",
-      requires: ["fechaInicio", "fechaFin"],
-    },
-    {
-      value: "reporte-salidas-por-fecha",
-      text: "Salidas materia prima por fecha",
-      requires: ["fechaInicio", "fechaFin"],
-    },
-    {
-      value: "reporte-ultima-compra-proveedores",
-      text: "Ultima Compra Proveedores",
-      requires: [],
-    },
-    { value: "Todos", text: "Generar todos" },
+    { value: "reporte-entradas-por-fecha", text: "Entradas materia prima por fecha", requires: ["fechaInicio", "fechaFin"] },
+    { value: "reporte-inventario-stock", text: "Inventario Stock Actual", requires: [] },
+    { value: "reporte-materia-prima-usada", text: "Materia Prima Usada", requires: [] },
+    { value: "reporte-movimientos-materia-prima", text: "Movimientos por materia prima", requires: ["nombreMateria"] },
+    { value: "reporte-produccion-fechas", text: "Produccion por fecha", requires: ["fechaInicio", "fechaFin"] },
+    { value: "reporte-salidas-por-fecha", text: "Salidas materia prima por fecha", requires: ["fechaInicio", "fechaFin"] },
+    { value: "reporte-ultima-compra-proveedores", text: "Ultima Compra Proveedores", requires: [] },
+    { value: "Todos", text: "Generar todos", requires: [] }
   ];
 
-  const [datosReporte, setDatosReporte] = useState({
-    productos: [],
-    usuarios: [],
-    proveedores: [],
-  });
+  const MostrarUsuarios = async () => {
+    const res = await axios.get("http://localhost:3000/api/usuarios");
+    setUsuarios(res.data);
+  };
 
-  const [reporteListo, setReporteListo] = useState(false);
+  const MostrarProveedores = async () => {
+    const res = await axios.get("http://localhost:3000/proveedores");
+    setProveedores(res.data);
+  };
 
-  const descargarManual = async () => {
-    const blob = await pdf(
-      <MyDocument ciudades={datosReporte.productos} />
-    ).toBlob();
-    FileSaver.saveAs(blob, "reporte_manual.pdf");
+  const MostrarMateriaPrima = async () => {
+    const res = await axios.get("http://localhost:3000/materia_prima");
+    setProductos(res.data);
   };
 
   useEffect(() => {
-    setReporteListo(true); // Indica que los datos del reporte ya están cargados
-  }, [datosReporte]);
-
-  useEffect(() => {
-    const generarTodos = async () => {
-      if (selectRep?.value === "Todos") {
-        try {
-          const [resUsuarios, resProveedores, resProductos] = await Promise.all(
-            [
-              axios.get("http://localhost:3000/api/usuarios"),
-              axios.get("http://localhost:3000/proveedores"),
-              axios.get("http://localhost:3000/materia_prima"),
-            ]
-          );
-
-          setUsuarios(resUsuarios.data);
-          setProveedores(resProveedores.data);
-          setProductos(resProductos.data);
-        } catch (error) {
-          console.error("Error al obtener datos:", error);
-        }
-      }
-    };
-
     MostrarUsuarios();
     MostrarProveedores();
     MostrarMateriaPrima();
-    generarTodos();
-  }, [selectRep]);
+  }, []);
 
   const handleSelectChange = (e, { value }) => {
-    const selectedReport = Filtro.find((n) => n.value === value);
-    setSelectRep(selectedReport);
-    setInputsVisibles(selectedReport?.requires || []);
+    const selected = Filtro.find((f) => f.value === value);
+    setSelectRep(selected);
+    setInputsVisibles(selected?.requires || []);
   };
 
-  ///MOSTRAR ULTIMOS 4 PROVEEDORES
-  const MostrarProveedores = async () => {
-    try {
-      const response = await axios.get("http://localhost:3000/proveedores");
-      setProveedores(Array.isArray(response.data) ? response.data : []);
-    } catch (error) {
-      console.error("Error fetching proveedores:", error);
-    }
-  };
-  ///MOSTRAR ULTIMOS 4 USUARIOS
-  const MostrarUsuarios = async () => {
-    try {
-      const response = await axios.get("http://localhost:3000/api/usuarios");
-      setUsuarios(Array.isArray(response.data) ? response.data : []);
-    } catch (error) {
-      console.error("Error fetching usuarios:", error);
-    }
-  };
-
-  ///MOSTRAR ULTIMOS 4 PRODUCTOS
-  const MostrarMateriaPrima = async () => {
-    try {
-      const response = await axios.get("http://localhost:3000/materia_prima");
-      setProductos(Array.isArray(response.data) ? response.data : []);
-    } catch (error) {
-      console.error("Error fetching materias primas:", error);
-    }
-  };
-
-  ///BTN BUSCAR
   const BtnBuscar = async () => {
     setLoading(true);
     try {
-      let queryParams = [];
-
-      if (inputsVisibles.includes("fechaInicio") && fechaInicio) {
-        queryParams.push(`fechaInicio=${fechaInicio}`);
+      let res;
+  
+      if (selectRep.value === "reporte-movimientos-materia-prima") {
+        res = await axios.post(`http://localhost:3000/${selectRep.value}`, {
+          materiaPrimaID: ID
+        });
+      } else if (
+        selectRep.value === "reporte-entradas-por-fecha" ||
+        selectRep.value === "reporte-salidas-por-fecha" ||
+        selectRep.value === "reporte-produccion-fechas"
+      ) {
+        res = await axios.post(`http://localhost:3000/${selectRep.value}`, {
+          fecha_inicio: fechaInicio,
+          fecha_fin: fechaFin
+        });
+      } else {
+        const params = new URLSearchParams();
+        if (fechaInicio) params.append("fechaInicio", fechaInicio);
+        if (fechaFin) params.append("fechaFin", fechaFin);
+        if (ID) params.append("nombreMateria", ID);
+  
+        let url = `http://localhost:3000/${selectRep.value}`;
+        if (params.toString()) url += `?${params.toString()}`;
+  
+        res = await axios.get(url);
       }
-      if (inputsVisibles.includes("fechaFin") && fechaFin) {
-        queryParams.push(`fechaFin=${fechaFin}`);
-      }
-      if (inputsVisibles.includes("nombreMateria") && nombreMateria) {
-        queryParams.push(`nombreMateria=${nombreMateria}`);
-      }
-
-      const queryString = queryParams.join("&");
-      const url = `http://localhost:3000/${selectRep.value}?${queryString}`;
-      console.log("🚀 URL generada para reporte:", url);
-
-      const response = await axios.get(url);
-      console.log("📌 Respuesta del servidor:", response.data);
-
-      const datosRecibidos = Array.isArray(response.data) ? response.data[0] : response.data;
-
-      // Guardamos los datos en el estado para el PDF
-      setDatosReporte({
-        productos: datosRecibidos || [],
-        usuarios,
-        proveedores,
-      });
+  
+      setDatosReporte(res.data);
+      console.log("Datos del reporte:", res.data);
     } catch (err) {
-      console.error("Error al buscar reportes:", err);
+      console.error("Error generando el reporte:", err);
+      Swal.fire({
+        title: "Error",
+        text: "Ocurrió un error al generar el reporte.",
+        icon: "error"
+      });
     }
     setLoading(false);
   };
+  
+  
+  
+  
+  
+  
 
   const GenerateReport = async () => {
-    const result = await Swal.fire({
-      title: "¿Quieres Generar este reporte?",
-      text: "Esta acción generará el reporte seleccionado.",
-      icon: "warning",
+    const confirm = await Swal.fire({
+      title: "¿Generar Reporte?",
+      icon: "question",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, generar",
+      confirmButtonText: "Sí",
     });
+    if (confirm.isConfirmed) await BtnBuscar();
+  };
 
-    if (result.isConfirmed) {
-      await BtnBuscar(); // <-- espera a que se actualicen los datos
-
-      Swal.fire(
-        "¡Generado!",
-        "El reporte ha sido generado correctamente.",
-        "success"
-      );
-    } else {
-      Swal.fire("Cancelado", "No se generó ningún reporte.", "error");
+  const getDocumento = () => {
+    switch (selectRep?.value) {
+      case "reporte-entradas-por-fecha":
+        return <EntradasPorFechaPDF data={datosReporte} />;
+      case "reporte-inventario-stock":
+        return <InventarioStockPDF data={datosReporte} />;
+      case "reporte-materia-prima-usada":
+        return <MateriaUsadaPDF data={datosReporte} />;
+      case "reporte-movimientos-materia-prima":
+        return <MovimientosMateriaPDF data={datosReporte} />;
+      case "reporte-produccion-fechas":
+        return <ProduccionFechaPDF data={datosReporte} />;
+      case "reporte-salidas-por-fecha":
+        return <SalidasFechaPDF data={datosReporte} />;
+      case "reporte-ultima-compra-proveedores":
+        return <UltimaCompraPDF data={datosReporte} />;
+      case "Todos":
+        return <TodosPDF usuarios={usuarios} proveedores={proveedores} productos={productos} />;
+      default:
+        return null;
     }
+  };
+
+  const descargarManual = async () => {
+    const blob = await pdf(getDocumento()).toBlob();
+    FileSaver.saveAs(blob, "reporte_manual.pdf");
   };
 
   return (
     <section>
       <div className="reportes-container">
-        <p className="reportes-titulo">
-          <i className="icono-reporte"></i>Reportes
-        </p>
+        <p className="reportes-titulo"><i className="icono-reporte"></i>Reportes</p>
       </div>
 
       <div className="formulario-container">
@@ -226,9 +175,7 @@ function ReportesCombinados() {
                 <Select
                   placeholder="Selecciona un reporte"
                   options={Filtro}
-                  name="Nombre"
                   onChange={handleSelectChange}
-                  id="codigoCiudad"
                   value={selectRep?.value}
                 />
               </FormField>
@@ -236,22 +183,14 @@ function ReportesCombinados() {
               {inputsVisibles.includes("fechaInicio") && (
                 <FormField>
                   <label>Fecha Inicio</label>
-                  <input
-                    type="date"
-                    value={fechaInicio}
-                    onChange={(e) => setFechaInicio(e.target.value)}
-                  />
+                  <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} />
                 </FormField>
               )}
 
               {inputsVisibles.includes("fechaFin") && (
                 <FormField>
                   <label>Fecha Fin</label>
-                  <input
-                    type="date"
-                    value={fechaFin}
-                    onChange={(e) => setFechaFin(e.target.value)}
-                  />
+                  <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} />
                 </FormField>
               )}
 
@@ -260,50 +199,30 @@ function ReportesCombinados() {
                   <label>Materia Prima</label>
                   <Select
                     placeholder="Selecciona una materia prima"
-                    options={productos?.map((mat) => ({
-                      value: mat.Nombre,
-                      text: mat.Nombre,
-                    }))}
+                    options={productos.map((p) => ({ value: p.ID, text: p.Nombre }))}
                     onChange={(e, { value }) => setNombreMateria(value)}
-                    value={nombreMateria}
+                    value={ID}
                   />
                 </FormField>
               )}
 
-              {/* Contenedor de los botones alineados */}
               <div className="botones-container">
-                <span
-                  className="boton-reporte"
-                  onClick={GenerateReport}
-                  disabled={loading}
-                >
-                  <i
-                    className="icono-generar"
-                    style={{ fontSize: "1.5rem" }}
-                  ></i>
+                <span className="boton-reporte" onClick={GenerateReport} disabled={loading}>
+                  <i className="icono-generar" style={{ fontSize: "1.5rem" }}></i>
                   <span>Generar Reporte</span>
                 </span>
 
-                {reporteListo && (
+                {datosReporte && (
                   <PDFDownloadLink
-                    document={<MyDocument ciudades={datosReporte.productos} />}
+                    document={getDocumento()}
                     fileName="reporte_generado.pdf"
                     className="link-descarga"
                   >
                     {({ loading }) =>
                       loading ? (
-                        <Button
-                          label="Generando Reporte..."
-                          severity="info"
-                          disabled
-                        />
+                        <Button label="Generando..." disabled />
                       ) : (
-                        <Button
-                          label="Descargar"
-                          severity="success"
-                          className="boton-descarga"
-                          onClick={descargarManual}
-                        />
+                        <Button label="Descargar" className="boton-descarga" onClick={descargarManual} />
                       )
                     }
                   </PDFDownloadLink>
@@ -317,62 +236,41 @@ function ReportesCombinados() {
       <article className="Dasboard">Novedades</article>
 
       <div className="tablas-container">
-        {/* Usuarios */}
         <div className="tabla-card">
           <div className="tabla-header">
             <FontAwesomeIcon icon={faUsersGear} className="icono-usuarios" />
             <h3 className="tabla-titulo">Usuarios</h3>
           </div>
-          <div className="tabla-contenido">
-            <DataTable
-              value={usuarios}
-              rows={4}
-              tableStyle={{ minWidth: "30rem" }}
-            >
-              <Column field="nombre" header="Nombre"></Column>
-              <Column field="username" header="Usuario"></Column>
-              <Column field="rol" header="Rol"></Column>
-            </DataTable>
-          </div>
+          <DataTable value={usuarios} rows={4} tableStyle={{ minWidth: "30rem" }}>
+            <Column field="nombre" header="Nombre" />
+            <Column field="username" header="Usuario" />
+            <Column field="rol" header="Rol" />
+          </DataTable>
         </div>
 
-        {/* Proveedores */}
         <div className="tabla-card">
           <div className="tabla-header">
             <FontAwesomeIcon icon={faTruck} className="icono-proveedores" />
             <h3 className="tabla-titulo">Proveedores</h3>
           </div>
-          <div className="tabla-contenido">
-            <DataTable
-              value={proveedores}
-              rows={4}
-              tableStyle={{ minWidth: "30rem" }}
-            >
-              <Column field="ID" header="#"></Column>
-              <Column field="Nombre" header="Nombre"></Column>
-              <Column field="Telefono" header="Telefono"></Column>
-            </DataTable>
-          </div>
+          <DataTable value={proveedores} rows={4} tableStyle={{ minWidth: "30rem" }}>
+            <Column field="ID" header="#" />
+            <Column field="Nombre" header="Nombre" />
+            <Column field="Telefono" header="Telefono" />
+          </DataTable>
         </div>
 
-        {/* Productos */}
         <div className="tabla-card">
           <div className="tabla-header">
             <FontAwesomeIcon icon={faCartFlatbed} className="icono-productos" />
             <h3 className="tabla-titulo">Materias Primas</h3>
           </div>
-          <div className="tabla-contenido">
-            <DataTable
-              value={productos}
-              rows={4}
-              tableStyle={{ minWidth: "30rem" }}
-            >
-              <Column field="ID" header="#"></Column>
-              <Column field="Nombre" header="Nombre"></Column>
-              <Column field="Stock" header="Stock"></Column>
-              <Column field="Unidad" header="Unidad"></Column>
-            </DataTable>
-          </div>
+          <DataTable value={productos} rows={4} tableStyle={{ minWidth: "30rem" }}>
+            <Column field="ID" header="#" />
+            <Column field="Nombre" header="Nombre" />
+            <Column field="Stock" header="Stock" />
+            <Column field="Unidad" header="Unidad" />
+          </DataTable>
         </div>
       </div>
     </section>
