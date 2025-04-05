@@ -14,15 +14,14 @@ import {
 import axios from "axios";
 import Swal from "sweetalert2";
 import "./styles/Reportes.css";
+import { pdf } from "@react-pdf/renderer";
+import FileSaver from "file-saver";
 
 function ReportesCombinados() {
-  const [TProveedores, setProveedores] = useState([]);
-  const [TMaterias, setTMaterias] = useState([]);
-  const [Usuarios, setUsuarios] = useState([]);
+  const [productos, setProductos] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
+  const [proveedores, setProveedores] = useState([]);
   const [selectRep, setSelectRep] = useState(null);
-  const [ciudades, setCiudades] = useState([]);
-  const [ciudadesNombre, setCiudadesNombre] = useState([]);
-  const [ReportesProveedores, setReporProveedores] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
@@ -31,57 +30,67 @@ function ReportesCombinados() {
 
   const Filtro = [
     {
-      value: "api/reporte-entradas-materia-prima",
-      text: "Entradas Materia Prima",
-      requires: [],
-    },
-    {
-      value: "api/reporte-entradas-por-fecha",
+      value: "reporte-entradas-por-fecha",
       text: "Entradas materia prima por fecha",
       requires: ["fechaInicio", "fechaFin"],
     },
     {
-      value: "api/reporte-inventario-stock-actual",
+      value: "reporte-inventario-stock",
       text: "Inventario Stock Actual",
       requires: [],
     },
     {
-      value: "api/reporte-materia-prima-usada",
+      value: "reporte-materia-prima-usada",
       text: "Materia Prima Usada",
       requires: [],
     },
     {
-      value: "api/reporte-movimientos-materia-prima",
-      text: "Movimientos Materia Prima",
+      value: "reporte-movimientos-materia-prima",
+      text: "Movimientos por materia prima",
       requires: ["nombreMateria"],
     },
     {
-      value: "api/reporte-produccion-por-fecha",
+      value: "reporte-produccion-fechas",
       text: "Produccion por fecha",
       requires: ["fechaInicio", "fechaFin"],
     },
     {
-      value: "api/reporte-salidas-materia-prima",
-      text: "Salidas Materia Prima",
-      requires: [],
-    },
-    {
-      value: "api/reporte-salidas-por-fecha",
+      value: "reporte-salidas-por-fecha",
       text: "Salidas materia prima por fecha",
       requires: ["fechaInicio", "fechaFin"],
     },
     {
-      value: "api/reporte-ultima-compra-proveedores",
+      value: "reporte-ultima-compra-proveedores",
       text: "Ultima Compra Proveedores",
       requires: [],
     },
     { value: "Todos", text: "Generar todos" },
   ];
+
+  const [datosReporte, setDatosReporte] = useState({
+    productos: [],
+    usuarios: [],
+    proveedores: [],
+  });
+
+  const [reporteListo, setReporteListo] = useState(false);
+
+  const descargarManual = async () => {
+    const blob = await pdf(
+      <MyDocument ciudades={datosReporte.productos} />
+    ).toBlob();
+    FileSaver.saveAs(blob, "reporte_manual.pdf");
+  };
+
+  useEffect(() => {
+    setReporteListo(true); // Indica que los datos del reporte ya están cargados
+  }, [datosReporte]);
+
   useEffect(() => {
     const generarTodos = async () => {
       if (selectRep?.value === "Todos") {
         try {
-          const [ResUsuarios, ResProveedores, ResProductos] = await Promise.all(
+          const [resUsuarios, resProveedores, resProductos] = await Promise.all(
             [
               axios.get("http://localhost:3000/api/usuarios"),
               axios.get("http://localhost:3000/proveedores"),
@@ -89,9 +98,9 @@ function ReportesCombinados() {
             ]
           );
 
-          setCiudadesNombre(ResUsuarios.data);
-          setReporProveedores(ResProveedores.data);
-          setCiudades(ResProductos.data);
+          setUsuarios(resUsuarios.data);
+          setProveedores(resProveedores.data);
+          setProductos(resProductos.data);
         } catch (error) {
           console.error("Error al obtener datos:", error);
         }
@@ -114,7 +123,7 @@ function ReportesCombinados() {
   const MostrarProveedores = async () => {
     try {
       const response = await axios.get("http://localhost:3000/proveedores");
-      setProveedores(response.data);
+      setProveedores(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching proveedores:", error);
     }
@@ -123,8 +132,7 @@ function ReportesCombinados() {
   const MostrarUsuarios = async () => {
     try {
       const response = await axios.get("http://localhost:3000/api/usuarios");
-
-      setUsuarios(response.data);
+      setUsuarios(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching usuarios:", error);
     }
@@ -134,17 +142,18 @@ function ReportesCombinados() {
   const MostrarMateriaPrima = async () => {
     try {
       const response = await axios.get("http://localhost:3000/materia_prima");
-      setTMaterias(response.data);
+      setProductos(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching materias primas:", error);
     }
   };
+
   ///BTN BUSCAR
   const BtnBuscar = async () => {
     setLoading(true);
     try {
       let queryParams = [];
-  
+
       if (inputsVisibles.includes("fechaInicio") && fechaInicio) {
         queryParams.push(`fechaInicio=${fechaInicio}`);
       }
@@ -154,55 +163,50 @@ function ReportesCombinados() {
       if (inputsVisibles.includes("nombreMateria") && nombreMateria) {
         queryParams.push(`nombreMateria=${nombreMateria}`);
       }
-  
-      if (queryParams.length === 0) {
-        Swal.fire({
-          icon: "info",
-          title: "Sin datos",
-          text: "Por favor selecciona al menos un criterio de búsqueda.",
-        });
-        setLoading(false);
-        return;
-      }
-  
+
       const queryString = queryParams.join("&");
       const url = `http://localhost:3000/${selectRep.value}?${queryString}`;
-  
+      console.log("🚀 URL generada para reporte:", url);
+
       const response = await axios.get(url);
-      setCiudades(response.data);
+      console.log("📌 Respuesta del servidor:", response.data);
+
+      const datosRecibidos = Array.isArray(response.data) ? response.data[0] : response.data;
+
+      // Guardamos los datos en el estado para el PDF
+      setDatosReporte({
+        productos: datosRecibidos || [],
+        usuarios,
+        proveedores,
+      });
     } catch (err) {
       console.error("Error al buscar reportes:", err);
     }
     setLoading(false);
   };
 
-  const GenerateReport = () => {
-    Swal.fire({
-        title: "¿Quieres Generar este reporte?",
-        text: "Esta acción generará el reporte seleccionado.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
+  const GenerateReport = async () => {
+    const result = await Swal.fire({
+      title: "¿Quieres Generar este reporte?",
+      text: "Esta acción generará el reporte seleccionado.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, generar"
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          BtnBuscar();
-  
-          Swal.fire(
-            "Generado!",
-            "El reporte ha sido generado correctamente.",
-            "success"
-          );
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-          Swal.fire(
-            "Cancelado",
-            "No se generó ningún reporte.",
-            "error"
-          );
-        }
-      });
+      confirmButtonText: "Sí, generar",
+    });
+
+    if (result.isConfirmed) {
+      await BtnBuscar(); // <-- espera a que se actualicen los datos
+
+      Swal.fire(
+        "¡Generado!",
+        "El reporte ha sido generado correctamente.",
+        "success"
+      );
+    } else {
+      Swal.fire("Cancelado", "No se generó ningún reporte.", "error");
+    }
   };
 
   return (
@@ -256,7 +260,7 @@ function ReportesCombinados() {
                   <label>Materia Prima</label>
                   <Select
                     placeholder="Selecciona una materia prima"
-                    options={TMaterias.map((mat) => ({
+                    options={productos?.map((mat) => ({
                       value: mat.Nombre,
                       text: mat.Nombre,
                     }))}
@@ -280,33 +284,30 @@ function ReportesCombinados() {
                   <span>Generar Reporte</span>
                 </span>
 
-                <PDFDownloadLink
-                  document={
-                    <MyDocument
-                      ciudades={ciudades}
-                      ciudadesNombre={ciudadesNombre}
-                      ReportesProveedores={ReportesProveedores}
-                    />
-                  }
-                  fileName="primer_reporte.pdf"
-                  className="link-descarga"
-                >
-                  {({ loading }) =>
-                    loading ? (
-                      <Button
-                        label="Generando Reporte..."
-                        severity="info"
-                        disabled
-                      />
-                    ) : (
-                      <Button
-                        label="Descargar"
-                        severity="success"
-                        className="boton-descarga"
-                      />
-                    )
-                  }
-                </PDFDownloadLink>
+                {reporteListo && (
+                  <PDFDownloadLink
+                    document={<MyDocument ciudades={datosReporte.productos} />}
+                    fileName="reporte_generado.pdf"
+                    className="link-descarga"
+                  >
+                    {({ loading }) =>
+                      loading ? (
+                        <Button
+                          label="Generando Reporte..."
+                          severity="info"
+                          disabled
+                        />
+                      ) : (
+                        <Button
+                          label="Descargar"
+                          severity="success"
+                          className="boton-descarga"
+                          onClick={descargarManual}
+                        />
+                      )
+                    }
+                  </PDFDownloadLink>
+                )}
               </div>
             </FormGroup>
           </Form>
@@ -324,7 +325,7 @@ function ReportesCombinados() {
           </div>
           <div className="tabla-contenido">
             <DataTable
-              value={Usuarios}
+              value={usuarios}
               rows={4}
               tableStyle={{ minWidth: "30rem" }}
             >
@@ -343,7 +344,7 @@ function ReportesCombinados() {
           </div>
           <div className="tabla-contenido">
             <DataTable
-              value={TProveedores}
+              value={proveedores}
               rows={4}
               tableStyle={{ minWidth: "30rem" }}
             >
@@ -358,11 +359,11 @@ function ReportesCombinados() {
         <div className="tabla-card">
           <div className="tabla-header">
             <FontAwesomeIcon icon={faCartFlatbed} className="icono-productos" />
-            <h3 className="tabla-titulo">Productos</h3>
+            <h3 className="tabla-titulo">Materias Primas</h3>
           </div>
           <div className="tabla-contenido">
             <DataTable
-              value={TMaterias}
+              value={productos}
               rows={4}
               tableStyle={{ minWidth: "30rem" }}
             >

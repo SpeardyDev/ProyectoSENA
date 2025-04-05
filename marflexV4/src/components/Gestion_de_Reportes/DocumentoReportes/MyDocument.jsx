@@ -70,76 +70,76 @@ const styles = StyleSheet.create({
   },
 });
 
-const ReportTable = ({ ciudades, ciudadesNombre, ReportesProveedores }) => (
+const ReportTable = ({ mPrimas = [], usuarios = [], proveedores = [] }) => (
   <View style={styles.table}>
-    {ciudadesNombre.length > 0 && (
+    {usuarios?.length > 0 && (
       <>
         <Text style={styles.sectionTitle}>Usuarios</Text>
         <View style={[styles.tableRow, styles.tableHeader]}>
           <Text style={styles.tableTitulo}>Documento</Text>
           <Text style={styles.tableTitulo}>Usuario</Text>
           <Text style={styles.tableTitulo}>Rol</Text>
-          <Text style={styles.tableTitulo}>Telefono</Text>
+          <Text style={styles.tableTitulo}>Estado</Text>
+          <Text style={styles.tableTitulo}>Teléfono</Text>
         </View>
-        {ciudadesNombre
-        .filter((usuario) =>
-          usuario.documento && usuario.username && usuario.rol && usuario.telefono
-      )
-      .map((usuario, index) => (
-        <View key={index} style={styles.tableRow}>
-          <Text style={styles.tableCell}>{usuario.documento}</Text>
-          <Text style={styles.tableCell}>{usuario.username}</Text>
-          <Text style={styles.tableCell}>{usuario.rol}</Text>
-          <Text style={styles.tableCell}>{usuario.telefono}</Text>
-        </View>
-      ))}
+        {usuarios
+          ?.filter(
+            (u) =>
+              u.documento && u.username && u.rol && u.estado && u.telefono
+          )
+          .map((u, i) => (
+            <View key={i} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{u.documento}</Text>
+              <Text style={styles.tableCell}>{u.username}</Text>
+              <Text style={styles.tableCell}>{u.rol}</Text>
+              <Text style={styles.tableCell}>{u.estado}</Text>
+              <Text style={styles.tableCell}>{u.telefono}</Text>
+            </View>
+          ))}
       </>
     )}
 
-    {ReportesProveedores.length > 1 && (
+    {proveedores?.length > 0 && (
       <>
         <Text style={styles.sectionTitle}>Proveedores</Text>
         <View style={[styles.tableRow, styles.tableHeader]}>
-          <Text style={styles.tableTitulo}>Codigo</Text>
+          <Text style={styles.tableTitulo}>ID</Text>
           <Text style={styles.tableTitulo}>Nombre</Text>
-          <Text style={styles.tableTitulo}>Telefono</Text>
-          <Text style={styles.tableTitulo}>Direccion</Text>
-          <Text style={styles.tableTitulo}>Barrio</Text>
+          <Text style={styles.tableTitulo}>Teléfono</Text>
+          <Text style={styles.tableTitulo}>Dirección</Text>
         </View>
-        {ReportesProveedores.filter((proveedor) =>
-          proveedor.ID && proveedor.Nombre && proveedor.Telefono1 && proveedor.Direccion && proveedor.Barrio
-      )
-      .map((proveedor, index) => (
-        <View key={index} style={styles.tableRow}>
-          <Text style={styles.tableCell}>{proveedor.ID}</Text>
-          <Text style={styles.tableCell}>{proveedor.Nombre}</Text>
-          <Text style={styles.tableCell}>{proveedor.Telefono1}</Text>
-          <Text style={styles.tableCell}>{proveedor.Direccion}</Text>
-          <Text style={styles.tableCell}>{proveedor.Barrio}</Text>
-        </View>
-      ))}
+        {proveedores
+          ?.filter(
+            (p) => p.ID && p.Nombre && p.Telefono && p.Direccion
+          )
+          .map((p, i) => (
+            <View key={i} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{p.ID}</Text>
+              <Text style={styles.tableCell}>{p.Nombre}</Text>
+              <Text style={styles.tableCell}>{p.Telefono}</Text>
+              <Text style={styles.tableCell}>{p.Direccion}</Text>
+            </View>
+          ))}
       </>
     )}
 
-    {ciudades.length > 0 && (
+    {mPrimas?.length > 0 && (
       <>
-        <Text style={styles.sectionTitle}>Productos</Text>
+        <Text style={styles.sectionTitle}>Materias Primas</Text>
         <View style={[styles.tableRow, styles.tableHeader]}>
-          <Text style={styles.tableTitulo}>Codigo</Text>
+          <Text style={styles.tableTitulo}>ID</Text>
           <Text style={styles.tableTitulo}>Nombre</Text>
-          <Text style={styles.tableTitulo}>Cantidad max</Text>
-          <Text style={styles.tableTitulo}>Cantidad min</Text>
-          <Text style={styles.tableTitulo}>Fecha de Ingreso</Text>
-          <Text style={styles.tableTitulo}>Precio</Text>
+          <Text style={styles.tableTitulo}>Descripción</Text>
+          <Text style={styles.tableTitulo}>Stock</Text>
+          <Text style={styles.tableTitulo}>Unidad</Text>
         </View>
-        {ciudades.map((producto, index) => (
-          <View key={index} style={styles.tableRow}>
-            <Text style={styles.tableCell}>{producto.ID}</Text>
-            <Text style={styles.tableCell}>{producto.Nombre}</Text>
-            <Text style={styles.tableCell}>{producto.Cantidad}</Text>
-            <Text style={styles.tableCell}>{producto.StockMinimo}</Text>
-            <Text style={styles.tableCell}>{producto.FechaIngreso}</Text>
-            <Text style={styles.tableCell}>{producto.Precio}</Text>
+        {mPrimas?.map((m, i) => (
+          <View key={i} style={styles.tableRow}>
+            <Text style={styles.tableCell}>{m.ID}</Text>
+            <Text style={styles.tableCell}>{m.Nombre}</Text>
+            <Text style={styles.tableCell}>{m.Descripcion}</Text>
+            <Text style={styles.tableCell}>{m.Stock}</Text>
+            <Text style={styles.tableCell}>{m.Unidad}</Text>
           </View>
         ))}
       </>
@@ -147,20 +147,24 @@ const ReportTable = ({ ciudades, ciudadesNombre, ReportesProveedores }) => (
   </View>
 );
 
-
-const MyDocument = ({ciudades, ciudadesNombre,ReportesProveedores}) => (
-  <Document>
+const MyDocument = ({ mPrimas = [], usuarios = [], proveedores = [] }) => {
+  console.log("📄 Datos en MyDocument:", { mPrimas, usuarios, proveedores });
+  return (
+    <Document>
     <Page size="A4" style={styles.page}>
       <Text>
         <Image src={LogoSena} style={{ width: "400px", height: "300px" }} />
       </Text>
       <Text style={styles.sectionTitle}>Reportes</Text>
-      <ReportTable ciudadesNombre={ciudadesNombre} ciudades={ciudades} ReportesProveedores={ReportesProveedores}   />
-      <Text style={styles.footer}>
-        © 2024 SENA.
-      </Text>
+      <ReportTable
+        usuarios={usuarios}
+        mPrimas={mPrimas}
+        proveedores={proveedores}
+      />
+      <Text style={styles.footer}>© 2024 SENA.</Text>
     </Page>
   </Document>
-);
+  );
+};
 
 export default MyDocument;
