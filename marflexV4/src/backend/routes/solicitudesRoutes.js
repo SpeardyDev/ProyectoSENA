@@ -60,7 +60,10 @@ router.get("/solicitudes_materia_prima", async (req, res) => {
 router.get("/solicitudes_materia_prima/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const [result] = await db.query("SELECT * FROM solicitudes_materia_prima WHERE ID = ?", [id]);
+    const [result] = await db.query(
+      "SELECT * FROM solicitudes_materia_prima WHERE ID = ?",
+      [id]
+    );
     if (result.length === 0) {
       return res.status(404).json({ message: "Solicitud no encontrada" });
     }
@@ -102,7 +105,13 @@ router.get("/solicitudes_materia_prima/:id", async (req, res) => {
 
 // Crear una nueva solicitud
 router.post("/agregar/solicitudes_materia_prima", async (req, res) => {
-  const { ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo } = req.body;
+  const {
+    ID_Usuario,
+    ID_MateriaPrima,
+    Cantidad_Solicitada,
+    Estado,
+    Motivo_Rechazo,
+  } = req.body;
   try {
     const [result] = await db.query(
       "INSERT INTO solicitudes_materia_prima (ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo) VALUES (?, ?, ?, ?, ?)",
@@ -113,8 +122,6 @@ router.post("/agregar/solicitudes_materia_prima", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-
 
 /**
  * @swagger
@@ -157,11 +164,24 @@ router.post("/agregar/solicitudes_materia_prima", async (req, res) => {
 // Actualizar una solicitud
 router.put("/actualizar/solicitudes_materia_prima/:id", async (req, res) => {
   const { id } = req.params;
-  const { ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo } = req.body;
+  const {
+    ID_Usuario,
+    ID_MateriaPrima,
+    Cantidad_Solicitada,
+    Estado,
+    Motivo_Rechazo,
+  } = req.body;
   try {
     const [result] = await db.query(
       "UPDATE solicitudes_materia_prima SET ID_Usuario = ?, ID_MateriaPrima = ?, Cantidad_Solicitada = ?, Estado = ?, Motivo_Rechazo = ? WHERE ID = ?",
-      [ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo, id]
+      [
+        ID_Usuario,
+        ID_MateriaPrima,
+        Cantidad_Solicitada,
+        Estado,
+        Motivo_Rechazo,
+        id,
+      ]
     );
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Solicitud no encontrada" });
@@ -197,7 +217,10 @@ router.put("/actualizar/solicitudes_materia_prima/:id", async (req, res) => {
 router.delete("/eliminar/solicitudes_materia_prima/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const [result] = await db.query("DELETE FROM solicitudes_materia_prima WHERE ID = ?", [id]);
+    const [result] = await db.query(
+      "DELETE FROM solicitudes_materia_prima WHERE ID = ?",
+      [id]
+    );
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Solicitud no encontrada" });
     }
@@ -223,7 +246,9 @@ router.delete("/eliminar/solicitudes_materia_prima/:id", async (req, res) => {
 // Endpoint para obtener solicitudes pendientes
 router.get("/solicitudes/pendientes", async (req, res) => {
   try {
-    const [results] = await db.query("SELECT * FROM solicitudes_materia_prima WHERE Estado = 'pendiente'");
+    const [results] = await db.query(
+      "SELECT * FROM solicitudes_materia_prima WHERE Estado = 'pendiente'"
+    );
     res.json(results);
   } catch (err) {
     res.status(500).json({ error: "Error en el servidor" });
@@ -258,40 +283,38 @@ router.post("/aprobar-solicitud", async (req, res) => {
   const { ID } = req.body;
 
   if (!ID || isNaN(ID)) {
-      return res.status(400).json({ error: "ID de solicitud inválido" });
+    return res.status(400).json({ error: "ID de solicitud inválido" });
   }
 
   try {
-      await db.query("CALL AprobarSolicitud(?)", [ID]);
+    await db.query("CALL AprobarSolicitud(?)", [ID]);
 
-      return res.json({ success: true, message: "Solicitud aprobada correctamente" });
-
+    return res.json({
+      success: true,
+      message: "Solicitud aprobada correctamente",
+    });
   } catch (error) {
-      console.error("Error al aprobar solicitud:", error);
+    console.error("Error al aprobar solicitud:", error);
 
-      if (error.code === "ER_SIGNAL_EXCEPTION") {
-          const errorMessage = error.sqlMessage || "";
+    if (error.code === "ER_SIGNAL_EXCEPTION") {
+      const errorMessage = error.sqlMessage || "";
 
-          if (errorMessage.includes("Stock insuficiente")) {
-              const match = errorMessage.match(/Stock disponible: (\d+)/);
-              const stockDisponible = match ? parseInt(match[1]) : 0;
+      if (errorMessage.includes("Stock insuficiente")) {
+        const match = errorMessage.match(/Stock disponible: (\d+)/);
+        const stockDisponible = match ? parseInt(match[1]) : 0;
 
-              return res.status(400).json({ 
-                  error: "Stock insuficiente", 
-                  stockDisponible 
-              });
-          }
-
-          return res.status(400).json({ error: errorMessage });
+        return res.status(400).json({
+          error: "Stock insuficiente",
+          stockDisponible,
+        });
       }
 
-      res.status(500).json({ error: "Error en el servidor" });
+      return res.status(400).json({ error: errorMessage });
+    }
+
+    res.status(500).json({ error: "Error en el servidor" });
   }
 });
-
-
-
-
 
 /**
  * @swagger
@@ -323,10 +346,12 @@ router.post("/aprobar-solicitud", async (req, res) => {
 router.post("/rechazar-solicitud", async (req, res) => {
   const { ID, Motivo_Rechazo } = req.body;
 
-  console.log("Datos recibidos:", req.body); // 🔍 Verifica qué datos llegan
+  console.log("Datos recibidos:", req.body);
 
   if (!ID || !Motivo_Rechazo) {
-    return res.status(400).json({ error: "ID de solicitud y motivo son requeridos" });
+    return res
+      .status(400)
+      .json({ error: "ID de solicitud y motivo son requeridos" });
   }
 
   try {

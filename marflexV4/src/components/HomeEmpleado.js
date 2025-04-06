@@ -1,7 +1,7 @@
 import React from "react";
 import logo from "../img/LogoMarflex.png";
 import icono from "../img/forklift_30dp_DA954B_FILL0_wght400_GRAD0_opsz24.png";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import "./styles/HomeAdmin.css";
@@ -10,6 +10,7 @@ import Detalle from "./Gestion_Detalles/Detalle.js";
 import MenuDePerfil from './MenuDePerfil.js';
 import Solicitud from './Gestion_Solicitudes/solicitudesEmp.js'
 import Reportes from "./Gestion_de_Reportes/Reportes.js";
+import { Button } from 'semantic-ui-react';
 
 const HomeEmpleado = () => {
   const [visibleComponents, setVisibleComponents] = useState({
@@ -30,18 +31,71 @@ const HomeEmpleado = () => {
     }));
   };
 
-  const [avatar, setAvatar] = useState(
-    require("../img/foto-perfil.jpg")
-  );
+  const defaultAvatar = require("../backend/uploads/foto-perfil.jpg");
+  const [avatar, setAvatar] = useState(defaultAvatar);
 
-  const handleImageChange = (event) => {
+  const handleImageChange = async (event) => {
     const file = event.target.files[0];
+  
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setAvatar(reader.result);
-      };
-      reader.readAsDataURL(file);
+      const formData = new FormData();
+      formData.append("fotoPerfil", file);
+  
+      const token = localStorage.getItem("token");
+  
+      try {
+        const res = await fetch("http://localhost:3000/usuarios/foto", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          body: formData,
+        });
+  
+        const data = await res.json();
+  
+        if (data.fotoPerfil) {
+          setAvatar(`http://localhost:3000/uploads/${data.fotoPerfil}`);
+        } else {
+          console.error("No se recibió fotoPerfil:", data);
+        }
+      } catch (error) {
+        console.error("Error subiendo la foto:", error);
+      }
+    }
+  };
+  
+  useEffect(() => {
+    const storedFoto = localStorage.getItem("fotoPerfil");
+  
+    if (storedFoto) {
+      setAvatar(`http://localhost:3000/uploads/${storedFoto}`);
+    } else {
+      setAvatar(require("../backend/uploads/foto-perfil.jpg"));
+    }
+  }, []);
+
+  const eliminarFoto = async () => {
+    const token = localStorage.getItem('token');
+  
+    try {
+      const res = await fetch('http://localhost:3000/eliminar/usuarios/foto', {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+  
+      if (res.ok) {
+        localStorage.setItem('fotoPerfil', 'foto-perfil.jpg');
+        setAvatar(require('../backend/uploads/foto-perfil.jpg'));
+        alert('Foto de perfil eliminada');
+      } else {
+        alert('No se pudo eliminar la foto');
+      }
+    } catch (error) {
+      console.error("Error al eliminar foto:", error);
+      alert('Error al eliminar la foto');
     }
   };
 
@@ -69,12 +123,18 @@ const HomeEmpleado = () => {
             <div className="contenido-usuario">
               <img 
                 id="profile-pic" 
-                src={avatar} 
+                src={avatar || require("../backend/uploads/foto-perfil.jpg")}
                 alt="Foto de perfil" 
                 className="profile-pic"
               />
               <input type="file" id="fileInput" accept="image/*" style={{ display: 'none' }} onChange={handleImageChange} />
               <button onClick={() => document.getElementById('fileInput').click()} className="btn-upload"><i class="fa-solid fa-camera"></i></button>
+              {avatar !== defaultAvatar && (
+                <Button icon color="red" style={{marginTop: '25px'}} onClick={eliminarFoto}>
+                  Eliminar Foto
+                </Button>
+              )}
+
               <div className="perfil-nombre">
                 <p id="Nombre">SANDRA VIVIANA RUIZ MENESES</p>
               </div>

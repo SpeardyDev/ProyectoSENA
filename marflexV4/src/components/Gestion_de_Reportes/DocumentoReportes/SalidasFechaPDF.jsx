@@ -80,7 +80,7 @@ const SalidasFechaPDF = ({ data }) => {
             </View>
     
             {/* Título */}
-            <Text style={styles.sectionTitle}>salidas de Materias Primas por Fecha</Text>
+            <Text style={styles.sectionTitle}>Salidas de Materias Primas por Fecha</Text>
     
             {/* Tabla */}
             <View style={styles.table}>

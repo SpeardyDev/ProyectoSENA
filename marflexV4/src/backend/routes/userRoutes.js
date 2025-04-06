@@ -35,9 +35,9 @@ router.get("/api/usuarios", async (req, res) => {
 });
 
 // Obtener todos los usuarios (MySQL)
-router.get('/usuarios', async (req, res) => {
+router.get("/usuarios", async (req, res) => {
   try {
-    const [results] = await db.query('SELECT * FROM usuarios');
+    const [results] = await db.query("SELECT * FROM usuarios");
     res.json(results);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -86,12 +86,19 @@ router.put("/api/editar/usuarios/:id", async (req, res) => {
     const datosActualizados = req.body;
 
     if (datosActualizados.password) {
-      datosActualizados.password = await bcrypt.hash(datosActualizados.password, 10);
+      datosActualizados.password = await bcrypt.hash(
+        datosActualizados.password,
+        10
+      );
     }
 
-    const usuarioActualizado = await models.findByIdAndUpdate(id, datosActualizados, {
-      new: true,
-    });
+    const usuarioActualizado = await models.findByIdAndUpdate(
+      id,
+      datosActualizados,
+      {
+        new: true,
+      }
+    );
 
     if (!usuarioActualizado) {
       return res.status(404).json({ message: "Usuario no encontrado" });
@@ -104,23 +111,26 @@ router.put("/api/editar/usuarios/:id", async (req, res) => {
 });
 
 // Actualizar usuario (MySQL)
-router.put('/actualizar/usuarios/:id', async (req, res) => {
+router.put("/actualizar/usuarios/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { Nombre, Usuario, Password, Rol, ID_Estado } = req.body;
-    
+
     let updateUser = { Nombre, Usuario, Rol, ID_Estado };
     if (Password) {
       updateUser.Password = await bcrypt.hash(Password, 10);
     }
 
-    const [result] = await db.query('UPDATE usuarios SET ? WHERE ID = ?', [updateUser, id]);
+    const [result] = await db.query("UPDATE usuarios SET ? WHERE ID = ?", [
+      updateUser,
+      id,
+    ]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
-    res.json({ message: 'Usuario actualizado' });
+    res.json({ message: "Usuario actualizado" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -151,7 +161,7 @@ router.put('/actualizar/usuarios/:id', async (req, res) => {
 // Eliminar usuario (MongoDB)
 router.delete("/api/eliminar/usuarios/:id", async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
     const usuarioEliminado = await models.findByIdAndDelete(id);
 
     if (!usuarioEliminado) {
@@ -165,16 +175,16 @@ router.delete("/api/eliminar/usuarios/:id", async (req, res) => {
 });
 
 // Eliminar usuario (MySQL)
-router.delete('/eliminar/usuarios/:id', async (req, res) => {
+router.delete("/eliminar/usuarios/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const [result] = await db.query('DELETE FROM usuarios WHERE ID = ?', [id]);
+    const [result] = await db.query("DELETE FROM usuarios WHERE ID = ?", [id]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
-    res.json({ message: 'Usuario eliminado' });
+    res.json({ message: "Usuario eliminado" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

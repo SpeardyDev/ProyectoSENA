@@ -23,13 +23,13 @@ const db = require("../config/dbMysql");
  */
 
 // Obtener todos los proveedores
-router.get('/proveedores', async (req, res) => {
-    try {
-        const [results] = await db.query('SELECT * FROM proveedores');
-        res.json(results);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+router.get("/proveedores", async (req, res) => {
+  try {
+    const [results] = await db.query("SELECT * FROM proveedores");
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 /**
@@ -52,17 +52,19 @@ router.get('/proveedores', async (req, res) => {
  */
 
 // Obtener un proveedor por ID
-router.get('/proveedores/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        const [result] = await db.query('SELECT * FROM proveedores WHERE ID = ?', [id]);
-        if (result.length === 0) {
-            return res.status(404).json({ message: 'Proveedor no encontrado' });
-        }
-        res.json(result[0]);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+router.get("/proveedores/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [result] = await db.query("SELECT * FROM proveedores WHERE ID = ?", [
+      id,
+    ]);
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Proveedor no encontrado" });
     }
+    res.json(result[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 /**
@@ -92,17 +94,17 @@ router.get('/proveedores/:id', async (req, res) => {
  */
 
 // Crear un nuevo proveedor
-router.post('/agregar/proveedores', async (req, res) => {
-    const { Nombre, Telefono, Direccion } = req.body;
-    try {
-        const [result] = await db.query(
-            'INSERT INTO proveedores (Nombre, Telefono, Direccion) VALUES (?, ?, ?)',
-            [Nombre, Telefono, Direccion]
-        );
-        res.status(201).json({ id: result.insertId, Nombre, Telefono, Direccion });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+router.post("/agregar/proveedores", async (req, res) => {
+  const { Nombre, Telefono, Direccion } = req.body;
+  try {
+    const [result] = await db.query(
+      "INSERT INTO proveedores (Nombre, Telefono, Direccion) VALUES (?, ?, ?)",
+      [Nombre, Telefono, Direccion]
+    );
+    res.status(201).json({ id: result.insertId, Nombre, Telefono, Direccion });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 /**
@@ -140,21 +142,21 @@ router.post('/agregar/proveedores', async (req, res) => {
  */
 
 // Actualizar un proveedor
-router.put('/actualizar/proveedores/:id', async (req, res) => {
-    const { id } = req.params;
-    const { Nombre, Telefono, Direccion } = req.body;
-    try {
-        const [result] = await db.query(
-            'UPDATE proveedores SET Nombre = ?, Telefono = ?, Direccion = ? WHERE ID = ?',
-            [Nombre, Telefono, Direccion, id]
-        );
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Proveedor no encontrado' });
-        }
-        res.json({ message: 'Proveedor actualizado correctamente' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+router.put("/actualizar/proveedores/:id", async (req, res) => {
+  const { id } = req.params;
+  const { Nombre, Telefono, Direccion } = req.body;
+  try {
+    const [result] = await db.query(
+      "UPDATE proveedores SET Nombre = ?, Telefono = ?, Direccion = ? WHERE ID = ?",
+      [Nombre, Telefono, Direccion, id]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Proveedor no encontrado" });
     }
+    res.json({ message: "Proveedor actualizado correctamente" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 /**
@@ -179,17 +181,19 @@ router.put('/actualizar/proveedores/:id', async (req, res) => {
  */
 
 // Eliminar un proveedor
-router.delete('/eliminar/proveedores/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        const [result] = await db.query('DELETE FROM proveedores WHERE ID = ?', [id]);
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Proveedor no encontrado' });
-        }
-        res.json({ message: 'Proveedor eliminado correctamente' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+router.delete("/eliminar/proveedores/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [result] = await db.query("DELETE FROM proveedores WHERE ID = ?", [
+      id,
+    ]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Proveedor no encontrado" });
     }
+    res.json({ message: "Proveedor eliminado correctamente" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = router;
