@@ -23,9 +23,9 @@ const router = express.Router();
  */
 
 // Obtener todos los colchones
-router.get('/colchones', async (req, res) => {
+router.get("/colchones", async (req, res) => {
   try {
-    const [results] = await db.query('SELECT * FROM colchones');
+    const [results] = await db.query("SELECT * FROM colchones");
     res.json(results);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -52,12 +52,14 @@ router.get('/colchones', async (req, res) => {
  */
 
 // Obtener un colchón por ID
-router.get('/colchones/:id', async (req, res) => {
+router.get("/colchones/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const [result] = await db.query('SELECT * FROM colchones WHERE ID = ?', [id]);
+    const [result] = await db.query("SELECT * FROM colchones WHERE ID = ?", [
+      id,
+    ]);
     if (result.length === 0) {
-      return res.status(404).json({ message: 'Colchón no encontrado' });
+      return res.status(404).json({ message: "Colchón no encontrado" });
     }
     res.json(result[0]);
   } catch (err) {
@@ -94,12 +96,26 @@ router.get('/colchones/:id', async (req, res) => {
  */
 
 // Crear un nuevo colchón
-router.post('/agregar/colchones', async (req, res) => {
+router.post("/agregar/colchones", async (req, res) => {
   const { Modelo, Descripcion, Fecha_Fabricacion, Cantidad } = req.body;
   try {
-    const query = 'INSERT INTO colchones (Modelo, Descripcion, Fecha_Fabricacion, Cantidad) VALUES (?, ?, ?, ?)';
-    const [result] = await db.query(query, [Modelo, Descripcion, Fecha_Fabricacion, Cantidad]);
-    res.status(201).json({ id: result.insertId, Modelo, Descripcion, Fecha_Fabricacion, Cantidad });
+    const query =
+      "INSERT INTO colchones (Modelo, Descripcion, Fecha_Fabricacion, Cantidad) VALUES (?, ?, ?, ?)";
+    const [result] = await db.query(query, [
+      Modelo,
+      Descripcion,
+      Fecha_Fabricacion,
+      Cantidad,
+    ]);
+    res
+      .status(201)
+      .json({
+        id: result.insertId,
+        Modelo,
+        Descripcion,
+        Fecha_Fabricacion,
+        Cantidad,
+      });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -142,21 +158,30 @@ router.post('/agregar/colchones', async (req, res) => {
  */
 
 // Actualizar un colchón
-router.put('/actualizar/colchones/:id', async (req, res) => {
+router.put("/actualizar/colchones/:id", async (req, res) => {
   const { id } = req.params;
   const { Modelo, Descripcion, Fecha_Fabricacion, Cantidad } = req.body;
-  
-  const fechaFormatoCorrecto = Fecha_Fabricacion ? new Date(Fecha_Fabricacion).toISOString().slice(0, 10) : null;
-  
+
+  const fechaFormatoCorrecto = Fecha_Fabricacion
+    ? new Date(Fecha_Fabricacion).toISOString().slice(0, 10)
+    : null;
+
   try {
-    const query = 'UPDATE colchones SET Modelo = ?, Descripcion = ?, Fecha_Fabricacion = ?, Cantidad = ? WHERE ID = ?';
-    const [result] = await db.query(query, [Modelo, Descripcion, fechaFormatoCorrecto, Cantidad, id]);
+    const query =
+      "UPDATE colchones SET Modelo = ?, Descripcion = ?, Fecha_Fabricacion = ?, Cantidad = ? WHERE ID = ?";
+    const [result] = await db.query(query, [
+      Modelo,
+      Descripcion,
+      fechaFormatoCorrecto,
+      Cantidad,
+      id,
+    ]);
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Colchón no encontrado' });
+      return res.status(404).json({ message: "Colchón no encontrado" });
     }
 
-    res.json({ message: 'Colchón actualizado correctamente' });
+    res.json({ message: "Colchón actualizado correctamente" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -184,16 +209,16 @@ router.put('/actualizar/colchones/:id', async (req, res) => {
  */
 
 // Eliminar un colchón
-router.delete('/eliminar/colchones/:id', async (req, res) => {
+router.delete("/eliminar/colchones/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const [result] = await db.query('DELETE FROM colchones WHERE ID = ?', [id]);
+    const [result] = await db.query("DELETE FROM colchones WHERE ID = ?", [id]);
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Colchón no encontrado' });
+      return res.status(404).json({ message: "Colchón no encontrado" });
     }
 
-    res.json({ message: 'Colchón eliminado correctamente' });
+    res.json({ message: "Colchón eliminado correctamente" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

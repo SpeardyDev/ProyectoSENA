@@ -2,8 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectMongoDB = require("./config/dbMongo"); // Conectar a MongoDB
-const { swaggerDocs: V1SwaggerDocs } = require('./swagger');
-
+const { swaggerDocs: V1SwaggerDocs } = require("./swagger");
+const path = require("path");
 const authRoutes = require("./routes/authRoutes");
 const colchonesRoutes = require("./routes/colchonesRoutes");
 const detalleRoutes = require("./routes/detalleRoutes");
@@ -36,6 +36,7 @@ app.use(proveedoresRoutes);
 app.use(reportes);
 app.use(solicitudesRoutes);
 app.use(usuariosRoutes);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.listen(puerto, () => {
   console.log(`Servidor corriendo en el puerto ${puerto}`);

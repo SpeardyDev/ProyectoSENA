@@ -23,13 +23,13 @@ const db = require("../config/dbMysql");
  */
 
 // Obtener todos los movimientos
-router.get('/movimientos', async (req, res) => {
-    try {
-        const [results] = await db.query('SELECT * FROM movimientos');
-        res.json(results);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+router.get("/movimientos", async (req, res) => {
+  try {
+    const [results] = await db.query("SELECT * FROM movimientos");
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 /**
@@ -52,17 +52,19 @@ router.get('/movimientos', async (req, res) => {
  */
 
 // Obtener un movimiento por ID
-router.get('/movimientos/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        const [result] = await db.query('SELECT * FROM movimientos WHERE ID = ?', [id]);
-        if (result.length === 0) {
-            return res.status(404).json({ message: 'Movimiento no encontrado' });
-        }
-        res.json(result[0]);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+router.get("/movimientos/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [result] = await db.query("SELECT * FROM movimientos WHERE ID = ?", [
+      id,
+    ]);
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Movimiento no encontrado" });
     }
+    res.json(result[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 /**
@@ -94,17 +96,25 @@ router.get('/movimientos/:id', async (req, res) => {
  */
 
 // Crear un nuevo movimiento
-router.post('/agregar/movimientos', async (req, res) => {
-    const { ID_MateriaPrima, Tipo, Cantidad, ID_Proveedor } = req.body;
-    try {
-        const [result] = await db.query(
-            'INSERT INTO movimientos (ID_MateriaPrima, Tipo, Cantidad, ID_Proveedor) VALUES (?, ?, ?, ?)',
-            [ID_MateriaPrima, Tipo, Cantidad, ID_Proveedor]
-        );
-        res.status(201).json({ id: result.insertId, ID_MateriaPrima, Tipo, Cantidad, ID_Proveedor });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+router.post("/agregar/movimientos", async (req, res) => {
+  const { ID_MateriaPrima, Tipo, Cantidad, ID_Proveedor } = req.body;
+  try {
+    const [result] = await db.query(
+      "INSERT INTO movimientos (ID_MateriaPrima, Tipo, Cantidad, ID_Proveedor) VALUES (?, ?, ?, ?)",
+      [ID_MateriaPrima, Tipo, Cantidad, ID_Proveedor]
+    );
+    res
+      .status(201)
+      .json({
+        id: result.insertId,
+        ID_MateriaPrima,
+        Tipo,
+        Cantidad,
+        ID_Proveedor,
+      });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 /**
@@ -144,22 +154,24 @@ router.post('/agregar/movimientos', async (req, res) => {
  */
 
 // Actualizar un movimiento
-router.put('/actualizar/movimientos/:id', async (req, res) => {
-    const { id } = req.params;
-    const { ID_MateriaPrima, Tipo, Cantidad, Fecha, ID_Proveedor } = req.body;
-    const fechaFormatoCorrecto = Fecha ? new Date(Fecha).toISOString().slice(0, 10) : null;
-    try {
-        const [result] = await db.query(
-            'UPDATE movimientos SET ID_MateriaPrima = ?, Tipo = ?, Cantidad = ?, Fecha = ?, ID_Proveedor = ? WHERE ID = ?',
-            [ID_MateriaPrima, Tipo, Cantidad, fechaFormatoCorrecto, ID_Proveedor, id]
-        );
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Movimiento no encontrado' });
-        }
-        res.json({ message: 'Movimiento actualizado correctamente' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+router.put("/actualizar/movimientos/:id", async (req, res) => {
+  const { id } = req.params;
+  const { ID_MateriaPrima, Tipo, Cantidad, Fecha, ID_Proveedor } = req.body;
+  const fechaFormatoCorrecto = Fecha
+    ? new Date(Fecha).toISOString().slice(0, 10)
+    : null;
+  try {
+    const [result] = await db.query(
+      "UPDATE movimientos SET ID_MateriaPrima = ?, Tipo = ?, Cantidad = ?, Fecha = ?, ID_Proveedor = ? WHERE ID = ?",
+      [ID_MateriaPrima, Tipo, Cantidad, fechaFormatoCorrecto, ID_Proveedor, id]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Movimiento no encontrado" });
     }
+    res.json({ message: "Movimiento actualizado correctamente" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 /**
@@ -184,36 +196,19 @@ router.put('/actualizar/movimientos/:id', async (req, res) => {
  */
 
 // Eliminar un movimiento
-router.delete('/eliminar/movimientos/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        const [result] = await db.query('DELETE FROM movimientos WHERE ID = ?', [id]);
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Movimiento no encontrado' });
-        }
-        res.json({ message: 'Movimiento eliminado correctamente' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+router.delete("/eliminar/movimientos/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [result] = await db.query("DELETE FROM movimientos WHERE ID = ?", [
+      id,
+    ]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Movimiento no encontrado" });
     }
+    res.json({ message: "Movimiento eliminado correctamente" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-// Obtener todas las entradas de materia prima
-router.get('/entradas', async (req, res) => {
-    try {
-        const [rows] = await db.query('CALL ReporteEntradasMateriaPrima()');
-        res.json(rows[0]);
-    } catch (error) {
-        res.status(500).json({ error: error.sqlMessage || 'Error en el servidor' });
-    }
-});
-
-// Obtener todas las salidas de materia prima
-router.get('/salidas', async (req, res) => {
-    try {
-        const [rows] = await db.query('CALL ReporteSalidasMateriaPrima()');
-        res.json(rows[0]);
-    } catch (error) {
-        res.status(500).json({ error: error.sqlMessage || 'Error en el servidor' });
-    }
-});
 module.exports = router;

@@ -1,13 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../config/dbMysql");
+const upload = require('../middleware/upload');
+const auth = require('../middleware/authMiddleware');
+const fs = require('fs');
+const path = require('path');
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const nodemailer = require('nodemailer'); // Para enviar correos
+const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
-dotenv.config(); // Cargar variables de entorno
-const otpStore = {}; // Guardará los códigos temporalmente
+dotenv.config();
+const otpStore = {};
 
 /**
  * @swagger
@@ -44,8 +47,6 @@ const otpStore = {}; // Guardará los códigos temporalmente
 router.post("/registrar", async (req, res) => {
   try {
     const { username, password } = req.body;
-
-    // Verifica si el usuario ya existe
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).send({ message: "El usuario ya existe." });
@@ -109,7 +110,15 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.send({ message: "Ingreso exitoso", success: true, token, rol: user.rol });
+    res.send({
+      message: "Ingreso exitoso",
+      success: true,
+      token,
+      rol: user.rol,
+      userId: user._id,
+      fotoPerfil: user.fotoPerfil || null
+    });
+    
   } catch (error) {
     console.error("Error en el servidor:", error);
     res.status(500).send({ message: "Error en el servidor" });
@@ -179,8 +188,8 @@ router.post("/recuperar-password", async (req, res) => {
     return res.status(404).json({ message: "Usuario no encontrado." });
   }
 
-  const otp = Math.floor(100000 + Math.random() * 900000); // Código de 6 dígitos
-  otpStore[username] = { otp, expires: Date.now() + 5 * 60 * 1000 }; // Expira en 5 minutos
+  const otp = Math.floor(100000 + Math.random() * 900000);
+  otpStore[username] = { otp, expires: Date.now() + 5 * 60 * 1000 };
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -193,7 +202,31 @@ router.post("/recuperar-password", async (req, res) => {
   res.json({ message: "Código enviado al correo." });
 });
 
-// Verificar código OTP
+/**
+ * @swagger
+ * /auth/verificar-otp:
+ *   post:
+ *     summary: Verificar el código OTP para recuperación de contraseña
+ *     tags: [Autenticación]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               otp:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Código verificado correctamente
+ *       400:
+ *         description: Código inválido o expirado
+ */
+
+// Verificación del código OTP
 router.post("/verificar-otp", (req, res) => {
   const { username, otp } = req.body;
   const storedOtp = otpStore[username];
@@ -242,16 +275,100 @@ router.post('/reset-password', async (req, res) => {
       return res.status(400).json({ message: "Usuario no encontrado." });
     }
 
-    // Encriptar la nueva contraseña si no está encriptada
     const hashedPassword = await bcrypt.hash(password, 10);
     usuario.password = hashedPassword;
 
-    // Guardar en la base de datos
     await usuario.save();
     res.json({ message: "Contraseña restablecida con éxito." });
   } catch (error) {
     console.error("Error al actualizar la contraseña:", error);
     res.status(500).json({ message: "Error del servidor. Inténtalo de nuevo." });
+  }
+});
+
+/**
+ * @swagger
+ * /auth/usuarios/foto:
+ *   post:
+ *     summary: Subir o actualizar foto de perfil del usuario
+ *     tags: [Autenticación]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               fotoPerfil:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Foto actualizada exitosamente
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error actualizando foto
+ */
+
+// Añadir foto de perfil
+router.post('/usuarios/foto', auth, upload.single('fotoPerfil'), async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+    user.fotoPerfil = req.file.filename;
+    await user.save();
+
+    res.json({ message: 'Foto actualizada', fotoPerfil: user.fotoPerfil });
+  } catch (error) {
+    console.error("Error actualizando foto de perfil:", error);
+    res.status(500).json({ error: 'Error actualizando foto' });
+  }
+});
+
+/**
+ * @swagger
+ * /auth/eliminar/usuarios/foto:
+ *   delete:
+ *     summary: Eliminar la foto de perfil del usuario
+ *     tags: [Autenticación]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Foto eliminada con éxito
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error al eliminar la foto
+ */
+
+// Eliminar foto de perfil
+router.delete('/eliminar/usuarios/foto', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+
+    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+    if (user.fotoPerfil) {
+      const filePath = path.join(__dirname, '../uploads', user.fotoPerfil);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+      user.fotoPerfil = undefined;
+      await user.save();
+    }
+
+    res.json({ message: 'Foto eliminada con éxito' });
+  } catch (error) {
+    console.error("Error al eliminar foto:", error);
+    res.status(500).json({ error: 'Error al eliminar la foto' });
   }
 });
 

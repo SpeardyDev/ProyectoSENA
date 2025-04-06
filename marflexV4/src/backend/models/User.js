@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
   documento: { type: String, required: true },
@@ -9,16 +9,17 @@ const userSchema = new mongoose.Schema({
   rol: { type: String, required: true },
   estado: { type: String, required: true },
   telefono: { type: String, required: true },
+  fotoPerfil: { type: String, required: false },
 });
 
 // Evita encriptar la contraseña dos veces
-userSchema.pre('save', async function (next) {
-  if (this.isModified('password') && !this.password.startsWith('$2b$')) {
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password") && !this.password.startsWith("$2b$")) {
     this.password = await bcrypt.hash(this.password, 10);
   }
   next();
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;

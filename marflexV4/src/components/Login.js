@@ -3,6 +3,7 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import logo from '../img/LogoMarflex.png';
 import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
+// import { jwtDecode } from "jwt-decode";
 import './styles/Login.css'; // Archivo CSS para estilos específicos de Login
 import axios from 'axios';
 
@@ -19,10 +20,17 @@ function Login() {
         username: username.trim().toLowerCase(),
         password
       });
-
-      const { token, rol } = response.data;
+  
+      const { token, rol, userId, fotoPerfil } = response.data;
+  
+      // Guardar en localStorage
       localStorage.setItem('token', token);
-
+      localStorage.setItem('userId', userId);
+      localStorage.setItem(
+        "fotoPerfil",
+        fotoPerfil || "foto-perfil.jpg" // nombre de la imagen por defecto
+      );
+  
       if (rol === 'Administrador') {
         alert("Login exitoso administrador");
         navigate("/HomeAdmin");

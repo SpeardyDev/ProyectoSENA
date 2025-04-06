@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
+import { useState, useEffect } from "react";
 import logo from "../img/LogoMarflex.png";
 import icono from "../img/forklift_30dp_DA954B_FILL0_wght400_GRAD0_opsz24.png";
-import { useState } from "react";
 import "./styles/HomeAdmin.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -13,6 +13,7 @@ import Reportes from "./Gestion_de_Reportes/Reportes";
 import Movimientos from "./Gestion_Movimientos/Movimientos";
 import SolicitudesP from "./Gestion_Solicitudes/solicitudesPendientes";
 import Solicitudes from "./Gestion_Solicitudes/solicitudesAdmin";
+import { Button } from 'semantic-ui-react';
 
 const HomeAdmin = () => {
   const [visibleComponents, setVisibleComponents] = useState({
@@ -37,21 +38,76 @@ const HomeAdmin = () => {
       Solicitudes: componentName === "Solicitudes de Materia Prima",
     }));
   };
-  const [avatar, setAvatar] = useState(
-    require("../img/foto-perfil.jpg")
-  );
+
   const [BtnMenu, setBtnMenu] = useState(false);
 
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setAvatar(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const defaultAvatar = require("../backend/uploads/foto-perfil.jpg");
+  const [avatar, setAvatar] = useState(defaultAvatar);
+  
+    const handleImageChange = async (event) => {
+      const file = event.target.files[0];
+    
+      if (file) {
+        const formData = new FormData();
+        formData.append("fotoPerfil", file);
+    
+        const token = localStorage.getItem("token");
+    
+        try {
+          const res = await fetch("http://localhost:3000/usuarios/foto", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`
+            },
+            body: formData,
+          });
+    
+          const data = await res.json();
+    
+          if (data.fotoPerfil) {
+            setAvatar(`http://localhost:3000/uploads/${data.fotoPerfil}`);
+          } else {
+            console.error("No se recibió fotoPerfil:", data);
+          }
+        } catch (error) {
+          console.error("Error subiendo la foto:", error);
+        }
+      }
+    };
+    
+    useEffect(() => {
+      const storedFoto = localStorage.getItem("fotoPerfil");
+    
+      if (storedFoto) {
+        setAvatar(`http://localhost:3000/uploads/${storedFoto}`);
+      } else {
+        setAvatar(require("../backend/uploads/foto-perfil.jpg"));
+      }
+    }, []);
+  
+    const eliminarFoto = async () => {
+      const token = localStorage.getItem('token');
+    
+      try {
+        const res = await fetch('http://localhost:3000/eliminar/usuarios/foto', {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+    
+        if (res.ok) {
+          localStorage.setItem('fotoPerfil', 'foto-perfil.jpg');
+          setAvatar(require('../backend/uploads/foto-perfil.jpg'));
+          alert('Foto de perfil eliminada');
+        } else {
+          alert('No se pudo eliminar la foto');
+        }
+      } catch (error) {
+        console.error("Error al eliminar foto:", error);
+        alert('Error al eliminar la foto');
+      }
+    };
 
   return (
     <div className="App">
@@ -89,12 +145,17 @@ const HomeAdmin = () => {
               />
               <img 
                 id="profile-pic" 
-                src={avatar} 
+                src={avatar || require("../backend/uploads/foto-perfil.jpg")}
                 alt="Foto de perfil" 
                 className="profile-pic"
               />
               <input type="file" id="fileInput" accept="image/*" style={{ display: 'none' }} onChange={handleImageChange} />
               <button onClick={() => document.getElementById('fileInput').click()} className="btn-upload"><i class="fa-solid fa-camera"></i></button>
+              {avatar !== defaultAvatar && (
+                <Button icon color="red" style={{marginTop: '25px'}} onClick={eliminarFoto}>
+                  Eliminar Foto
+                </Button>
+              )}
               <p id="Nombre">REYNALDO MARTINEZ FUENTES</p>
             </div>
             <div className="contenido-menu">
