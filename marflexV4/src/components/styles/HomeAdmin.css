@@ -10,14 +10,14 @@
 *::-moz-selection {
   background: none;
 }
-.App{
-  font-family:Arial, Helvetica, sans-serif;
+.App {
+  font-family: Arial, Helvetica, sans-serif;
 }
 .titulo {
   -webkit-user-select: none; /* Safari */
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
-   user-select: none; /* Standard */
+  user-select: none; /* Standard */
 }
 .item {
   width: 100%;
@@ -26,14 +26,13 @@
   font-size: 15px;
 }
 
-
 .barra-navegacion {
   display: flex;
   width: 100%;
   height: 80px;
   align-items: center;
   justify-content: space-around;
-  border-bottom: solid 1px #DBDBDA;
+  border-bottom: solid 1px #dbdbda;
 }
 .logo {
   display: flex;
@@ -69,7 +68,7 @@
 }
 .li-desplegable {
   margin-left: 8px;
-  border-left:solid 1px #00000065 ;
+  border-left: solid 1px #00000065;
 }
 .contenido-usuario {
   display: flex;
@@ -103,7 +102,7 @@
 }
 #Nombre {
   margin-top: 25px;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
 }
 .select-perfil:focus {
   outline: none;
@@ -117,7 +116,7 @@
 }
 .texto-menu h6 {
   font-size: 14px;
-  font-weight:  400;
+  font-weight: 400;
   margin: 15px;
   font-family: "Poetsen One", sans-serif;
 }
@@ -157,7 +156,6 @@
   background: #e0e0e056;
   transform: scale(1.05); /* Efecto de pulsación */
   cursor: pointer;
-  
 }
 /* Probando*/
 .collapse-content {
@@ -220,18 +218,42 @@ li.expanded .fa-minus {
   align-items: center;
 }
 /* colores de fondo de el contenedor de los iconos */
-.users {background-color:#3f9642;}
-.dolly{background-color: #e08907;}
-.cajas{background-color: #f02d1f;}
-.Factura{background-color:#625e63;}
-.Caja {background-color: #1b8ae4;}
-.Camion{background-color: #d11855;}
-.Bodega{background-color: #048073;}
-.Cartera{background-color: #f73b2a;}
-.signo-dolar{background-color: #4a8b8a;}
-.Mano{background-color: #b99eaa;}
-.Billete{background-color: #794204;}
-.Monedas{background-color: #03c0c0;}
+.users {
+  background-color: #3f9642;
+}
+.dolly {
+  background-color: #e08907;
+}
+.cajas {
+  background-color: #f02d1f;
+}
+.Factura {
+  background-color: #625e63;
+}
+.Caja {
+  background-color: #1b8ae4;
+}
+.Camion {
+  background-color: #d11855;
+}
+.Bodega {
+  background-color: #048073;
+}
+.Cartera {
+  background-color: #f73b2a;
+}
+.signo-dolar {
+  background-color: #4a8b8a;
+}
+.Mano {
+  background-color: #b99eaa;
+}
+.Billete {
+  background-color: #794204;
+}
+.Monedas {
+  background-color: #03c0c0;
+}
 
 /* Tamoño y color de los iconos de Dashboard */
 #icono {
@@ -247,18 +269,42 @@ li.expanded .fa-minus {
 }
 
 /* Color de todas las card */
-.green { background-color: #4CAF50; }
-.orange { background-color: #FF9800; }
-.red { background-color: #F44336; }
-.purple { background-color: #706c70; }
-.blue { background-color: #2196F3; }
-.pink { background-color: #E91E63; }
-.teal { background-color: #009688; }
-.brown { background-color: #ff4c3a; }
-.blue-2 {background-color: #559e9d;}
-.pink-2 {background-color: #cca9b8;}
-.teal-2 {background-color: #884902;}
-.blue-cielo {background-color: #05d1d1;}
+.green {
+  background-color: #4caf50;
+}
+.orange {
+  background-color: #ff9800;
+}
+.red {
+  background-color: #f44336;
+}
+.purple {
+  background-color: #706c70;
+}
+.blue {
+  background-color: #2196f3;
+}
+.pink {
+  background-color: #e91e63;
+}
+.teal {
+  background-color: #009688;
+}
+.brown {
+  background-color: #ff4c3a;
+}
+.blue-2 {
+  background-color: #559e9d;
+}
+.pink-2 {
+  background-color: #cca9b8;
+}
+.teal-2 {
+  background-color: #884902;
+}
+.blue-cielo {
+  background-color: #05d1d1;
+}
 /* Estilo de la caja que contiene los numeros del Dashboard */
 .numero {
   display: flex;
@@ -278,7 +324,7 @@ li.expanded .fa-minus {
   font-weight: 500;
   padding-left: 10px;
   align-items: center;
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 
 /*Estilo de los iconos del + */
@@ -286,13 +332,13 @@ li.expanded .fa-minus {
   float: right;
 }
 /*Contenedor de todo el contenido de categorías*/
-.cont-categorias{
+.cont-categorias {
   width: 95%;
   height: 50vh;
   padding: 10px;
 }
 /*Contenedor de todo el contenido de categorías*/
-.cont-productos{
+.cont-productos {
   width: 95%;
   height: 50vh;
   padding: 10px;
@@ -301,7 +347,7 @@ li.expanded .fa-minus {
 
 .Tcategoria {
   height: 45vh;
-  background-color: #ffffff ;
+  background-color: #ffffff;
   box-shadow: 4px 0 7px rgba(0, 0, 0, 0.2);
 }
 .btn-primary {
@@ -317,7 +363,7 @@ li.expanded .fa-minus {
 .menu-amburguesa {
   display: none;
 }
-.Btn_ocultar{
+.Btn_ocultar {
   display: none;
 }
 
@@ -328,11 +374,8 @@ li.expanded .fa-minus {
   }
 }
 
-
-
 /* Estilos para pantallas medianas (de 769px a 1024px) */
 @media screen and (min-width: 769px) and (max-width: 1024px) {
-  
   .menu {
     display: block;
     width: 50%;
@@ -346,31 +389,31 @@ li.expanded .fa-minus {
     align-items: center;
     height: 9vh;
     width: 65%;
-}
-  
-.menu-amburguesa {
-  display: block;
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  right:10px;
-  top: 90px;
-  color: #000000a1;
- }
- .Btn_ocultar{
-  display: block;
-  position: absolute;
-  font-size: 2rem;
-  right: 10px;
-  top: 10px;
-}
+  }
+
+  .menu-amburguesa {
+    display: block;
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    right: 10px;
+    top: 90px;
+    color: #000000a1;
+  }
+  .Btn_ocultar {
+    display: block;
+    position: absolute;
+    font-size: 2rem;
+    right: 10px;
+    top: 10px;
+  }
   .contenedor-universal {
     width: 100%;
   }
   .Dashboard {
-      width: 80%;
-      height: 85vh;
+    width: 80%;
+    height: 85vh;
   }
   .card {
     width: calc(50% - 5px);
@@ -378,30 +421,28 @@ li.expanded .fa-minus {
     margin-bottom: 40px;
     padding: 25px 0px;
     text-align: center;
+  }
+  .contenedor-icono {
+    display: flex;
+    width: 40%;
+    height: 90px;
+    justify-content: center;
+    align-items: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    color: #fff;
+    transition: background-color 0.3s;
+  }
 }
-.contenedor-icono {
-  display: flex;
-  width: 40%;
-  height: 90px;
-  justify-content: center;
-  align-items: center;
-}
-.btn {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  text-decoration: none;
-  color: #fff;
-  transition: background-color 0.3s;
-}
-  
-}
-
-
 
 /* Estilos para pantallas grandes (más de 1024px) */
-@media screen and (min-width: 1025px) {}
+@media screen and (min-width: 1025px) {
+}

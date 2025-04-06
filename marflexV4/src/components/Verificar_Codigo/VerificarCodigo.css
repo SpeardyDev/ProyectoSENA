@@ -1,55 +1,55 @@
 .contenedor-input-verficar-contraseña {
-    display: flex;
-    width: 95%;
-    height: 14vh;
-    padding: 0px 15px;
+  display: flex;
+  width: 95%;
+  height: 14vh;
+  padding: 0px 15px;
 }
 .custom-otp-input-sample {
-    width: 48px;
-    height: 48px;
-    font-size: 24px;
-    appearance: none;
-    text-align: center;
-    transition: all 0.2s;
-    border-radius: 0;
-    border: 1px solid var(--surface-400);
-    background: transparent;
-    outline-offset: -2px;
-    outline-color: transparent;
-    border-right: 0 none;
-    transition: outline-color 0.3s;
-    color: var(--text-color);
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  appearance: none;
+  text-align: center;
+  transition: all 0.2s;
+  border-radius: 0;
+  border: 1px solid var(--surface-400);
+  background: transparent;
+  outline-offset: -2px;
+  outline-color: transparent;
+  border-right: 0 none;
+  transition: outline-color 0.3s;
+  color: var(--text-color);
 }
 .btn-verificar {
-    width: 125px;
+  width: 125px;
   height: 40px;
   cursor: pointer;
-  color: #FFFFFF;
-  background: #F5CC48;
+  color: #ffffff;
+  background: #f5cc48;
   border-radius: 10px;
   border: solid 1px;
   font-weight: 600;
   font-size: 15px;
-  font-family: 'Times New Roman', Times, serif;
+  font-family: "Times New Roman", Times, serif;
 }
 .img-logo-candado {
-    width: 60px;
-    height: 60px;
+  width: 60px;
+  height: 60px;
 }
 .h1-login-verficar {
-    font-family: "Roboto Condensed", sans-serif;
-    font-weight: 400;
-    color: #5a5a59;
-    font-size: 2.8em;
-    margin: 0 0; 
-    padding-right: 13.3px;
+  font-family: "Roboto Condensed", sans-serif;
+  font-weight: 400;
+  color: #5a5a59;
+  font-size: 2.8em;
+  margin: 0 0;
+  padding-right: 13.3px;
 }
 .info-text {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding-top:15px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  padding-top: 15px;
 }
 .contenedor-Btns {
-    display: flex;
-    justify-content: center;
-    padding-right: 10px;
+  display: flex;
+  justify-content: center;
+  padding-right: 10px;
 }

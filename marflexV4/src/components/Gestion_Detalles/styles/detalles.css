@@ -6,7 +6,7 @@
   font-weight: 500;
   font-family: Arial, Helvetica, sans-serif;
 }
-.RegistroNuevo_Colchon{
+.RegistroNuevo_Colchon {
   width: 620px;
   height: auto;
   border-radius: 30px;
@@ -14,7 +14,7 @@
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   padding: 20px;
 }
-.Filtro{
+.Filtro {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -60,8 +60,3 @@
   height: 50vh;
   padding: 10px;
 }
-/* .menu {
-  width: 20%;
-  height: 75px;
-  box-shadow: 3px 0 6px rgba(0, 0, 0, 0.2);
-} */

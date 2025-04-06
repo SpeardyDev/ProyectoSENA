@@ -1,7 +1,14 @@
-import { useState } from 'react';
-import { FiUser, FiInfo, FiBell, FiLogOut, FiChevronDown, FiChevronUp } from "react-icons/fi";
-import './styles/menuPerfil.css'; 
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import {
+  FiUser,
+  FiInfo,
+  FiBell,
+  FiLogOut,
+  FiChevronDown,
+  FiChevronUp,
+} from "react-icons/fi";
+import "./styles/menuPerfil.css";
+import { useNavigate } from "react-router-dom";
 
 const MenuDePerfil = () => {
   const navigate = useNavigate();
@@ -13,35 +20,34 @@ const MenuDePerfil = () => {
     setActiveDropdown(activeDropdown === dropdown ? "" : dropdown);
   };
   const CerrarSesion = async () => {
-    alert('Saliendo de la sesión');
+    alert("Saliendo de la sesión");
     try {
-      const response = await fetch('http://localhost:3000/cerrarsesion', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3000/cerrarsesion", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
-  
-      console.log('Response:', response);
-  
-      if (typeof response.json !== 'function') {
-        throw new Error('La respuesta no es un objeto JSON válido');
+
+      console.log("Response:", response);
+
+      if (typeof response.json !== "function") {
+        throw new Error("La respuesta no es un objeto JSON válido");
       }
-  
+
       const result = await response.json();
-      console.log('Result:', result);
-  
+      console.log("Result:", result);
+
       if (response.ok) {
         console.log(result.message);
-        navigate('/Login');
+        navigate("/Login");
       } else {
-        console.error('Error al cerrar sesión:', result.message);
+        console.error("Error al cerrar sesión:", result.message);
       }
     } catch (error) {
-      console.error('Error en el servidor:', error);
+      console.error("Error en el servidor:", error);
     }
   };
-
 
   return (
     <div className="user-menu">
@@ -74,10 +80,17 @@ const MenuDePerfil = () => {
             </div>
           )}
 
-          <div className="menu-item" onClick={() => toggleDropdown("notifications")}>
+          <div
+            className="menu-item"
+            onClick={() => toggleDropdown("notifications")}
+          >
             <FiBell className="menu-icon" />
             Notificaciones
-            {activeDropdown === "notifications" ? <FiChevronUp /> : <FiChevronDown />}
+            {activeDropdown === "notifications" ? (
+              <FiChevronUp />
+            ) : (
+              <FiChevronDown />
+            )}
           </div>
           {activeDropdown === "notifications" && (
             <div className="dropdown-content">

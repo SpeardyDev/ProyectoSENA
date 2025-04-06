@@ -22,24 +22,30 @@ const Detalle = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    Promise.all([obtenerColchones(), obtenerMateriasPrimas()]).then(() => mostrarDetalles());
+    Promise.all([obtenerColchones(), obtenerMateriasPrimas()]).then(() =>
+      mostrarDetalles()
+    );
   });
 
   const mostrarDetalles = () => {
     axios
       .get("http://localhost:3000/detalle_colchon")
       .then((response) => {
-        const detallesConNombres = response.data.map(detalle => {
-          const materiaPrima = materiasPrimas.find(mp => mp.value === detalle.ID_MateriaPrima);
-          const colchon = colchones.find(c => c.value === detalle.ID_Colchon);
-  
+        const detallesConNombres = response.data.map((detalle) => {
+          const materiaPrima = materiasPrimas.find(
+            (mp) => mp.value === detalle.ID_MateriaPrima
+          );
+          const colchon = colchones.find((c) => c.value === detalle.ID_Colchon);
+
           return {
             ...detalle,
-            NombreMateriaPrima: materiaPrima ? materiaPrima.text : "Desconocido",
-            NombreColchon: colchon ? colchon.text : "Desconocido"
+            NombreMateriaPrima: materiaPrima
+              ? materiaPrima.text
+              : "Desconocido",
+            NombreColchon: colchon ? colchon.text : "Desconocido",
           };
         });
-  
+
         setDetalles(detallesConNombres);
       })
       .catch((error) => console.error("Error al obtener los detalles:", error));
@@ -56,7 +62,9 @@ const Detalle = () => {
         }));
         setColchones(opciones);
       })
-      .catch((error) => console.error("Error al obtener los colchones:", error));
+      .catch((error) =>
+        console.error("Error al obtener los colchones:", error)
+      );
   };
 
   const obtenerMateriasPrimas = () => {
@@ -70,7 +78,9 @@ const Detalle = () => {
         }));
         setMateriasPrimas(opciones);
       })
-      .catch((error) => console.error("Error al obtener las materias primas:", error));
+      .catch((error) =>
+        console.error("Error al obtener las materias primas:", error)
+      );
   };
 
   const handleChange = (e, { name, value }) => {
@@ -93,7 +103,9 @@ const Detalle = () => {
         Swal.fire({
           position: "top-center",
           icon: "success",
-          title: editandoID ? "Registro actualizado con éxito." : "Registro guardado con éxito.",
+          title: editandoID
+            ? "Registro actualizado con éxito."
+            : "Registro guardado con éxito.",
           showConfirmButton: false,
           timer: 1500,
         });
@@ -152,10 +164,11 @@ const Detalle = () => {
     setSearchTerm(value.toLowerCase());
   };
 
-  const filteredItems = detalles.filter(item =>
-    item.ID.toString().includes(searchTerm) ||
-    item.NombreColchon.toLowerCase().includes(searchTerm) ||
-    item.NombreMateriaPrima.toLowerCase().includes(searchTerm)
+  const filteredItems = detalles.filter(
+    (item) =>
+      item.ID.toString().includes(searchTerm) ||
+      item.NombreColchon.toLowerCase().includes(searchTerm) ||
+      item.NombreMateriaPrima.toLowerCase().includes(searchTerm)
   );
 
   const handlePageChange = (page) => setCurrentPage(page);
@@ -211,7 +224,9 @@ const Detalle = () => {
               required
             />
           </Form.Group>
-          <Button type="submit" color="green">{editandoID ? "Actualizar" : "Registrar"}</Button>
+          <Button type="submit" color="green">
+            {editandoID ? "Actualizar" : "Registrar"}
+          </Button>
           <Button
             type="button"
             color="red"
@@ -246,7 +261,15 @@ const Detalle = () => {
             <i className="pi pi-upload" style={{ fontSize: "1.5rem" }}></i>
             <span>Exportar</span>
           </span>
-          <Button onClick={() => {setMostrarFormulario(!mostrarFormulario); LimpiarFormulario();}} color="green"><i className="pi pi-plus" /> Detalle</Button>
+          <Button
+            onClick={() => {
+              setMostrarFormulario(!mostrarFormulario);
+              LimpiarFormulario();
+            }}
+            color="green"
+          >
+            <i className="pi pi-plus" /> Detalle
+          </Button>
         </div>
       </div>
       <article className="Dasboard"></article>
@@ -262,18 +285,38 @@ const Detalle = () => {
         </Table.Header>
         <Table.Body>
           {currentItems.map((detalle) => {
-            const colchon = colchones.find((c) => c.value === detalle.ID_Colchon);
-            const materiaPrima = materiasPrimas.find((m) => m.value === detalle.ID_MateriaPrima);
+            const colchon = colchones.find(
+              (c) => c.value === detalle.ID_Colchon
+            );
+            const materiaPrima = materiasPrimas.find(
+              (m) => m.value === detalle.ID_MateriaPrima
+            );
 
             return (
               <Table.Row key={detalle.ID}>
                 <Table.Cell>{detalle.ID}</Table.Cell>
-                <Table.Cell>{colchon ? colchon.text : "Desconocido"}</Table.Cell>
-                <Table.Cell>{materiaPrima ? materiaPrima.text : "Desconocido"}</Table.Cell>
+                <Table.Cell>
+                  {colchon ? colchon.text : "Desconocido"}
+                </Table.Cell>
+                <Table.Cell>
+                  {materiaPrima ? materiaPrima.text : "Desconocido"}
+                </Table.Cell>
                 <Table.Cell>{detalle.Cantidad_Usada}</Table.Cell>
                 <Table.Cell>
-                  <Button icon color="blue" onClick={() => handleEditar(detalle.ID)}><Icon name="edit" /></Button>
-                  <Button icon color="red" onClick={() => handleEliminar(detalle.ID)}><Icon name="trash" /></Button>
+                  <Button
+                    icon
+                    color="blue"
+                    onClick={() => handleEditar(detalle.ID)}
+                  >
+                    <Icon name="edit" />
+                  </Button>
+                  <Button
+                    icon
+                    color="red"
+                    onClick={() => handleEliminar(detalle.ID)}
+                  >
+                    <Icon name="trash" />
+                  </Button>
                 </Table.Cell>
               </Table.Row>
             );

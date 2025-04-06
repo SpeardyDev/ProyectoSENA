@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
-import { Button, Table, Icon, Dropdown, Input, Search} from "semantic-ui-react";
+import {
+  Button,
+  Table,
+  Icon,
+  Dropdown,
+  Input,
+  Search,
+} from "semantic-ui-react";
 import axios from "axios";
 import Pagination from "../Pagination";
-import Swal from "sweetalert2"; 
+import Swal from "sweetalert2";
 
 const SolicitudPendientes = () => {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -26,7 +33,9 @@ const SolicitudPendientes = () => {
     axios
       .get("http://localhost:3000/solicitudes/pendientes")
       .then((response) => setSolicitudes(response.data))
-      .catch((error) => console.error("Error al obtener las solicitudes pendientes:", error));
+      .catch((error) =>
+        console.error("Error al obtener las solicitudes pendientes:", error)
+      );
   };
 
   const obtenerUsuarios = () => {
@@ -54,7 +63,9 @@ const SolicitudPendientes = () => {
         }));
         setMateriasPrimas(opciones);
       })
-      .catch((error) => console.error("Error al obtener las materias primas:", error));
+      .catch((error) =>
+        console.error("Error al obtener las materias primas:", error)
+      );
   };
 
   const handleEditClick = (id, estadoActual) => {
@@ -65,77 +76,81 @@ const SolicitudPendientes = () => {
 
   const handleSaveClick = async (id) => {
     try {
-        if (newEstado === "Aprobada") {
-            const response = await axios.post("http://localhost:3000/aprobar-solicitud", { ID: id });
+      if (newEstado === "Aprobada") {
+        const response = await axios.post(
+          "http://localhost:3000/aprobar-solicitud",
+          { ID: id }
+        );
 
-            await Swal.fire({
-                title: "Solicitud aprobada",
-                text: "La solicitud ha sido aprobada con éxito.",
-                icon: "success",
-                confirmButtonText: "OK"
-            });
+        await Swal.fire({
+          title: "Solicitud aprobada",
+          text: "La solicitud ha sido aprobada con éxito.",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
 
-            console.log("Solicitud aprobada:", response.data);
-        } else if (newEstado === "Rechazada" && motivoRechazo.trim()) {
-            const response = await axios.post("http://localhost:3000/rechazar-solicitud", {
-                ID: id,
-                Motivo_Rechazo: motivoRechazo.trim(),
-            });
+        console.log("Solicitud aprobada:", response.data);
+      } else if (newEstado === "Rechazada" && motivoRechazo.trim()) {
+        const response = await axios.post(
+          "http://localhost:3000/rechazar-solicitud",
+          {
+            ID: id,
+            Motivo_Rechazo: motivoRechazo.trim(),
+          }
+        );
 
-            await Swal.fire({
-                title: "Solicitud rechazada",
-                text: "Motivo: " + motivoRechazo.trim(),
-                icon: "error",
-                confirmButtonText: "OK"
-            });
+        await Swal.fire({
+          title: "Solicitud rechazada",
+          text: "Motivo: " + motivoRechazo.trim(),
+          icon: "error",
+          confirmButtonText: "OK",
+        });
 
-            console.log("Solicitud rechazada:", response.data);
-        } else {
-            console.warn("Estado inválido o motivo de rechazo vacío.");
-            return;
-        }
+        console.log("Solicitud rechazada:", response.data);
+      } else {
+        console.warn("Estado inválido o motivo de rechazo vacío.");
+        return;
+      }
 
-        obtenerSolicitudesPendientes();
-        setEditingSolicitud(null);
+      obtenerSolicitudesPendientes();
+      setEditingSolicitud(null);
     } catch (error) {
-        console.error("Error al actualizar la solicitud:", error);
+      console.error("Error al actualizar la solicitud:", error);
 
-        if (error.response?.data) {
-            const { error: errorMessage, stockDisponible } = error.response.data;
+      if (error.response?.data) {
+        const { error: errorMessage, stockDisponible } = error.response.data;
 
-            if (errorMessage === "Stock insuficiente") {
-                await Swal.fire({
-                    title: "Stock insuficiente",
-                    text: `No hay suficiente stock para aprobar esta solicitud. Stock disponible: ${stockDisponible}`,
-                    icon: "warning",
-                    confirmButtonText: "OK"
-                });
-            } else {
-                await Swal.fire({
-                    title: "Error",
-                    text: errorMessage || "Algo salió mal",
-                    icon: "error",
-                    confirmButtonText: "OK"
-                });
-            }
+        if (errorMessage === "Stock insuficiente") {
+          await Swal.fire({
+            title: "Stock insuficiente",
+            text: `No hay suficiente stock para aprobar esta solicitud. Stock disponible: ${stockDisponible}`,
+            icon: "warning",
+            confirmButtonText: "OK",
+          });
         } else {
-            await Swal.fire({
-                title: "Error",
-                text: "No se recibió respuesta del servidor. Intenta nuevamente.",
-                icon: "error",
-                confirmButtonText: "OK"
-            });
+          await Swal.fire({
+            title: "Error",
+            text: errorMessage || "Algo salió mal",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
         }
+      } else {
+        await Swal.fire({
+          title: "Error",
+          text: "No se recibió respuesta del servidor. Intenta nuevamente.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
     }
-};
-
-
+  };
 
   const handleSearchChange = (e, { value }) => {
     setSearchTerm(value.toLowerCase());
   };
 
-  const filteredItems = solicitudes.filter(item =>
+  const filteredItems = solicitudes.filter((item) =>
     item.ID.toString().includes(searchTerm)
   );
 
@@ -189,14 +204,22 @@ const SolicitudPendientes = () => {
         </Table.Header>
         <Table.Body>
           {currentItems.map((solicitud) => {
-            const usuario = usuarios.find((u) => u.value === solicitud.ID_Usuario);
-            const materiaPrima = materiasPrimas.find((m) => m.value === solicitud.ID_MateriaPrima);
+            const usuario = usuarios.find(
+              (u) => u.value === solicitud.ID_Usuario
+            );
+            const materiaPrima = materiasPrimas.find(
+              (m) => m.value === solicitud.ID_MateriaPrima
+            );
 
             return (
               <Table.Row key={solicitud.ID}>
                 <Table.Cell>{solicitud.ID}</Table.Cell>
-                <Table.Cell>{usuario ? usuario.text : "Desconocido"}</Table.Cell>
-                <Table.Cell>{materiaPrima ? materiaPrima.text : "Desconocido"}</Table.Cell>
+                <Table.Cell>
+                  {usuario ? usuario.text : "Desconocido"}
+                </Table.Cell>
+                <Table.Cell>
+                  {materiaPrima ? materiaPrima.text : "Desconocido"}
+                </Table.Cell>
                 <Table.Cell>{solicitud.Cantidad_Solicitada}</Table.Cell>
                 <Table.Cell>{solicitud.Fecha_Solicitud}</Table.Cell>
                 <Table.Cell>
@@ -204,9 +227,21 @@ const SolicitudPendientes = () => {
                     <Dropdown
                       selection
                       options={[
-                        { key: "pendiente", text: "Pendiente", value: "Pendiente" },
-                        { key: "aprobada", text: "Aprobada", value: "Aprobada" },
-                        { key: "rechazada", text: "Rechazada", value: "Rechazada" },
+                        {
+                          key: "pendiente",
+                          text: "Pendiente",
+                          value: "Pendiente",
+                        },
+                        {
+                          key: "aprobada",
+                          text: "Aprobada",
+                          value: "Aprobada",
+                        },
+                        {
+                          key: "rechazada",
+                          text: "Rechazada",
+                          value: "Rechazada",
+                        },
                       ]}
                       value={newEstado}
                       onChange={(e, { value }) => setNewEstado(value)}
@@ -216,7 +251,8 @@ const SolicitudPendientes = () => {
                   )}
                 </Table.Cell>
                 <Table.Cell>
-                  {editingSolicitud === solicitud.ID && newEstado === "Rechazada" ? (
+                  {editingSolicitud === solicitud.ID &&
+                  newEstado === "Rechazada" ? (
                     <Input
                       placeholder="Motivo de rechazo"
                       value={motivoRechazo}
@@ -228,11 +264,21 @@ const SolicitudPendientes = () => {
                 </Table.Cell>
                 <Table.Cell>
                   {editingSolicitud === solicitud.ID ? (
-                    <Button icon color="green" onClick={() => handleSaveClick(solicitud.ID)}>
+                    <Button
+                      icon
+                      color="green"
+                      onClick={() => handleSaveClick(solicitud.ID)}
+                    >
                       <Icon name="save" />
                     </Button>
                   ) : (
-                    <Button icon color="blue" onClick={() => handleEditClick(solicitud.ID, solicitud.Estado)}>
+                    <Button
+                      icon
+                      color="blue"
+                      onClick={() =>
+                        handleEditClick(solicitud.ID, solicitud.Estado)
+                      }
+                    >
                       <Icon name="edit" />
                     </Button>
                   )}
