@@ -33,12 +33,20 @@ function RecuperarContraseña() {
     <div className="contenedor">
       <form className="mi-app-formulario" onSubmit={handleEnviarCodigo}>
         <div className="img-presentacion-recuperarContraseña">
-        <FontAwesomeIcon 
-              icon={faArrowLeft} 
-              className="icon-regresar" 
-              onClick={() => navigate("/login")} 
-              style={{ cursor: "pointer", marginRight: "10px", height:"25px", position:"absolute", left:"0px",top:"13px",color: "#5a5a59" }}
-            />
+          <FontAwesomeIcon
+            icon={faArrowLeft}
+            className="icon-regresar"
+            onClick={() => navigate("/login")}
+            style={{
+              cursor: "pointer",
+              marginRight: "10px",
+              height: "25px",
+              position: "absolute",
+              left: "0px",
+              top: "13px",
+              color: "#5a5a59",
+            }}
+          />
           <img
             className="img_presentacion_login"
             src="/img/persona-que-relaja-casa.png"
@@ -48,7 +56,6 @@ function RecuperarContraseña() {
 
         <div className="formulario">
           <div className="titulo-login">
-            
             <h1 className="h1-Rcontraseña">Recuperar Contraseña</h1>
           </div>
 

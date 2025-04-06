@@ -1,5 +1,12 @@
-import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import React from "react";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+} from "@react-pdf/renderer";
 import logoUrl from "./img/LogoMarflexPDF.png";
 
 const styles = StyleSheet.create({
@@ -68,7 +75,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const UltimaCompraPDF = ({ data }) =>{
+const UltimaCompraPDF = ({ data }) => {
   const currentDate = new Date().toLocaleString("es-CO");
 
   return (
@@ -98,7 +105,9 @@ const UltimaCompraPDF = ({ data }) =>{
           ))}
         </View>
 
-        <Text style={styles.footer}>Generado automáticamente por el sistema de Marflex. </Text>
+        <Text style={styles.footer}>
+          Generado automáticamente por el sistema de Marflex.{" "}
+        </Text>
       </Page>
     </Document>
   );

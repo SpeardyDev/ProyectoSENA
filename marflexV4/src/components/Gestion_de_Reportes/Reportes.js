@@ -6,7 +6,11 @@ import { FormGroup, FormField, Form, Select } from "semantic-ui-react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUsersGear, faTruck, faCartFlatbed } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUsersGear,
+  faTruck,
+  faCartFlatbed,
+} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import Swal from "sweetalert2";
 import "./styles/Reportes.css";
@@ -36,14 +40,42 @@ function ReportesCombinados() {
   const [datosReporte, setDatosReporte] = useState(null);
 
   const Filtro = [
-    { value: "reporte-entradas-por-fecha", text: "Entradas materia prima por fecha", requires: ["fechaInicio", "fechaFin"] },
-    { value: "reporte-inventario-stock", text: "Inventario Stock Actual", requires: [] },
-    { value: "reporte-materia-prima-usada", text: "Materia Prima Usada", requires: [] },
-    { value: "reporte-movimientos-materia-prima", text: "Movimientos por materia prima", requires: ["nombreMateria"] },
-    { value: "reporte-produccion-fechas", text: "Produccion por fecha", requires: ["fechaInicio", "fechaFin"] },
-    { value: "reporte-salidas-por-fecha", text: "Salidas materia prima por fecha", requires: ["fechaInicio", "fechaFin"] },
-    { value: "reporte-ultima-compra-proveedores", text: "Ultima Compra Proveedores", requires: [] },
-    { value: "Todos", text: "Generar todos", requires: [] }
+    {
+      value: "reporte-entradas-por-fecha",
+      text: "Entradas materia prima por fecha",
+      requires: ["fechaInicio", "fechaFin"],
+    },
+    {
+      value: "reporte-inventario-stock",
+      text: "Inventario Stock Actual",
+      requires: [],
+    },
+    {
+      value: "reporte-materia-prima-usada",
+      text: "Materia Prima Usada",
+      requires: [],
+    },
+    {
+      value: "reporte-movimientos-materia-prima",
+      text: "Movimientos por materia prima",
+      requires: ["nombreMateria"],
+    },
+    {
+      value: "reporte-produccion-fechas",
+      text: "Produccion por fecha",
+      requires: ["fechaInicio", "fechaFin"],
+    },
+    {
+      value: "reporte-salidas-por-fecha",
+      text: "Salidas materia prima por fecha",
+      requires: ["fechaInicio", "fechaFin"],
+    },
+    {
+      value: "reporte-ultima-compra-proveedores",
+      text: "Ultima Compra Proveedores",
+      requires: [],
+    },
+    { value: "Todos", text: "Generar todos", requires: [] },
   ];
 
   const MostrarUsuarios = async () => {
@@ -77,10 +109,10 @@ function ReportesCombinados() {
     setLoading(true);
     try {
       let res;
-  
+
       if (selectRep.value === "reporte-movimientos-materia-prima") {
         res = await axios.post(`http://localhost:3000/${selectRep.value}`, {
-          materiaPrimaID: ID
+          materiaPrimaID: ID,
         });
       } else if (
         selectRep.value === "reporte-entradas-por-fecha" ||
@@ -89,20 +121,20 @@ function ReportesCombinados() {
       ) {
         res = await axios.post(`http://localhost:3000/${selectRep.value}`, {
           fecha_inicio: fechaInicio,
-          fecha_fin: fechaFin
+          fecha_fin: fechaFin,
         });
       } else {
         const params = new URLSearchParams();
         if (fechaInicio) params.append("fechaInicio", fechaInicio);
         if (fechaFin) params.append("fechaFin", fechaFin);
         if (ID) params.append("nombreMateria", ID);
-  
+
         let url = `http://localhost:3000/${selectRep.value}`;
         if (params.toString()) url += `?${params.toString()}`;
-  
+
         res = await axios.get(url);
       }
-  
+
       setDatosReporte(res.data);
       console.log("Datos del reporte:", res.data);
     } catch (err) {
@@ -110,17 +142,11 @@ function ReportesCombinados() {
       Swal.fire({
         title: "Error",
         text: "Ocurrió un error al generar el reporte.",
-        icon: "error"
+        icon: "error",
       });
     }
     setLoading(false);
   };
-  
-  
-  
-  
-  
-  
 
   const GenerateReport = async () => {
     const confirm = await Swal.fire({
@@ -149,7 +175,13 @@ function ReportesCombinados() {
       case "reporte-ultima-compra-proveedores":
         return <UltimaCompraPDF data={datosReporte} />;
       case "Todos":
-        return <TodosPDF usuarios={usuarios} proveedores={proveedores} productos={productos} />;
+        return (
+          <TodosPDF
+            usuarios={usuarios}
+            proveedores={proveedores}
+            productos={productos}
+          />
+        );
       default:
         return null;
     }
@@ -163,7 +195,9 @@ function ReportesCombinados() {
   return (
     <section>
       <div className="reportes-container">
-        <p className="reportes-titulo"><i className="icono-reporte"></i>Reportes</p>
+        <p className="reportes-titulo">
+          <i className="icono-reporte"></i>Reportes
+        </p>
       </div>
 
       <div className="formulario-container">
@@ -183,14 +217,22 @@ function ReportesCombinados() {
               {inputsVisibles.includes("fechaInicio") && (
                 <FormField>
                   <label>Fecha Inicio</label>
-                  <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} />
+                  <input
+                    type="date"
+                    value={fechaInicio}
+                    onChange={(e) => setFechaInicio(e.target.value)}
+                  />
                 </FormField>
               )}
 
               {inputsVisibles.includes("fechaFin") && (
                 <FormField>
                   <label>Fecha Fin</label>
-                  <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} />
+                  <input
+                    type="date"
+                    value={fechaFin}
+                    onChange={(e) => setFechaFin(e.target.value)}
+                  />
                 </FormField>
               )}
 
@@ -199,7 +241,10 @@ function ReportesCombinados() {
                   <label>Materia Prima</label>
                   <Select
                     placeholder="Selecciona una materia prima"
-                    options={productos.map((p) => ({ value: p.ID, text: p.Nombre }))}
+                    options={productos.map((p) => ({
+                      value: p.ID,
+                      text: p.Nombre,
+                    }))}
                     onChange={(e, { value }) => setNombreMateria(value)}
                     value={ID}
                   />
@@ -207,8 +252,15 @@ function ReportesCombinados() {
               )}
 
               <div className="botones-container">
-                <span className="boton-reporte" onClick={GenerateReport} disabled={loading}>
-                  <i className="icono-generar" style={{ fontSize: "1.5rem" }}></i>
+                <span
+                  className="boton-reporte"
+                  onClick={GenerateReport}
+                  disabled={loading}
+                >
+                  <i
+                    className="icono-generar"
+                    style={{ fontSize: "1.5rem" }}
+                  ></i>
                   <span>Generar Reporte</span>
                 </span>
 
@@ -222,7 +274,11 @@ function ReportesCombinados() {
                       loading ? (
                         <Button label="Generando..." disabled />
                       ) : (
-                        <Button label="Descargar" className="boton-descarga" onClick={descargarManual} />
+                        <Button
+                          label="Descargar"
+                          className="boton-descarga"
+                          onClick={descargarManual}
+                        />
                       )
                     }
                   </PDFDownloadLink>
@@ -241,7 +297,11 @@ function ReportesCombinados() {
             <FontAwesomeIcon icon={faUsersGear} className="icono-usuarios" />
             <h3 className="tabla-titulo">Usuarios</h3>
           </div>
-          <DataTable value={usuarios} rows={4} tableStyle={{ minWidth: "30rem" }}>
+          <DataTable
+            value={usuarios}
+            rows={4}
+            tableStyle={{ minWidth: "30rem" }}
+          >
             <Column field="nombre" header="Nombre" />
             <Column field="username" header="Usuario" />
             <Column field="rol" header="Rol" />
@@ -253,7 +313,11 @@ function ReportesCombinados() {
             <FontAwesomeIcon icon={faTruck} className="icono-proveedores" />
             <h3 className="tabla-titulo">Proveedores</h3>
           </div>
-          <DataTable value={proveedores} rows={4} tableStyle={{ minWidth: "30rem" }}>
+          <DataTable
+            value={proveedores}
+            rows={4}
+            tableStyle={{ minWidth: "30rem" }}
+          >
             <Column field="ID" header="#" />
             <Column field="Nombre" header="Nombre" />
             <Column field="Telefono" header="Telefono" />
@@ -265,7 +329,11 @@ function ReportesCombinados() {
             <FontAwesomeIcon icon={faCartFlatbed} className="icono-productos" />
             <h3 className="tabla-titulo">Materias Primas</h3>
           </div>
-          <DataTable value={productos} rows={4} tableStyle={{ minWidth: "30rem" }}>
+          <DataTable
+            value={productos}
+            rows={4}
+            tableStyle={{ minWidth: "30rem" }}
+          >
             <Column field="ID" header="#" />
             <Column field="Nombre" header="Nombre" />
             <Column field="Stock" header="Stock" />

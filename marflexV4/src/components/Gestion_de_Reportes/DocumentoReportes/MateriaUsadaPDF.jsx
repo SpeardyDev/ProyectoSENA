@@ -1,5 +1,12 @@
-import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import React from "react";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+} from "@react-pdf/renderer";
 import logoUrl from "./img/LogoMarflexPDF.png";
 
 const styles = StyleSheet.create({
@@ -70,40 +77,42 @@ const styles = StyleSheet.create({
 
 const MateriaUsadaPDF = ({ data }) => {
   const currentDate = new Date().toLocaleString("es-CO");
-   return (
-      <Document>
-        <Page size="A4" style={styles.page}>
-          {/* Header: Logo + Fecha */}
-          <View style={styles.headerContainer}>
-            <Image src={logoUrl} style={styles.logo} />
-            <Text style={styles.dateText}>{currentDate}</Text>
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {/* Header: Logo + Fecha */}
+        <View style={styles.headerContainer}>
+          <Image src={logoUrl} style={styles.logo} />
+          <Text style={styles.dateText}>{currentDate}</Text>
+        </View>
+
+        {/* Título */}
+        <Text style={styles.sectionTitle}>Materia prima usada</Text>
+
+        {/* Tabla */}
+        <View style={styles.table}>
+          <View style={styles.tableRow}>
+            <Text style={styles.tableTitulo}>Mod del colchon</Text>
+            <Text style={styles.tableTitulo}>Nombre</Text>
+            <Text style={styles.tableTitulo}>Cantidad</Text>
+            <Text style={styles.tableTitulo}>Fec de fabricacion</Text>
           </View>
-  
-          {/* Título */}
-          <Text style={styles.sectionTitle}>Materia prima usada</Text>
-  
-          {/* Tabla */}
-          <View style={styles.table}>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableTitulo}>Mod del colchon</Text>
-              <Text style={styles.tableTitulo}>Nombre</Text>
-              <Text style={styles.tableTitulo}>Cantidad</Text>
-              <Text style={styles.tableTitulo}>Fec de fabricacion</Text>
+
+          {data.map((item, i) => (
+            <View style={styles.tableRow} key={i}>
+              <Text style={styles.tableCell}>{item.Modelo_Colchon}</Text>
+              <Text style={styles.tableCell}>{item.Nombre_MateriaPrima}</Text>
+              <Text style={styles.tableCell}>{item.Cantidad_Usada}</Text>
+              <Text style={styles.tableCell}>{item.Fecha_Fabricacion}</Text>
             </View>
-  
-            {data.map((item, i) => (
-              <View style={styles.tableRow} key={i}>
-                <Text style={styles.tableCell}>{item.Modelo_Colchon}</Text>
-                <Text style={styles.tableCell}>{item.Nombre_MateriaPrima}</Text>
-                <Text style={styles.tableCell}>{item.Cantidad_Usada}</Text>
-                <Text style={styles.tableCell}>{item.Fecha_Fabricacion}</Text>
-              </View>
-            ))}
-          </View>
-  
-          <Text style={styles.footer}>Generado automáticamente por el sistema de Marflex. </Text>
-        </Page>
-      </Document>
-    );
-  };
+          ))}
+        </View>
+
+        <Text style={styles.footer}>
+          Generado automáticamente por el sistema de Marflex.{" "}
+        </Text>
+      </Page>
+    </Document>
+  );
+};
 export default MateriaUsadaPDF;

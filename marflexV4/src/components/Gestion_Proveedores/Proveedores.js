@@ -2,7 +2,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import React, { useEffect, useState } from "react";
 import "./styles/Proveedores.css";
-import { Button, Form, Table, Search, Icon } from 'semantic-ui-react';
+import { Button, Form, Table, Search, Icon } from "semantic-ui-react";
 import Pagination from "../Pagination";
 import { InputMask } from "primereact/inputmask";
 
@@ -39,10 +39,7 @@ function Proveedores() {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .post(
-        "http://localhost:3000/agregar/proveedores",
-        formularioDatos
-      )
+      .post("http://localhost:3000/agregar/proveedores", formularioDatos)
       .then(() => {
         setMostrarFormulario(false);
         mostrarProveedores();
@@ -58,7 +55,7 @@ function Proveedores() {
   };
 
   const handleEditar = (id) => {
-    const proveedor = proveedores.find(item => item.ID === id);
+    const proveedor = proveedores.find((item) => item.ID === id);
     setProveedorEditando(proveedor.ID);
     setFormularioDato({
       Nombre: proveedor.Nombre,
@@ -134,9 +131,10 @@ function Proveedores() {
     setSearchTerm(value.toLowerCase());
   };
 
-  const filteredItems = proveedores.filter(item =>
-    item.ID.toString().includes(searchTerm) ||
-    item.Nombre.toLowerCase().includes(searchTerm) 
+  const filteredItems = proveedores.filter(
+    (item) =>
+      item.ID.toString().includes(searchTerm) ||
+      item.Nombre.toLowerCase().includes(searchTerm)
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -150,7 +148,10 @@ function Proveedores() {
       </div>
 
       {mostrarFormulario && (
-        <Form className="RegistroNuevoProveedor" onSubmit={proveedorEditando ? handleActualizar : handleSubmit}>
+        <Form
+          className="RegistroNuevoProveedor"
+          onSubmit={proveedorEditando ? handleActualizar : handleSubmit}
+        >
           <div className="contenedor_formulario_Proveedores">
             <Form.Group widths="equal">
               <Form.Field
@@ -185,8 +186,20 @@ function Proveedores() {
               />
             </Form.Group>
 
-            <Button type='submit' color='green'>{proveedorEditando ? 'Actualizar' : 'Registrar'}</Button>
-            <Button type='button' color='red' onClick={() => { setMostrarFormulario(false); setProveedorEditando(null); LimpiarFormulario();}}>Cancelar</Button>
+            <Button type="submit" color="green">
+              {proveedorEditando ? "Actualizar" : "Registrar"}
+            </Button>
+            <Button
+              type="button"
+              color="red"
+              onClick={() => {
+                setMostrarFormulario(false);
+                setProveedorEditando(null);
+                LimpiarFormulario();
+              }}
+            >
+              Cancelar
+            </Button>
           </div>
         </Form>
       )}
@@ -239,11 +252,19 @@ function Proveedores() {
               <Table.Cell>{proveedor.Telefono}</Table.Cell>
               <Table.Cell>{proveedor.Direccion}</Table.Cell>
               <Table.Cell>
-              <Button icon color="blue" onClick={() => handleEditar(proveedor.ID)}>
-                  <Icon name='edit' />
+                <Button
+                  icon
+                  color="blue"
+                  onClick={() => handleEditar(proveedor.ID)}
+                >
+                  <Icon name="edit" />
                 </Button>
-                <Button icon color="red" onClick={() => BtnEliminar(proveedor.ID)}>
-                  <Icon name='trash' />
+                <Button
+                  icon
+                  color="red"
+                  onClick={() => BtnEliminar(proveedor.ID)}
+                >
+                  <Icon name="trash" />
                 </Button>
               </Table.Cell>
             </Table.Row>

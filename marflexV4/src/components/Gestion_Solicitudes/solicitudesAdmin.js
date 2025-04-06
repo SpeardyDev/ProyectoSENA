@@ -5,81 +5,94 @@ import Pagination from "../Pagination";
 import "./styles/solicitudes.css";
 
 const SolicitudAdmin = () => {
-    const [solicitudes, setSolicitudes] = useState([]);
-    const [usuarios, setUsuarios] = useState([]);
-    const [materiasPrimas, setMateriasPrimas] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(8);
-    const [searchTerm, setSearchTerm] = useState("");
-  
-    useEffect(() => {
-      Promise.all([obtenerUsuarios(), obtenerMateriasPrimas()]).then(() => mostrarSolicitudes());
-    });
-  
-    const mostrarSolicitudes = () => {
-      axios
-        .get("http://localhost:3000/solicitudes_materia_prima")
-        .then((response) => {
-          const solicitudesConNombres = response.data.map(solicitud => {
-            const usuario = usuarios.find(u => u.value === solicitud.ID_Usuario);
-            const materiaPrima = materiasPrimas.find(mp => mp.value === solicitud.ID_MateriaPrima);
-    
-            return {
-              ...solicitud,
-              NombreUsuario: usuario ? usuario.text : "Desconocido",
-              NombreMateriaPrima: materiaPrima ? materiaPrima.text : "Desconocido"
-            };
-          });
-    
-          setSolicitudes(solicitudesConNombres);
-        })
-        .catch((error) => console.error("Error al obtener las solicitudes:", error));
-    };
-  
-    const obtenerUsuarios = () => {
-      return axios
-        .get("http://localhost:3000/usuarios")
-        .then((response) => {
-          const opciones = response.data.map((usuario) => ({
-            key: usuario.ID,
-            text: usuario.Nombre,
-            value: usuario.ID,
-          }));
-          setUsuarios(opciones);
-        })
-        .catch((error) => console.error("Error al obtener los usuarios:", error));
-    };
-  
-    const obtenerMateriasPrimas = () => {
-      return axios
-        .get("http://localhost:3000/materia_prima")
-        .then((response) => {
-          const opciones = response.data.map((materia) => ({
-            key: materia.ID,
-            text: materia.Nombre,
-            value: materia.ID,
-          }));
-          setMateriasPrimas(opciones);
-        })
-        .catch((error) => console.error("Error al obtener las materias primas:", error));
-    };
-  
-    const handleSearchChange = (e, { value }) => {
-      setSearchTerm(value.toLowerCase());
-    };
-  
-    const filteredItems = solicitudes.filter(item =>
+  const [solicitudes, setSolicitudes] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
+  const [materiasPrimas, setMateriasPrimas] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(8);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    Promise.all([obtenerUsuarios(), obtenerMateriasPrimas()]).then(() =>
+      mostrarSolicitudes()
+    );
+  });
+
+  const mostrarSolicitudes = () => {
+    axios
+      .get("http://localhost:3000/solicitudes_materia_prima")
+      .then((response) => {
+        const solicitudesConNombres = response.data.map((solicitud) => {
+          const usuario = usuarios.find(
+            (u) => u.value === solicitud.ID_Usuario
+          );
+          const materiaPrima = materiasPrimas.find(
+            (mp) => mp.value === solicitud.ID_MateriaPrima
+          );
+
+          return {
+            ...solicitud,
+            NombreUsuario: usuario ? usuario.text : "Desconocido",
+            NombreMateriaPrima: materiaPrima
+              ? materiaPrima.text
+              : "Desconocido",
+          };
+        });
+
+        setSolicitudes(solicitudesConNombres);
+      })
+      .catch((error) =>
+        console.error("Error al obtener las solicitudes:", error)
+      );
+  };
+
+  const obtenerUsuarios = () => {
+    return axios
+      .get("http://localhost:3000/usuarios")
+      .then((response) => {
+        const opciones = response.data.map((usuario) => ({
+          key: usuario.ID,
+          text: usuario.Nombre,
+          value: usuario.ID,
+        }));
+        setUsuarios(opciones);
+      })
+      .catch((error) => console.error("Error al obtener los usuarios:", error));
+  };
+
+  const obtenerMateriasPrimas = () => {
+    return axios
+      .get("http://localhost:3000/materia_prima")
+      .then((response) => {
+        const opciones = response.data.map((materia) => ({
+          key: materia.ID,
+          text: materia.Nombre,
+          value: materia.ID,
+        }));
+        setMateriasPrimas(opciones);
+      })
+      .catch((error) =>
+        console.error("Error al obtener las materias primas:", error)
+      );
+  };
+
+  const handleSearchChange = (e, { value }) => {
+    setSearchTerm(value.toLowerCase());
+  };
+
+  const filteredItems = solicitudes.filter(
+    (item) =>
       item.ID.toString().includes(searchTerm) ||
       item.NombreUsuario.toLowerCase().includes(searchTerm) || // Buscar por nombre de usuario
       item.NombreMateriaPrima.toLowerCase().includes(searchTerm) || // Buscar por nombre de materia prima
       item.Estado.toLowerCase().includes(searchTerm)
-    );
+  );
 
-    const handlePageChange = (page) => setCurrentPage(page);
-  
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+  const handlePageChange = (page) => setCurrentPage(page);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div>
@@ -126,8 +139,15 @@ const SolicitudAdmin = () => {
           {currentItems.map((solicitud) => (
             <Table.Row key={solicitud.ID}>
               <Table.Cell>{solicitud.ID}</Table.Cell>
-              <Table.Cell>{usuarios.find((m) => m.value === solicitud.ID_Usuario)?.text || "Desconocido"}</Table.Cell>
-              <Table.Cell>{materiasPrimas.find((m) => String(m.value) === String(solicitud.ID_MateriaPrima))?.text || "Desconocido"}</Table.Cell>
+              <Table.Cell>
+                {usuarios.find((m) => m.value === solicitud.ID_Usuario)?.text ||
+                  "Desconocido"}
+              </Table.Cell>
+              <Table.Cell>
+                {materiasPrimas.find(
+                  (m) => String(m.value) === String(solicitud.ID_MateriaPrima)
+                )?.text || "Desconocido"}
+              </Table.Cell>
               <Table.Cell>{solicitud.Cantidad_Solicitada}</Table.Cell>
               <Table.Cell>{solicitud.Fecha_Solicitud}</Table.Cell>
               <Table.Cell>{solicitud.Estado}</Table.Cell>

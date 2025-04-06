@@ -7,12 +7,12 @@ import Swal from "sweetalert2";
 
 const Estados = [
   { value: "Activo", text: "Activo" },
-  { value: "Inactivo", text: "Inactivo" }
+  { value: "Inactivo", text: "Inactivo" },
 ];
 
 const Roles = [
   { value: "Empleado", text: "Empleado" },
-  { value: "Administrador", text: "Administrador" }
+  { value: "Administrador", text: "Administrador" },
 ];
 
 const initialFormState = {
@@ -22,7 +22,7 @@ const initialFormState = {
   password: "",
   telefono: "",
   estado: "",
-  rol: ""
+  rol: "",
 };
 
 function Usuarios() {
@@ -50,20 +50,23 @@ function Usuarios() {
   const handleChange = (e, data) => {
     if (data) {
       const { name, value } = data;
-      setFormularioDatos(prevState => ({ ...prevState, [name]: value }));
+      setFormularioDatos((prevState) => ({ ...prevState, [name]: value }));
     } else {
       const { name, value } = e.target;
-      setFormularioDatos(prevState => ({ ...prevState, [name]: value }));
+      setFormularioDatos((prevState) => ({ ...prevState, [name]: value }));
     }
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (editarUsuario) {
         const datosAEnviar = { ...formularioDatos };
         if (!formularioDatos.password.trim()) delete datosAEnviar.password;
-        await axios.put(`http://localhost:3000/api/editar/usuarios/${editarUsuario}`, datosAEnviar);
+        await axios.put(
+          `http://localhost:3000/api/editar/usuarios/${editarUsuario}`,
+          datosAEnviar
+        );
         Swal.fire("Éxito", "Usuario actualizado correctamente", "success");
       } else {
         await axios.post("http://localhost:3000/registrar", formularioDatos);
@@ -83,31 +86,31 @@ function Usuarios() {
   };
 
   const handleEditar = (id) => {
-    const usuario = usuarios.find(item => item._id === id);
+    const usuario = usuarios.find((item) => item._id === id);
     if (usuario) {
-      setFormularioDatos(prevState => ({
+      setFormularioDatos((prevState) => ({
         ...prevState,
         documento: usuario.documento,
         nombre: usuario.nombre,
         username: usuario.username,
-        password: "",  
+        password: "",
         telefono: usuario.telefono,
         estado: usuario.estado,
-        rol: usuario.rol
+        rol: usuario.rol,
       }));
       setEditarUsuario(id);
       setMostrarFormulario(true);
     }
   };
 
-  const handleEliminar = async id => {
+  const handleEliminar = async (id) => {
     const result = await Swal.fire({
       title: "¿Estás seguro?",
       text: "Esta acción no se puede revertir.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar"
+      cancelButtonText: "Cancelar",
     });
     if (result.isConfirmed) {
       try {
@@ -128,7 +131,7 @@ function Usuarios() {
       password: "",
       telefono: "",
       estado: "",
-      rol: ""
+      rol: "",
     });
   };
 
@@ -136,12 +139,13 @@ function Usuarios() {
     setSearchTerm(value.toLowerCase());
   };
 
-  const filteredItems = usuarios.filter(item =>
-    item.documento.toString().includes(searchTerm) ||
-    item.nombre.toString().includes(searchTerm) ||
-    item.username.toString().includes(searchTerm) ||
-    item.estado.toString().includes(searchTerm) ||
-    item.rol.toString().includes(searchTerm)
+  const filteredItems = usuarios.filter(
+    (item) =>
+      item.documento.toString().includes(searchTerm) ||
+      item.nombre.toString().includes(searchTerm) ||
+      item.username.toString().includes(searchTerm) ||
+      item.estado.toString().includes(searchTerm) ||
+      item.rol.toString().includes(searchTerm)
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;

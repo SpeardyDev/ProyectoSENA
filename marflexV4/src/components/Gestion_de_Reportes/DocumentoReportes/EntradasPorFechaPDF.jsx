@@ -1,5 +1,12 @@
-import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import React from "react";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+} from "@react-pdf/renderer";
 import logoUrl from "./img/LogoMarflexPDF.png";
 
 const styles = StyleSheet.create({
@@ -71,40 +78,44 @@ const styles = StyleSheet.create({
 const EntradasPorFechaPDF = ({ data }) => {
   const currentDate = new Date().toLocaleString("es-CO");
   return (
-      <Document>
-        <Page size="A4" style={styles.page}>
-          {/* Header: Logo + Fecha */}
-          <View style={styles.headerContainer}>
-            <Image src={logoUrl} style={styles.logo} />
-            <Text style={styles.dateText}>{currentDate}</Text>
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {/* Header: Logo + Fecha */}
+        <View style={styles.headerContainer}>
+          <Image src={logoUrl} style={styles.logo} />
+          <Text style={styles.dateText}>{currentDate}</Text>
+        </View>
+
+        {/* Título */}
+        <Text style={styles.sectionTitle}>
+          Entradas de Materias Primas por Fecha
+        </Text>
+
+        {/* Tabla */}
+        <View style={styles.table}>
+          <View style={styles.tableRow}>
+            <Text style={styles.tableTitulo}>Nombre</Text>
+            <Text style={styles.tableTitulo}>Cantidad</Text>
+            <Text style={styles.tableTitulo}>Proveedor</Text>
+            <Text style={styles.tableTitulo}>Fecha</Text>
           </View>
-  
-          {/* Título */}
-          <Text style={styles.sectionTitle}>Entradas de Materias Primas por Fecha</Text>
-  
-          {/* Tabla */}
-          <View style={styles.table}>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableTitulo}>Nombre</Text>
-              <Text style={styles.tableTitulo}>Cantidad</Text>
-              <Text style={styles.tableTitulo}>Proveedor</Text>
-              <Text style={styles.tableTitulo}>Fecha</Text>
+
+          {data.map((item, i) => (
+            <View style={styles.tableRow} key={i}>
+              <Text style={styles.tableCell}>{item.Nombre_MateriaPrima}</Text>
+              <Text style={styles.tableCell}>{item.Cantidad}</Text>
+              <Text style={styles.tableCell}>{item.Proveedor}</Text>
+              <Text style={styles.tableCell}>{item.Fecha}</Text>
             </View>
-  
-            {data.map((item, i) => (
-              <View style={styles.tableRow} key={i}>
-                <Text style={styles.tableCell}>{item.Nombre_MateriaPrima}</Text>
-                <Text style={styles.tableCell}>{item.Cantidad}</Text>
-                <Text style={styles.tableCell}>{item.Proveedor}</Text>
-                <Text style={styles.tableCell}>{item.Fecha}</Text>
-              </View>
-            ))}
-          </View>
-  
-          <Text style={styles.footer}>Generado automáticamente por el sistema de Marflex. </Text>
-        </Page>
-      </Document>
-    );
+          ))}
+        </View>
+
+        <Text style={styles.footer}>
+          Generado automáticamente por el sistema de Marflex.{" "}
+        </Text>
+      </Page>
+    </Document>
+  );
 };
 
 export default EntradasPorFechaPDF;

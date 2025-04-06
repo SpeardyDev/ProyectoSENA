@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import './styles/Paginacion.css';
+import React, { useEffect, useRef } from "react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import "./styles/Paginacion.css";
 
 const Pagination = ({ currentPage, totalPages, handlePageChange }) => {
   const buttonRefs = useRef([]);
@@ -9,7 +9,7 @@ const Pagination = ({ currentPage, totalPages, handlePageChange }) => {
     if (buttonRefs.current[currentPage - 1]) {
       buttonRefs.current[currentPage - 1].focus();
     }
-  }, [currentPage]); 
+  }, [currentPage]);
 
   const renderPaginationButtons = () => {
     const pages = [];
@@ -19,7 +19,11 @@ const Pagination = ({ currentPage, totalPages, handlePageChange }) => {
           key={i}
           ref={(el) => (buttonRefs.current[i - 1] = el)}
           onClick={() => handlePageChange(i)}
-          className={`btn-numero-paginacion ${currentPage === i ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} `}
+          className={`btn-numero-paginacion ${
+            currentPage === i
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-700"
+          } `}
         >
           {i}
         </button>
@@ -29,7 +33,11 @@ const Pagination = ({ currentPage, totalPages, handlePageChange }) => {
   };
 
   return (
-    <div className="contenedor_botones_paginacion" role="navigation" aria-label="Pagination">
+    <div
+      className="contenedor_botones_paginacion"
+      role="navigation"
+      aria-label="Pagination"
+    >
       <button
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}

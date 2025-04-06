@@ -1,11 +1,11 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
-import logo from '../img/LogoMarflex.png';
-import { useNavigate, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUsers } from "@fortawesome/free-solid-svg-icons";
+import logo from "../img/LogoMarflex.png";
+import { useNavigate, Link } from "react-router-dom";
+import { useState } from "react";
 // import { jwtDecode } from "jwt-decode";
-import './styles/Login.css'; // Archivo CSS para estilos específicos de Login
-import axios from 'axios';
+import "./styles/Login.css"; // Archivo CSS para estilos específicos de Login
+import axios from "axios";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -18,23 +18,20 @@ function Login() {
     try {
       const response = await axios.post("http://localhost:3000/login", {
         username: username.trim().toLowerCase(),
-        password
+        password,
       });
-  
+
       const { token, rol, userId, fotoPerfil } = response.data;
-  
+
       // Guardar en localStorage
-      localStorage.setItem('token', token);
-      localStorage.setItem('userId', userId);
-      localStorage.setItem(
-        "fotoPerfil",
-        fotoPerfil || "foto-perfil.jpg" // nombre de la imagen por defecto
-      );
-  
-      if (rol === 'Administrador') {
+      localStorage.setItem("token", token);
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("fotoPerfil", fotoPerfil || "foto-perfil.jpg");
+
+      if (rol === "Administrador") {
         alert("Login exitoso administrador");
         navigate("/HomeAdmin");
-      } else if (rol === 'Empleado') {
+      } else if (rol === "Empleado") {
         alert("Login exitoso empleado");
         navigate("/HomeEmpleado");
       }
@@ -53,7 +50,7 @@ function Login() {
       <form className="mi-app-formulario" onSubmit={IniciarLogin} method="post">
         <div className="img-presentacion">
           <img
-            className='img_presentacion_login'
+            className="img_presentacion_login"
             src="/img/persona-que-relaja-casa.png"
             alt="imagen de presentación"
           />
@@ -67,9 +64,14 @@ function Login() {
 
           <div className="content-input">
             <span className="span">
-              <FontAwesomeIcon className='icon' icon={faUsers} size="xl" style={{ color: "#646973" }} />
+              <FontAwesomeIcon
+                className="icon"
+                icon={faUsers}
+                size="xl"
+                style={{ color: "#646973" }}
+              />
               <input
-                className='input_login'
+                className="input_login"
                 placeholder="Nombre de usuario"
                 type="email"
                 value={username}
@@ -79,7 +81,11 @@ function Login() {
             </span>
 
             <span className="span password-container">
-              <img className="icon" src="/img/password.png" alt="icono de password" />
+              <img
+                className="icon"
+                src="/img/password.png"
+                alt="icono de password"
+              />
               <input
                 className="input_login"
                 placeholder="Contraseña"
@@ -90,7 +96,11 @@ function Login() {
               />
               <img
                 className="visibility_off"
-                src={passwordVisible ? "/img/visibility.png" : "/img/visibility_off.png"}
+                src={
+                  passwordVisible
+                    ? "/img/visibility.png"
+                    : "/img/visibility_off.png"
+                }
                 alt="icono del ojo"
                 onClick={PasswordVisibility}
               />
@@ -103,7 +113,9 @@ function Login() {
             </span>
 
             <span className="span">
-            <Link to="/RecuperarContraseña">¿Has olvidado tu contraseña?</Link>
+              <Link to="/RecuperarContraseña">
+                ¿Has olvidado tu contraseña?
+              </Link>
             </span>
           </div>
         </div>
