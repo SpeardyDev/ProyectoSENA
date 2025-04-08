@@ -6,11 +6,7 @@ import { FormGroup, FormField, Form, Select } from "semantic-ui-react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUsersGear,
-  faTruck,
-  faCartFlatbed,
-} from "@fortawesome/free-solid-svg-icons";
+import {faUsersGear, faTruck, faCartFlatbed, faRightLeft} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import Swal from "sweetalert2";
 import "./styles/Reportes.css";
@@ -30,6 +26,7 @@ import TodosPDF from "./DocumentoReportes/TodosPDF";
 function ReportesCombinados() {
   const [productos, setProductos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
+  const [Movimientos, setMovimientos] = useState([]);
   const [proveedores, setProveedores] = useState([]);
   const [selectRep, setSelectRep] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -92,9 +89,14 @@ function ReportesCombinados() {
     const res = await axios.get("http://localhost:3000/materia_prima");
     setProductos(res.data);
   };
+  const MostrarMovimientos = async () => {
+    const res = await axios.get("http://localhost:3000/movimientos");
+    setMovimientos(res.data);
+  };
 
   useEffect(() => {
     MostrarUsuarios();
+    MostrarMovimientos();
     MostrarProveedores();
     MostrarMateriaPrima();
   }, []);
@@ -298,13 +300,14 @@ function ReportesCombinados() {
             <h3 className="tabla-titulo">Usuarios</h3>
           </div>
           <DataTable
-            value={usuarios}
+            value={usuarios.slice(0,4)}
             rows={4}
-            tableStyle={{ minWidth: "30rem" }}
+            tableStyle={{ minWidth: "45rem" }}
           >
-            <Column field="nombre" header="Nombre" />
-            <Column field="username" header="Usuario" />
-            <Column field="rol" header="Rol" />
+            <Column field="nombre" header="Nombre" style={{ width: '25%' }} />
+            <Column field="username" header="Usuario" style={{ width: '25%' }} />
+            <Column field="rol" header="Rol" style={{ width: '10%' }} />
+
           </DataTable>
         </div>
 
@@ -316,7 +319,6 @@ function ReportesCombinados() {
           <DataTable
             value={proveedores}
             rows={4}
-            tableStyle={{ minWidth: "30rem" }}
           >
             <Column field="ID" header="#" />
             <Column field="Nombre" header="Nombre" />
@@ -332,12 +334,27 @@ function ReportesCombinados() {
           <DataTable
             value={productos}
             rows={4}
-            tableStyle={{ minWidth: "30rem" }}
           >
             <Column field="ID" header="#" />
             <Column field="Nombre" header="Nombre" />
             <Column field="Stock" header="Stock" />
             <Column field="Unidad" header="Unidad" />
+          </DataTable>
+        </div>
+        <div className="tabla-card">
+          <div className="tabla-header">
+          <FontAwesomeIcon icon={faRightLeft}  className="icono-movimientos" />
+            <h3 className="tabla-titulo">Movimientos</h3>
+          </div>
+          <DataTable
+            value={Movimientos.slice(0,4)}
+            rows={4}
+          >
+            <Column field="ID" header="#" style={{ width: '5%' }} />
+            <Column field="Tipo" header="Tipo" style={{ width: '20%', alignItems:"center" }}/>
+            <Column field="Cantidad" header="Cantidad" style={{ width: '20%' }} />
+            <Column field="ID_MateriaPrima" header="Materia prima" style={{ width: '25%' }} />
+            <Column field="Fecha" header="Fecha" style={{ width: '25%' }} />
           </DataTable>
         </div>
       </div>

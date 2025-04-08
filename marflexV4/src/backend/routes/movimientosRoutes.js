@@ -25,12 +25,19 @@ const db = require("../config/dbMysql");
 // Obtener todos los movimientos
 router.get("/movimientos", async (req, res) => {
   try {
-    const [results] = await db.query("SELECT * FROM movimientos");
-    res.json(results);
+    const [rows] = await db.query("SELECT * FROM movimientos");
+
+    const datosFormateados = rows.map((item) => ({
+      ...item,
+      Fecha: item.Fecha ? new Date(item.Fecha).toISOString().split("T")[0] : null,
+    }));
+
+    res.json(datosFormateados);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 /**
  * @swagger

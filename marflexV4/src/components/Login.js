@@ -3,8 +3,7 @@ import { faUsers } from "@fortawesome/free-solid-svg-icons";
 import logo from "../img/LogoMarflex.png";
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-// import { jwtDecode } from "jwt-decode";
-import "./styles/Login.css"; // Archivo CSS para estilos específicos de Login
+import "./styles/Login.css"; 
 import axios from "axios";
 
 function Login() {
@@ -20,14 +19,16 @@ function Login() {
         username: username.trim().toLowerCase(),
         password,
       });
-
-      const { token, rol, userId, fotoPerfil } = response.data;
-
+  
+      const { token, rol, userId, nombre, fotoPerfil } = response.data;
+  
       // Guardar en localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("userId", userId);
+      localStorage.setItem("nombre", nombre); 
+      localStorage.setItem("rol", rol); 
       localStorage.setItem("fotoPerfil", fotoPerfil || "foto-perfil.jpg");
-
+  
       if (rol === "Administrador") {
         alert("Login exitoso administrador");
         navigate("/HomeAdmin");
@@ -40,6 +41,7 @@ function Login() {
       alert("Usuario o contraseña incorrectos");
     }
   };
+  
 
   const PasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);

@@ -114,6 +114,7 @@ router.post("/login", async (req, res) => {
       message: "Ingreso exitoso",
       success: true,
       token,
+      nombre: user.nombre,
       rol: user.rol,
       userId: user._id,
       fotoPerfil: user.fotoPerfil || null

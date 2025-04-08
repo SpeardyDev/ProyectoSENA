@@ -64,6 +64,16 @@ const HomeEmpleado = () => {
       }
     }
   };
+  
+   //////trae el nombre de usuario 
+   const [nombre, setNombre] = useState(""); 
+
+   useEffect(() => {
+     const storedNombre = localStorage.getItem("nombre");
+     if (storedNombre) {
+       setNombre(storedNombre);
+     }
+   }, []);
 
   useEffect(() => {
     const storedFoto = localStorage.getItem("fotoPerfil");
@@ -152,7 +162,7 @@ const HomeEmpleado = () => {
               )}
 
               <div className="perfil-nombre">
-                <p id="Nombre">SANDRA VIVIANA RUIZ MENESES</p>
+                <p id="Nombre">{nombre}</p>
               </div>
             </div>
             <div className="contenido-menu">
