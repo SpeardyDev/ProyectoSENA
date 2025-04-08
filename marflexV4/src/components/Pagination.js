@@ -20,10 +20,8 @@ const Pagination = ({ currentPage, totalPages, handlePageChange }) => {
           ref={(el) => (buttonRefs.current[i - 1] = el)}
           onClick={() => handlePageChange(i)}
           className={`btn-numero-paginacion ${
-            currentPage === i
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-700"
-          } `}
+            currentPage === i ? "activo" : ""
+          }`}
         >
           {i}
         </button>

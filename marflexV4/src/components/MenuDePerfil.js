@@ -1,16 +1,10 @@
 import { useState } from "react";
-import {
-  FiUser,
-  FiInfo,
-  FiBell,
-  FiLogOut,
-  FiChevronDown,
-  FiChevronUp,
-} from "react-icons/fi";
+import {FiInfo, FiBell, FiLogOut, FiChevronDown, FiChevronUp} from "react-icons/fi";
 import "./styles/menuPerfil.css";
 import { useNavigate } from "react-router-dom";
+import defaultAvatar from "../backend/uploads/foto-perfil.jpg"; 
 
-const MenuDePerfil = () => {
+const MenuDePerfil = ({ avatar }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState("");
@@ -19,6 +13,7 @@ const MenuDePerfil = () => {
   const toggleDropdown = (dropdown) => {
     setActiveDropdown(activeDropdown === dropdown ? "" : dropdown);
   };
+
   const CerrarSesion = async () => {
     alert("Saliendo de la sesión");
     try {
@@ -29,14 +24,11 @@ const MenuDePerfil = () => {
         },
       });
 
-      console.log("Response:", response);
-
       if (typeof response.json !== "function") {
         throw new Error("La respuesta no es un objeto JSON válido");
       }
 
       const result = await response.json();
-      console.log("Result:", result);
 
       if (response.ok) {
         console.log(result.message);
@@ -52,14 +44,18 @@ const MenuDePerfil = () => {
   return (
     <div className="user-menu">
       <button onClick={toggleMenu} className="user-button">
-        <FiUser className="user-icon" />
+        <img
+          src={avatar || defaultAvatar}
+          alt="Foto de perfil"
+          className="user-avatar"
+        />
         <span className="sr-only">Open user menu</span>
       </button>
 
       {isOpen && (
         <div className="menu-perfil">
           <div className="menu-item" onClick={() => toggleDropdown("profile")}>
-            <FiUser className="menu-icon" />
+            <FiInfo className="menu-icon" />
             Configuración de Perfil
             {activeDropdown === "profile" ? <FiChevronUp /> : <FiChevronDown />}
           </div>

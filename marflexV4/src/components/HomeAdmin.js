@@ -15,6 +15,8 @@ import SolicitudesP from "./Gestion_Solicitudes/solicitudesPendientes";
 import Solicitudes from "./Gestion_Solicitudes/solicitudesAdmin";
 import { Button } from "semantic-ui-react";
 
+
+
 const HomeAdmin = () => {
   const [visibleComponents, setVisibleComponents] = useState({
     dashboard: true,
@@ -74,9 +76,19 @@ const HomeAdmin = () => {
       }
     }
   };
+  //////trae el nombre de usuario 
+  const [nombre, setNombre] = useState(""); 
 
   useEffect(() => {
+    const storedNombre = localStorage.getItem("nombre");
+    if (storedNombre) {
+      setNombre(storedNombre);
+    }
+  }, []);
+  
+  useEffect(() => {
     const storedFoto = localStorage.getItem("fotoPerfil");
+    
 
     if (storedFoto) {
       setAvatar(`http://localhost:3000/uploads/${storedFoto}`);
@@ -138,42 +150,48 @@ const HomeAdmin = () => {
             style={{ display: BtnMenu ? "none" : "block" }}
           >
             <div className="contenido-usuario">
-              <FontAwesomeIcon
-                onClick={() => setBtnMenu(!BtnMenu)}
-                className="Btn_ocultar"
-                icon={faXmark}
-              />
-              <img
-                id="profile-pic"
-                src={avatar || require("../backend/uploads/foto-perfil.jpg")}
-                alt="Foto de perfil"
-                className="profile-pic"
-              />
-              <input
-                type="file"
-                id="fileInput"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleImageChange}
-              />
-              <button
-                onClick={() => document.getElementById("fileInput").click()}
-                className="btn-upload"
-              >
-                <i class="fa-solid fa-camera"></i>
-              </button>
-              {avatar !== defaultAvatar && (
-                <Button
-                  icon
-                  color="red"
-                  style={{ marginTop: "25px" }}
-                  onClick={eliminarFoto}
-                >
-                  Eliminar Foto
-                </Button>
-              )}
-              <p id="Nombre">REYNALDO MARTINEZ FUENTES</p>
-            </div>
+  <FontAwesomeIcon
+    onClick={() => setBtnMenu(!BtnMenu)}
+    className="Btn_ocultar"
+    icon={faXmark}
+  />
+
+  {/* 🔧 Nuevo contenedor relativo para posicionar el botón */}
+  <div className="profile-container">
+    <img
+      id="profile-pic"
+      src={avatar || require("../backend/uploads/foto-perfil.jpg")}
+      alt="Foto de perfil"
+      className="profile-pic"
+    />
+    <input
+      type="file"
+      id="fileInput"
+      accept="image/*"
+      style={{ display: "none" }}
+      onChange={handleImageChange}
+    />
+    <button
+      onClick={() => document.getElementById("fileInput").click()}
+      className="btn-upload"
+    >
+      <i className="fa-solid fa-camera"></i>
+    </button>
+  </div>
+
+  {avatar !== defaultAvatar && (
+    <Button
+      icon
+      color="red"
+      style={{ marginTop: "25px" }}
+      onClick={eliminarFoto}
+    >
+      Eliminar Foto
+    </Button>
+  )}
+  <p id="Nombre">{nombre}</p>
+</div>
+
             <div className="contenido-menu">
               <div className="texto-menu">
                 <h6>NAVEGACIÓN PRINCIPAL</h6>
