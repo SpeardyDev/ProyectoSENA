@@ -13,12 +13,16 @@ import Reportes from "./Gestion_de_Reportes/Reportes";
 import Movimientos from "./Gestion_Movimientos/Movimientos";
 import SolicitudesP from "./Gestion_Solicitudes/solicitudesPendientes";
 import Solicitudes from "./Gestion_Solicitudes/solicitudesAdmin";
+<<<<<<< HEAD
 import NotificationIcon from "./Gestion_Solicitudes/NotificationIcon"
 import { Button } from "semantic-ui-react";
 import axios from "axios";
 import { io } from "socket.io-client";
 const socket = io("http://localhost:3000");
 
+=======
+import { Button } from "semantic-ui-react";
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 
 
 
@@ -32,6 +36,7 @@ const HomeAdmin = () => {
     Movimientos: false,
     Solicitudes: false,
   });
+<<<<<<< HEAD
 
   const [tieneNotificaciones, setTieneNotificaciones] = useState(false);
   const [cantidadNotificaciones, setCantidadNotificaciones] = useState(0);
@@ -63,6 +68,8 @@ const HomeAdmin = () => {
       socket.off("nueva_solicitud");
     };
   }, []);
+=======
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
   const handleButtonClick = (componentName) => {
     setVisibleComponents((prevState) => ({
       ...prevState,
@@ -170,8 +177,12 @@ const HomeAdmin = () => {
               <img src={logo} alt="Logo de marflex" />
               <h1 className="h1-nav">Marflex</h1>
             </div>
+<<<<<<< HEAD
             <div className="contenedor-user-notificacion">
               <NotificationIcon count={cantidadNotificaciones} hasNotification={tieneNotificaciones} />
+=======
+            <div>
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
               <MenuDePerfil />
             </div>
           </nav>
@@ -193,6 +204,10 @@ const HomeAdmin = () => {
     icon={faXmark}
   />
 
+<<<<<<< HEAD
+=======
+  {/* 🔧 Nuevo contenedor relativo para posicionar el botón */}
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
   <div className="profile-container">
     <img
       id="profile-pic"

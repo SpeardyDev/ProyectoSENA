@@ -54,6 +54,7 @@
   display: flex;
   align-items: center;
 }
+<<<<<<< HEAD
 .contenedor-user-notificacion {
   display: flex;
   align-items: center;
@@ -69,6 +70,8 @@
   padding: 8px;
   padding-bottom: 1rem;
 }
+=======
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 .lista img {
   width: 85px;
   height: 65px;
@@ -493,11 +496,14 @@ li.expanded .fa-minus {
     color: #fff;
     transition: background-color 0.3s;
   }
+<<<<<<< HEAD
   .lista {
     display: flex;
     align-items: center;
     margin-right: 3.5rem;
 }
+=======
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 }
 
 /* Estilos para pantallas grandes (más de 1024px) */

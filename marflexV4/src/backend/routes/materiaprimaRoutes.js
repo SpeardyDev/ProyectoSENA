@@ -2,9 +2,12 @@ const express = require("express");
 const db = require("../config/dbMysql"); // Importar la conexión a MySQL
 const router = express.Router();
 
+<<<<<<< HEAD
 // Función auxiliar para obtener la instancia de Socket.IO desde el req
 const getIO = (req) => req.app.get("io");
 
+=======
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 /**
  * @swagger
  * tags:
@@ -24,6 +27,10 @@ const getIO = (req) => req.app.get("io");
  *       500:
  *         description: Error del servidor
  */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 // Obtener toda la materia prima
 router.get("/materia_prima", async (req, res) => {
   try {
@@ -52,11 +59,21 @@ router.get("/materia_prima", async (req, res) => {
  *       404:
  *         description: Materia prima no encontrada
  */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 // Obtener una materia prima por ID
 router.get("/materia_prima/:id", async (req, res) => {
   try {
     const { id } = req.params;
+<<<<<<< HEAD
     const [rows] = await db.query("SELECT * FROM materia_prima WHERE ID = ?", [id]);
+=======
+    const [rows] = await db.query("SELECT * FROM materia_prima WHERE ID = ?", [
+      id,
+    ]);
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
     if (rows.length === 0) {
       return res.status(404).json({ message: "Materia prima no encontrada" });
     }
@@ -93,6 +110,7 @@ router.get("/materia_prima/:id", async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
+<<<<<<< HEAD
 // Agregar nueva materia prima
 router.post("/agregar/materia_prima", async (req, res) => {
   try {
@@ -115,10 +133,18 @@ router.post("/agregar/materia_prima", async (req, res) => {
     }
     
     // Inserta la nueva materia prima en la base de datos
+=======
+
+// Crear nueva materia prima
+router.post("/agregar/materia_prima", async (req, res) => {
+  try {
+    const { Nombre, Descripcion, Stock, Unidad } = req.body;
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
     const [result] = await db.query(
       "INSERT INTO materia_prima (Nombre, Descripcion, Stock, Unidad) VALUES (?, ?, ?, ?)",
       [Nombre, Descripcion, Stock, Unidad]
     );
+<<<<<<< HEAD
     
     // Recupera el registro recién insertado
     const [newItem] = await db.query("SELECT * FROM materia_prima WHERE ID = ?", [result.insertId]);
@@ -148,6 +174,16 @@ router.post("/agregar/materia_prima", async (req, res) => {
 });
 
 
+=======
+    res
+      .status(201)
+      .json({ id: result.insertId, Nombre, Descripcion, Stock, Unidad });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 /**
  * @swagger
  * /actualizar/materia_prima/{id}:
@@ -183,6 +219,7 @@ router.post("/agregar/materia_prima", async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
+<<<<<<< HEAD
 // Actualizar materia prima
 router.put("/actualizar/materia_prima/:id", async (req, res) => {
   const io = getIO(req);  // Se obtiene la instancia mediante req.app.get("io")
@@ -224,6 +261,24 @@ router.put("/actualizar/materia_prima/:id", async (req, res) => {
       message: "Error interno al actualizar el registro",
       error: error.message
     });
+=======
+
+// Actualizar materia prima
+router.put("/actualizar/materia_prima/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { Nombre, Descripcion, Stock, Unidad } = req.body;
+    const [result] = await db.query(
+      "UPDATE materia_prima SET Nombre = ?, Descripcion = ?, Stock = ?, Unidad = ? WHERE ID = ?",
+      [Nombre, Descripcion, Stock, Unidad, id]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Materia prima no encontrada" });
+    }
+    res.json({ message: "Materia prima actualizada correctamente" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
   }
 });
 
@@ -247,10 +302,15 @@ router.put("/actualizar/materia_prima/:id", async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 // Eliminar materia prima
 router.delete("/eliminar/materia_prima/:id", async (req, res) => {
   try {
     const { id } = req.params;
+<<<<<<< HEAD
     const io = req.app.get("io");
     
     // Verificar que el registro exista
@@ -295,3 +355,18 @@ router.delete("/eliminar/materia_prima/:id", async (req, res) => {
 
 
 module.exports = router;
+=======
+    const [result] = await db.query("DELETE FROM materia_prima WHERE ID = ?", [
+      id,
+    ]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Materia prima no encontrada" });
+    }
+    res.json({ message: "Materia prima eliminada correctamente" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+module.exports = router;
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033

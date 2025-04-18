@@ -1,10 +1,17 @@
 const express = require("express");
+<<<<<<< HEAD
 const db = require("../config/dbMysql");
 const bodyParser = require("body-parser");
 const moment = require('moment-timezone');
 module.exports = (io) => {
   const router = express.Router();
   router.use(bodyParser.json());
+=======
+const router = express.Router();
+const db = require("../config/dbMysql");
+const bodyParser = require("body-parser");
+router.use(bodyParser.json());
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 
 /**
  * @swagger
@@ -26,6 +33,7 @@ module.exports = (io) => {
  *         description: Error en el servidor
  */
 
+<<<<<<< HEAD
  // Obtener todas las solicitudes
  router.get("/solicitudes_materia_prima", async (req, res) => {
   try {
@@ -45,6 +53,13 @@ module.exports = (io) => {
     });
     
     res.json(formattedResults);
+=======
+// Obtener todas las solicitudes
+router.get("/solicitudes_materia_prima", async (req, res) => {
+  try {
+    const [results] = await db.query("SELECT * FROM solicitudes_materia_prima");
+    res.json(results);
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -72,8 +87,13 @@ module.exports = (io) => {
  *         description: Error en el servidor
  */
 
+<<<<<<< HEAD
  // Obtener una solicitud por ID
  router.get("/solicitudes_materia_prima/:id", async (req, res) => {
+=======
+// Obtener una solicitud por ID
+router.get("/solicitudes_materia_prima/:id", async (req, res) => {
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
   const { id } = req.params;
   try {
     const [result] = await db.query(
@@ -128,12 +148,16 @@ router.post("/agregar/solicitudes_materia_prima", async (req, res) => {
     Estado,
     Motivo_Rechazo,
   } = req.body;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
   try {
     const [result] = await db.query(
       "INSERT INTO solicitudes_materia_prima (ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo) VALUES (?, ?, ?, ?, ?)",
       [ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo]
     );
+<<<<<<< HEAD
 
     // Emitir notificación en tiempo real a todos los clientes
     io.emit("nueva_solicitud", {
@@ -146,13 +170,18 @@ router.post("/agregar/solicitudes_materia_prima", async (req, res) => {
       message: "Nueva solicitud de materia prima creada"
     });
 
+=======
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
     res.status(201).json({ id: result.insertId, ...req.body });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 /**
  * @swagger
  * /actualizar/solicitudes_materia_prima/{id}:
@@ -283,7 +312,11 @@ router.get("/solicitudes/pendientes", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Error en el servidor" });
   }
+<<<<<<< HEAD
 })
+=======
+});
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 
 /**
  * @swagger
@@ -309,7 +342,10 @@ router.get("/solicitudes/pendientes", async (req, res) => {
  *         description: Error en el servidor
  */
 
+<<<<<<< HEAD
 // Aprobar una solicitud
+=======
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 router.post("/aprobar-solicitud", async (req, res) => {
   const { ID } = req.body;
 
@@ -319,11 +355,14 @@ router.post("/aprobar-solicitud", async (req, res) => {
 
   try {
     await db.query("CALL AprobarSolicitud(?)", [ID]);
+<<<<<<< HEAD
     // Emitir evento a los clientes conectados
     io.emit("solicitud_aprobada", {
       id: ID,
       message: "Solicitud aprobada correctamente",
     });
+=======
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 
     return res.json({
       success: true,
@@ -351,6 +390,10 @@ router.post("/aprobar-solicitud", async (req, res) => {
     res.status(500).json({ error: "Error en el servidor" });
   }
 });
+<<<<<<< HEAD
+=======
+
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 /**
  * @swagger
  * /rechazar-solicitud:
@@ -377,10 +420,19 @@ router.post("/aprobar-solicitud", async (req, res) => {
  *         description: Error en el servidor
  */
 
+<<<<<<< HEAD
 // Rechazar una solicitud
 router.post("/rechazar-solicitud", async (req, res) => {
   const { ID, Motivo_Rechazo } = req.body;
 
+=======
+// Endpoint para rechazar solicitudes de los empleados
+router.post("/rechazar-solicitud", async (req, res) => {
+  const { ID, Motivo_Rechazo } = req.body;
+
+  console.log("Datos recibidos:", req.body);
+
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
   if (!ID || !Motivo_Rechazo) {
     return res
       .status(400)
@@ -389,6 +441,7 @@ router.post("/rechazar-solicitud", async (req, res) => {
 
   try {
     await db.query("CALL RechazarSolicitud(?, ?)", [ID, Motivo_Rechazo]);
+<<<<<<< HEAD
 
     // Emitir evento a los clientes conectados
     io.emit("solicitud_rechazada", {
@@ -397,6 +450,8 @@ router.post("/rechazar-solicitud", async (req, res) => {
       message: "Solicitud rechazada correctamente",
     });
 
+=======
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
     res.json({ message: "Solicitud rechazada correctamente" });
   } catch (error) {
     console.error("Error en la consulta:", error);
@@ -404,6 +459,10 @@ router.post("/rechazar-solicitud", async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 return router;
 };
 
+=======
+module.exports = router;
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033

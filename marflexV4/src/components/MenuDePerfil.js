@@ -1,5 +1,9 @@
 import { useState } from "react";
+<<<<<<< HEAD
 import {FiInfo, FiLogOut, FiChevronDown, FiChevronUp} from "react-icons/fi";
+=======
+import {FiInfo, FiBell, FiLogOut, FiChevronDown, FiChevronUp} from "react-icons/fi";
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 import "./styles/menuPerfil.css";
 import { useNavigate } from "react-router-dom";
 import defaultAvatar from "../backend/uploads/foto-perfil.jpg"; 
@@ -76,6 +80,27 @@ const MenuDePerfil = ({ avatar }) => {
             </div>
           )}
 
+<<<<<<< HEAD
+=======
+          <div
+            className="menu-item"
+            onClick={() => toggleDropdown("notifications")}
+          >
+            <FiBell className="menu-icon" />
+            Notificaciones
+            {activeDropdown === "notifications" ? (
+              <FiChevronUp />
+            ) : (
+              <FiChevronDown />
+            )}
+          </div>
+          {activeDropdown === "notifications" && (
+            <div className="dropdown-content">
+              <p>Configuración de notificación</p>
+            </div>
+          )}
+
+>>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
           <div className="menu-item" onClick={CerrarSesion}>
             <FiLogOut className="menu-icon" />
             Cerrar sesión
