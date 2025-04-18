@@ -13,7 +13,12 @@ import Reportes from "./Gestion_de_Reportes/Reportes";
 import Movimientos from "./Gestion_Movimientos/Movimientos";
 import SolicitudesP from "./Gestion_Solicitudes/solicitudesPendientes";
 import Solicitudes from "./Gestion_Solicitudes/solicitudesAdmin";
+import NotificationIcon from "./Gestion_Solicitudes/NotificationIcon"
 import { Button } from "semantic-ui-react";
+import axios from "axios";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:3000");
+
 
 
 
@@ -27,6 +32,37 @@ const HomeAdmin = () => {
     Movimientos: false,
     Solicitudes: false,
   });
+
+  const [tieneNotificaciones, setTieneNotificaciones] = useState(false);
+  const [cantidadNotificaciones, setCantidadNotificaciones] = useState(0);
+  const obtenerSolicitudesPendientes = () => {
+    axios
+      .get("http://localhost:3000/solicitudes/pendientes")
+      .then((response) => {
+        const cantidad = response.data.length;
+        setCantidadNotificaciones(cantidad);
+        setTieneNotificaciones(cantidad > 0);
+      })
+      .catch((error) =>
+        console.error("Error al obtener las solicitudes pendientes:", error)
+      );
+  };
+
+  useEffect(() => {
+    // Al cargar, obtener solicitudes pendientes
+    obtenerSolicitudesPendientes();
+    // Escuchar evento en tiempo real para nuevas solicitudes
+    socket.on("nueva_solicitud", (nuevaSolicitud) => {
+      // Incrementa el número de notificaciones
+      setCantidadNotificaciones((prev) => prev + 1);
+      setTieneNotificaciones(true);
+    });
+
+    // Limpia el listener cuando el componente se desmonta
+    return () => {
+      socket.off("nueva_solicitud");
+    };
+  }, []);
   const handleButtonClick = (componentName) => {
     setVisibleComponents((prevState) => ({
       ...prevState,
@@ -134,7 +170,8 @@ const HomeAdmin = () => {
               <img src={logo} alt="Logo de marflex" />
               <h1 className="h1-nav">Marflex</h1>
             </div>
-            <div>
+            <div className="contenedor-user-notificacion">
+              <NotificationIcon count={cantidadNotificaciones} hasNotification={tieneNotificaciones} />
               <MenuDePerfil />
             </div>
           </nav>
@@ -156,7 +193,6 @@ const HomeAdmin = () => {
     icon={faXmark}
   />
 
-  {/* 🔧 Nuevo contenedor relativo para posicionar el botón */}
   <div className="profile-container">
     <img
       id="profile-pic"

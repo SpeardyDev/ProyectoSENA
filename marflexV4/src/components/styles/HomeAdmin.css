@@ -54,6 +54,21 @@
   display: flex;
   align-items: center;
 }
+.contenedor-user-notificacion {
+  display: flex;
+  align-items: center;
+  gap: 1rem; 
+  height: 100%;
+}
+.contenedor-user-notificacion .user-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  padding-bottom: 1rem;
+}
 .lista img {
   width: 85px;
   height: 65px;
@@ -478,6 +493,11 @@ li.expanded .fa-minus {
     color: #fff;
     transition: background-color 0.3s;
   }
+  .lista {
+    display: flex;
+    align-items: center;
+    margin-right: 3.5rem;
+}
 }
 
 /* Estilos para pantallas grandes (más de 1024px) */

@@ -2,6 +2,9 @@ const express = require("express");
 const db = require("../config/dbMysql"); // Importar la conexión a MySQL
 const router = express.Router();
 
+// Función auxiliar para obtener la instancia de Socket.IO desde el req
+const getIO = (req) => req.app.get("io");
+
 /**
  * @swagger
  * tags:
@@ -21,7 +24,6 @@ const router = express.Router();
  *       500:
  *         description: Error del servidor
  */
-
 // Obtener toda la materia prima
 router.get("/materia_prima", async (req, res) => {
   try {
@@ -50,14 +52,11 @@ router.get("/materia_prima", async (req, res) => {
  *       404:
  *         description: Materia prima no encontrada
  */
-
 // Obtener una materia prima por ID
 router.get("/materia_prima/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const [rows] = await db.query("SELECT * FROM materia_prima WHERE ID = ?", [
-      id,
-    ]);
+    const [rows] = await db.query("SELECT * FROM materia_prima WHERE ID = ?", [id]);
     if (rows.length === 0) {
       return res.status(404).json({ message: "Materia prima no encontrada" });
     }
@@ -94,22 +93,60 @@ router.get("/materia_prima/:id", async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
-
-// Crear nueva materia prima
+// Agregar nueva materia prima
 router.post("/agregar/materia_prima", async (req, res) => {
   try {
     const { Nombre, Descripcion, Stock, Unidad } = req.body;
+    
+    // Validación de campos obligatorios
+    if (!Nombre || Stock === undefined || !Unidad) {
+      return res.status(400).json({
+        success: false,
+        message: "Nombre, Stock y Unidad son campos requeridos"
+      });
+    }
+    
+    // Validación de que Stock sea un número
+    if (typeof Stock !== 'number') {
+      return res.status(400).json({
+        success: false,
+        message: "Stock debe ser un número"
+      });
+    }
+    
+    // Inserta la nueva materia prima en la base de datos
     const [result] = await db.query(
       "INSERT INTO materia_prima (Nombre, Descripcion, Stock, Unidad) VALUES (?, ?, ?, ?)",
       [Nombre, Descripcion, Stock, Unidad]
     );
-    res
-      .status(201)
-      .json({ id: result.insertId, Nombre, Descripcion, Stock, Unidad });
+    
+    // Recupera el registro recién insertado
+    const [newItem] = await db.query("SELECT * FROM materia_prima WHERE ID = ?", [result.insertId]);
+    
+    // Obtiene la instancia de Socket.IO y emite el evento con la información actualizada
+    const io = req.app.get("io");
+    if (io) {
+      io.emit("materia_prima_actualizada", { ...newItem[0], updatedAt: new Date() });
+    }
+    
+    // Retorna la respuesta con éxito y los datos del registro insertado
+    res.status(201).json({
+      success: true,
+      data: newItem[0],
+      message: "Materia prima agregada exitosamente"
+    });
+    
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error en POST /agregar/materia_prima:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al agregar materia prima",
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
+
 
 /**
  * @swagger
@@ -146,22 +183,47 @@ router.post("/agregar/materia_prima", async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
-
 // Actualizar materia prima
 router.put("/actualizar/materia_prima/:id", async (req, res) => {
+  const io = getIO(req);  // Se obtiene la instancia mediante req.app.get("io")
+  
   try {
     const { id } = req.params;
     const { Nombre, Descripcion, Stock, Unidad } = req.body;
-    const [result] = await db.query(
+    
+    await db.query(
       "UPDATE materia_prima SET Nombre = ?, Descripcion = ?, Stock = ?, Unidad = ? WHERE ID = ?",
       [Nombre, Descripcion, Stock, Unidad, id]
     );
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Materia prima no encontrada" });
+    
+    const [updatedItem] = await db.query("SELECT * FROM materia_prima WHERE ID = ?", [id]);
+    
+    if (!updatedItem || updatedItem.length === 0) {
+      return res.status(404).json({ 
+        success: false,
+        message: "Materia prima no encontrada" 
+      });
     }
-    res.json({ message: "Materia prima actualizada correctamente" });
+        
+    if (io) {
+      io.emit("materia_prima_actualizada", updatedItem[0]);
+    } else {
+      console.error("Socket.IO no está disponible");
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: "Registro actualizado correctamente",
+      data: updatedItem[0]
+    });
+    
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error en actualización:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Error interno al actualizar el registro",
+      error: error.message
+    });
   }
 });
 
@@ -185,21 +247,51 @@ router.put("/actualizar/materia_prima/:id", async (req, res) => {
  *       500:
  *         description: Error del servidor
  */
-
 // Eliminar materia prima
 router.delete("/eliminar/materia_prima/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const [result] = await db.query("DELETE FROM materia_prima WHERE ID = ?", [
-      id,
-    ]);
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Materia prima no encontrada" });
+    const io = req.app.get("io");
+    
+    // Verificar que el registro exista
+    const [item] = await db.query("SELECT * FROM materia_prima WHERE ID = ?", [id]);
+    if (!item || item.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Materia prima no encontrada"
+      });
     }
-    res.json({ message: "Materia prima eliminada correctamente" });
+    
+    // Intentar eliminar el registro
+    const [result] = await db.query("DELETE FROM materia_prima WHERE ID = ?", [id]);
+    if (result.affectedRows === 0) {
+      return res.status(500).json({
+        success: false,
+        message: "No se pudo eliminar la materia prima"
+      });
+    }
+    
+    // Emitir el evento a través de Socket.IO para que los clientes se actualicen en tiempo real
+    if (io) {
+      io.emit("materia_prima_eliminada", id);
+    }
+    
+    // Respuesta exitosa
+    res.json({
+      success: true,
+      message: "Materia prima eliminada correctamente",
+      deletedId: id
+    });
+    
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error al eliminar materia prima:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error interno al eliminar el registro",
+      error: error.message
+    });
   }
 });
+
 
 module.exports = router;

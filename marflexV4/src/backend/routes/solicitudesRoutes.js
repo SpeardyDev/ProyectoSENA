@@ -1,8 +1,10 @@
 const express = require("express");
-const router = express.Router();
 const db = require("../config/dbMysql");
 const bodyParser = require("body-parser");
-router.use(bodyParser.json());
+const moment = require('moment-timezone');
+module.exports = (io) => {
+  const router = express.Router();
+  router.use(bodyParser.json());
 
 /**
  * @swagger
@@ -24,11 +26,25 @@ router.use(bodyParser.json());
  *         description: Error en el servidor
  */
 
-// Obtener todas las solicitudes
-router.get("/solicitudes_materia_prima", async (req, res) => {
+ // Obtener todas las solicitudes
+ router.get("/solicitudes_materia_prima", async (req, res) => {
   try {
     const [results] = await db.query("SELECT * FROM solicitudes_materia_prima");
-    res.json(results);
+    
+    // Formatear cada resultado
+    const formattedResults = results.map(item => {
+      // Clonar el objeto para no modificar el original
+      const formattedItem = {...item};
+      
+      // Formatear fecha
+      if (item.Fecha_Solicitud) {
+        formattedItem.Fecha_Solicitud_Date = moment(item.Fecha_Solicitud).tz('America/Bogota').format('YYYY-MM-DD');
+        formattedItem.Fecha_Solicitud_Time = moment(item.Fecha_Solicitud).tz('America/Bogota').format('HH:mm:ss');
+      }
+      return formattedItem;
+    });
+    
+    res.json(formattedResults);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -56,8 +72,8 @@ router.get("/solicitudes_materia_prima", async (req, res) => {
  *         description: Error en el servidor
  */
 
-// Obtener una solicitud por ID
-router.get("/solicitudes_materia_prima/:id", async (req, res) => {
+ // Obtener una solicitud por ID
+ router.get("/solicitudes_materia_prima/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const [result] = await db.query(
@@ -112,16 +128,30 @@ router.post("/agregar/solicitudes_materia_prima", async (req, res) => {
     Estado,
     Motivo_Rechazo,
   } = req.body;
+
   try {
     const [result] = await db.query(
       "INSERT INTO solicitudes_materia_prima (ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo) VALUES (?, ?, ?, ?, ?)",
       [ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo]
     );
+
+    // Emitir notificación en tiempo real a todos los clientes
+    io.emit("nueva_solicitud", {
+      id: result.insertId,
+      ID_Usuario,
+      ID_MateriaPrima,
+      Cantidad_Solicitada,
+      Estado,
+      Motivo_Rechazo,
+      message: "Nueva solicitud de materia prima creada"
+    });
+
     res.status(201).json({ id: result.insertId, ...req.body });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 /**
  * @swagger
@@ -253,7 +283,7 @@ router.get("/solicitudes/pendientes", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Error en el servidor" });
   }
-});
+})
 
 /**
  * @swagger
@@ -279,6 +309,7 @@ router.get("/solicitudes/pendientes", async (req, res) => {
  *         description: Error en el servidor
  */
 
+// Aprobar una solicitud
 router.post("/aprobar-solicitud", async (req, res) => {
   const { ID } = req.body;
 
@@ -288,6 +319,11 @@ router.post("/aprobar-solicitud", async (req, res) => {
 
   try {
     await db.query("CALL AprobarSolicitud(?)", [ID]);
+    // Emitir evento a los clientes conectados
+    io.emit("solicitud_aprobada", {
+      id: ID,
+      message: "Solicitud aprobada correctamente",
+    });
 
     return res.json({
       success: true,
@@ -315,7 +351,6 @@ router.post("/aprobar-solicitud", async (req, res) => {
     res.status(500).json({ error: "Error en el servidor" });
   }
 });
-
 /**
  * @swagger
  * /rechazar-solicitud:
@@ -342,11 +377,9 @@ router.post("/aprobar-solicitud", async (req, res) => {
  *         description: Error en el servidor
  */
 
-// Endpoint para rechazar solicitudes de los empleados
+// Rechazar una solicitud
 router.post("/rechazar-solicitud", async (req, res) => {
   const { ID, Motivo_Rechazo } = req.body;
-
-  console.log("Datos recibidos:", req.body);
 
   if (!ID || !Motivo_Rechazo) {
     return res
@@ -356,6 +389,14 @@ router.post("/rechazar-solicitud", async (req, res) => {
 
   try {
     await db.query("CALL RechazarSolicitud(?, ?)", [ID, Motivo_Rechazo]);
+
+    // Emitir evento a los clientes conectados
+    io.emit("solicitud_rechazada", {
+      id: ID,
+      motivo: Motivo_Rechazo,
+      message: "Solicitud rechazada correctamente",
+    });
+
     res.json({ message: "Solicitud rechazada correctamente" });
   } catch (error) {
     console.error("Error en la consulta:", error);
@@ -363,4 +404,6 @@ router.post("/rechazar-solicitud", async (req, res) => {
   }
 });
 
-module.exports = router;
+return router;
+};
+

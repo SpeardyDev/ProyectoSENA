@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
-import {
-  Button,
-  Table,
-  Icon,
-  Dropdown,
-  Input,
-  Search,
-} from "semantic-ui-react";
+import { Button, Table, Icon, Dropdown,Input, Search } from "semantic-ui-react";
 import axios from "axios";
 import Pagination from "../Pagination";
 import Swal from "sweetalert2";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:3000"); 
 
 const SolicitudPendientes = () => {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -23,20 +18,48 @@ const SolicitudPendientes = () => {
   const [itemsPerPage] = useState(8);
   const [searchTerm, setSearchTerm] = useState("");
 
+
+
   useEffect(() => {
     obtenerSolicitudesPendientes();
     obtenerUsuarios();
     obtenerMateriasPrimas();
+
+    // Escucha los eventos en tiempo real cuando se agrega una nueva solicitud
+    socket.on("nueva_solicitud", (nuevaSolicitud) => {
+      // Actualiza la lista de solicitudes sin recargar la página
+      setSolicitudes((prevSolicitudes) => [nuevaSolicitud, ...prevSolicitudes]);
+
+      // Mostrar una notificación al administrador
+      Swal.fire({
+        title: "Nueva Solicitud Recibida",
+        text: `Se ha agregado una nueva solicitud del usuario con ID: ${nuevaSolicitud.ID_Usuario}.`,
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+      obtenerSolicitudesPendientes();
+      obtenerUsuarios();
+      obtenerMateriasPrimas();
+    });
+    
+    // Limpiar listener cuando el componente se desmonte
+    return () => {
+      socket.off("nueva_solicitud");
+    };
   }, []);
 
   const obtenerSolicitudesPendientes = () => {
     axios
       .get("http://localhost:3000/solicitudes/pendientes")
-      .then((response) => setSolicitudes(response.data))
+      .then((response) => {
+        console.log("Datos obtenidos del servidor:", response.data);
+        setSolicitudes(response.data);
+      })
       .catch((error) =>
         console.error("Error al obtener las solicitudes pendientes:", error)
       );
   };
+  
 
   const obtenerUsuarios = () => {
     axios
@@ -150,9 +173,10 @@ const SolicitudPendientes = () => {
     setSearchTerm(value.toLowerCase());
   };
 
-  const filteredItems = solicitudes.filter((item) =>
-    item.ID.toString().includes(searchTerm)
+  const filteredItems = solicitudes.filter(
+    (item) => item.ID && item.ID.toString().includes(searchTerm)
   );
+  
 
   const handlePageChange = (page) => setCurrentPage(page);
 

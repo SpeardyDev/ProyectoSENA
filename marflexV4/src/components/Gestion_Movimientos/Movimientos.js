@@ -20,59 +20,31 @@ const Movimientos = () => {
   });
   const [editandoID, setEditandoID] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(8);
+  const [itemsPerPage] = useState(9);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    mostrarMovimientos();
-    obtenerMateriasPrimas();
-    obtenerProveedores();
-  });
+    obtenerDatosIniciales();
+  }, []);
 
-  const mostrarMovimientos = () => {
-    axios
-      .get("http://localhost:3000/movimientos")
-      .then((response) => {
-        const movimientosConNombres = response.data.map((movimiento) => {
-          const materiaPrima = materiasPrimas.find(
-            (mp) => mp.value === movimiento.ID_MateriaPrima
-          );
-          const proveedor = proveedores.find(
-            (p) => p.value === movimiento.ID_Proveedor
-          );
+  const obtenerDatosIniciales = async () => {
+    try {
+      setLoading(true);
+      const [movsRes, mpRes, provRes] = await Promise.all([
+        axios.get("http://localhost:3000/movimientos"),
+        axios.get("http://localhost:3000/materia_prima"),
+        axios.get("http://localhost:3000/proveedores"),
+      ]);
 
-          return {
-            ...movimiento,
-            NombreMateriaPrima: materiaPrima
-              ? materiaPrima.text
-              : "Desconocido",
-            NombreProveedor: proveedor ? proveedor.text : "Desconocido",
-          };
-        });
-
-        setMovimientos(movimientosConNombres);
-      })
-      .catch((error) =>
-        console.error("Error al obtener los movimientos:", error)
-      );
-  };
-
-  const obtenerMateriasPrimas = () => {
-    axios
-      .get("http://localhost:3000/materia_prima")
-      .then((response) => setMateriasPrimas(response.data))
-      .catch((error) =>
-        console.error("Error al obtener las materias primas:", error)
-      );
-  };
-
-  const obtenerProveedores = () => {
-    axios
-      .get("http://localhost:3000/proveedores")
-      .then((response) => setProveedores(response.data))
-      .catch((error) =>
-        console.error("Error al obtener los proveedores:", error)
-      );
+      setMovimientos(movsRes.data);
+      setMateriasPrimas(mpRes.data);
+      setProveedores(provRes.data);
+    } catch (error) {
+      console.error("Error cargando datos iniciales:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e, { name, value }) => {
@@ -82,54 +54,54 @@ const Movimientos = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const url = editandoID
       ? `http://localhost:3000/actualizar/movimientos/${editandoID}`
       : "http://localhost:3000/agregar/movimientos";
 
-    const method = editandoID ? axios.put : axios.post;
+    try {
+      if (editandoID) {
+        await axios.put(url, formularioDatos);
+      } else {
+        await axios.post(url, formularioDatos);
+      }
 
-    method(url, formularioDatos)
-      .then(() => {
-        setMostrarFormulario(false);
-        setEditandoID(null);
-        mostrarMovimientos();
-        Swal.fire({
-          position: "top-center",
-          icon: "success",
-          title: editandoID
-            ? "Movimiento actualizado con éxito."
-            : "Movimiento registrado con éxito.",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      })
-      .catch((error) => console.error("Error al guardar los datos:", error));
+      Swal.fire({
+        position: "top-center",
+        icon: "success",
+        title: editandoID ? "Movimiento actualizado" : "Movimiento registrado",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      setMostrarFormulario(false);
+      setEditandoID(null);
+      LimpiarFormulario();
+      obtenerDatosIniciales();
+    } catch (error) {
+      console.error("Error al guardar:", error);
+    }
   };
 
   const handleEliminar = (id) => {
     Swal.fire({
       title: "¿Estás seguro?",
-      text: "¡No podrás revertir esto!",
+      text: "No podrás revertir esto",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Sí, eliminar",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        axios
-          .delete(`http://localhost:3000/eliminar/movimientos/${id}`)
-          .then(() => {
-            mostrarMovimientos();
-            Swal.fire(
-              "Eliminado!",
-              "El registro ha sido eliminado.",
-              "success"
-            );
-          })
-          .catch((error) => console.error("Error al eliminar:", error));
+        try {
+          await axios.delete(`http://localhost:3000/eliminar/movimientos/${id}`);
+          Swal.fire("Eliminado!", "El registro ha sido eliminado.", "success");
+          obtenerDatosIniciales();
+        } catch (error) {
+          console.error("Error al eliminar:", error);
+        }
       }
     });
   };
@@ -142,9 +114,7 @@ const Movimientos = () => {
         Tipo: movimiento.Tipo,
         Cantidad: movimiento.Cantidad,
         ID_Proveedor: movimiento.ID_Proveedor,
-        Fecha: movimiento.Fecha
-          ? new Date(movimiento.Fecha).toISOString().slice(0, 10)
-          : "",
+        Fecha: new Date(movimiento.Fecha).toISOString().slice(0, 10),
       });
       setEditandoID(id);
       setMostrarFormulario(true);
@@ -157,7 +127,7 @@ const Movimientos = () => {
       Tipo: "",
       Cantidad: "",
       ID_Proveedor: "",
-      Fecha: "",
+      Fecha: new Date().toISOString().slice(0, 10),
     });
   };
 
@@ -168,9 +138,9 @@ const Movimientos = () => {
   const filteredItems = movimientos.filter(
     (item) =>
       item.ID.toString().includes(searchTerm) ||
-      item.NombreMateriaPrima.toLowerCase().includes(searchTerm) || // Buscar por nombre de materia prima
+      materiasPrimas.find((mp) => mp.ID === item.ID_MateriaPrima)?.Nombre?.toLowerCase().includes(searchTerm) ||
       item.Tipo.toLowerCase().includes(searchTerm) ||
-      item.NombreProveedor.toLowerCase().includes(searchTerm) // Buscar por nombre del proveedor
+      proveedores.find((p) => p.ID === item.ID_Proveedor)?.Nombre?.toLowerCase().includes(searchTerm)
   );
 
   const handlePageChange = (page) => setCurrentPage(page);
@@ -180,9 +150,8 @@ const Movimientos = () => {
 
   return (
     <div>
-      <div className="Titulo">
-        <p>Movimientos</p>
-      </div>
+      <div className="Titulo"><p>Movimientos</p></div>
+
       {mostrarFormulario && (
         <Form className="RegistroNuevo_Movimiento" onSubmit={handleSubmit}>
           <Form.Group widths="equal">
@@ -220,6 +189,7 @@ const Movimientos = () => {
               />
             </Form.Field>
           </Form.Group>
+
           <Form.Group widths="equal">
             <Form.Input
               label="Cantidad"
@@ -246,33 +216,26 @@ const Movimientos = () => {
               />
             </Form.Field>
           </Form.Group>
+
           <Form.Group widths="equal">
             <Form.Input
               label="Fecha"
               name="Fecha"
               type="date"
               value={formularioDatos.Fecha}
-              onChange={(e) =>
-                setFormularioDatos({
-                  ...formularioDatos,
-                  Fecha: e.target.value,
-                })
-              }
+              onChange={(e) => setFormularioDatos({ ...formularioDatos, Fecha: e.target.value })}
               required
             />
           </Form.Group>
+
           <Button type="submit" color="green">
             {editandoID ? "Actualizar" : "Registrar"}
           </Button>
-          <Button
-            type="button"
-            color="red"
-            onClick={() => {
-              setMostrarFormulario(false);
-              setEditandoID(null);
-              LimpiarFormulario();
-            }}
-          >
+          <Button type="button" color="red" onClick={() => {
+            setMostrarFormulario(false);
+            setEditandoID(null);
+            LimpiarFormulario();
+          }}>
             Cancelar
           </Button>
         </Form>
@@ -280,37 +243,24 @@ const Movimientos = () => {
 
       <div className="Filtro">
         <div className="Contenedor-1">
-          <Search
-            placeholder="Buscar"
-            onSearchChange={handleSearchChange}
-            showNoResults={false}
-          />
+          <Search placeholder="Buscar" onSearchChange={handleSearchChange} showNoResults={false} />
           <span className="icon-text">
             <i className="pi pi-filter" style={{ fontSize: "1.5rem" }}></i>
             <span>Filtro</span>
           </span>
         </div>
         <div className="Contenedor-2">
-          <span className="icon-text">
-            <i className="pi pi-tag" style={{ fontSize: "1.5rem" }}></i>
-            <span>Categorías</span>
-          </span>
-          <span className="icon-text">
-            <i className="pi pi-upload" style={{ fontSize: "1.5rem" }}></i>
-            <span>Exportar</span>
-          </span>
-          <Button
-            onClick={() => {
-              setMostrarFormulario(!mostrarFormulario);
-              LimpiarFormulario();
-            }}
-            color="green"
-          >
-            <i className="pi pi-plus" /> Materia Prima
+          <span className="icon-text"><i className="pi pi-tag" style={{ fontSize: "1.5rem" }}></i><span>Categorías</span></span>
+          <span className="icon-text"><i className="pi pi-upload" style={{ fontSize: "1.5rem" }}></i><span>Exportar</span></span>
+          <Button color="green" onClick={() => {
+            setMostrarFormulario(!mostrarFormulario);
+            LimpiarFormulario();
+          }}>
+            <i className="pi pi-plus" /> Movimiento
           </Button>
         </div>
       </div>
-      <article className="Dasboard"></article>
+
       <Table celled>
         <Table.Header>
           <Table.Row>
@@ -323,38 +273,32 @@ const Movimientos = () => {
             <Table.HeaderCell>Acciones</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
+
         <Table.Body>
-          {currentItems.map((mov) => (
-            <Table.Row key={mov.ID}>
-              <Table.Cell>{mov.ID}</Table.Cell>
-              <Table.Cell>
-                {materiasPrimas.find((mp) => mp.ID === mov.ID_MateriaPrima)
-                  ?.Nombre || "Desconocido"}
-              </Table.Cell>
-              <Table.Cell>{mov.Tipo}</Table.Cell>
-              <Table.Cell>{mov.Cantidad}</Table.Cell>
-              <Table.Cell>
-                {proveedores.find((prov) => prov.ID === mov.ID_Proveedor)
-                  ?.Nombre || "N/A"}
-              </Table.Cell>
-              <Table.Cell>
-                {new Date(mov.Fecha).toISOString().slice(0, 10)}
-              </Table.Cell>
-              <Table.Cell>
-                <Button icon color="blue" onClick={() => handleEditar(mov.ID)}>
-                  <Icon name="edit" />
-                </Button>
-                <Button icon color="red" onClick={() => handleEliminar(mov.ID)}>
-                  <Icon name="trash" />
-                </Button>
-              </Table.Cell>
-            </Table.Row>
-          ))}
+          {loading ? (
+            <Table.Row><Table.Cell colSpan="7">Cargando...</Table.Cell></Table.Row>
+          ) : (
+            currentItems.map((mov) => (
+              <Table.Row key={mov.ID}>
+                <Table.Cell>{mov.ID}</Table.Cell>
+                <Table.Cell>{materiasPrimas.find((mp) => mp.ID === mov.ID_MateriaPrima)?.Nombre || "Desconocido"}</Table.Cell>
+                <Table.Cell>{mov.Tipo}</Table.Cell>
+                <Table.Cell>{mov.Cantidad}</Table.Cell>
+                <Table.Cell>{proveedores.find((p) => p.ID === mov.ID_Proveedor)?.Nombre || "N/A"}</Table.Cell>
+                <Table.Cell>{new Date(mov.Fecha).toISOString().slice(0, 10)}</Table.Cell>
+                <Table.Cell>
+                  <Button icon color="blue" onClick={() => handleEditar(mov.ID)}><Icon name="edit" /></Button>
+                  <Button icon color="red" onClick={() => handleEliminar(mov.ID)}><Icon name="trash" /></Button>
+                </Table.Cell>
+              </Table.Row>
+            ))
+          )}
         </Table.Body>
       </Table>
+
       <Pagination
         currentPage={currentPage}
-        totalPages={Math.ceil(movimientos.length / itemsPerPage)}
+        totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
         handlePageChange={handlePageChange}
       />
     </div>

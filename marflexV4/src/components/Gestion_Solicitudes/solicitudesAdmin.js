@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Table, Search } from "semantic-ui-react";
+import { Table, Search, Icon} from "semantic-ui-react";
 import axios from "axios";
 import Pagination from "../Pagination";
 import "./styles/solicitudes.css";
+import 'primeicons/primeicons.css';
+import { Avatar } from 'primereact/avatar';
+        
+        
 
 const SolicitudAdmin = () => {
   const [solicitudes, setSolicitudes] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
   const [materiasPrimas, setMateriasPrimas] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(8);
+  const [itemsPerPage] = useState(6);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -123,39 +127,72 @@ const SolicitudAdmin = () => {
         </div>
       </div>
       <article className="Dasboard"></article>
-      <Table celled>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>ID</Table.HeaderCell>
-            <Table.HeaderCell>Usuario</Table.HeaderCell>
-            <Table.HeaderCell>Materia Prima</Table.HeaderCell>
-            <Table.HeaderCell>Cantidad Solicitada</Table.HeaderCell>
-            <Table.HeaderCell>Fecha Solicitud</Table.HeaderCell>
-            <Table.HeaderCell>Estado</Table.HeaderCell>
-            <Table.HeaderCell>Motivo Rechazo</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {currentItems.map((solicitud) => (
-            <Table.Row key={solicitud.ID}>
-              <Table.Cell>{solicitud.ID}</Table.Cell>
-              <Table.Cell>
-                {usuarios.find((m) => m.value === solicitud.ID_Usuario)?.text ||
-                  "Desconocido"}
-              </Table.Cell>
-              <Table.Cell>
-                {materiasPrimas.find(
-                  (m) => String(m.value) === String(solicitud.ID_MateriaPrima)
-                )?.text || "Desconocido"}
-              </Table.Cell>
-              <Table.Cell>{solicitud.Cantidad_Solicitada}</Table.Cell>
-              <Table.Cell>{solicitud.Fecha_Solicitud}</Table.Cell>
-              <Table.Cell>{solicitud.Estado}</Table.Cell>
-              <Table.Cell>{solicitud.Motivo_Rechazo || "Nulo"}</Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table>
+      <Table celled className="solicitudes-table" style={{ marginTop: '20px' }}>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell width={1}>#</Table.HeaderCell>
+      <Table.HeaderCell width={4}><Icon name="user" />Usuario</Table.HeaderCell>
+      <Table.HeaderCell width={2}>Materia Prima</Table.HeaderCell>
+      <Table.HeaderCell width={1}>Cantidad</Table.HeaderCell>
+      <Table.HeaderCell width={2}>Fecha</Table.HeaderCell>
+      <Table.HeaderCell width={2}>Estado</Table.HeaderCell>
+      <Table.HeaderCell width={3}><i className="pi pi-ban" style={{ fontSize: '1.1rem' }}></i>Motivo Rechazo</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    {currentItems.map((solicitud) => (
+      <Table.Row key={solicitud.ID}>
+        <Table.Cell className="text-center">{solicitud.ID}</Table.Cell>
+        <Table.Cell>
+          <div className="user-cell">
+            <Avatar image="/images/avatar/asiyajavayant.png" size="large" shape="circle" />
+            {usuarios.find((m) => m.value === solicitud.ID_Usuario)?.text || "Desconocido"}
+          </div>
+        </Table.Cell>
+        <Table.Cell>
+          <div className="materia-cell">
+            <Icon name="box" />
+            {materiasPrimas.find((m) => String(m.value) === String(solicitud.ID_MateriaPrima))?.text || "Desconocido"}
+          </div>
+        </Table.Cell>
+        <Table.Cell className="quantity-cell">
+  <div className="quantity-bubble">
+    {solicitud.Cantidad_Solicitada}
+  </div>
+</Table.Cell>
+
+        <Table.Cell>
+          <div className="date-cell">
+            <Icon name="calendar alternate" />
+            {solicitud.Fecha_Solicitud_Date}
+            <div className="time-text">
+              {solicitud.Fecha_Solicitud_Time}
+            </div>
+          </div>
+        </Table.Cell>
+        <Table.Cell className="text-center">
+          <div className="status-indicator">
+            <div 
+              className={`status-dot ${solicitud.Estado.toLowerCase()}`} 
+              title={solicitud.Estado}
+            />
+            <span className="status-label">{solicitud.Estado}</span>
+          </div>
+        </Table.Cell>
+        <Table.Cell>
+          {solicitud.Motivo_Rechazo ? (
+            <div className="rechazo-cell">
+              <Icon name="exclamation circle" />
+              {solicitud.Motivo_Rechazo}
+            </div>
+          ) : (
+            <span className="no-rechazo">N/A</span>
+          )}
+        </Table.Cell>
+      </Table.Row>
+    ))}
+  </Table.Body>
+</Table>
       <Pagination
         currentPage={currentPage}
         totalPages={Math.ceil(solicitudes.length / itemsPerPage)}

@@ -42,3 +42,179 @@
   height: 5vh;
   background-color: rgba(75, 73, 72, 0.979);
 }
+/* 🎯 Estilos generales para la tabla */
+.ui.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  margin: 20px 0;
+}
+
+/* 🧑‍💻 Cabecera de la tabla */
+.ui.table thead th {
+  background-color: #2c3e50;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 1rem;
+  padding: 15px 10px;
+  border: none !important;
+}
+
+/* 🔥 Filas y efecto hover */
+.ui.table tbody tr {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ui.table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.ui.table tbody tr:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* 📦 Celdas */
+.ui.table td {
+  padding: 12px 10px;
+  color: #333;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+.ui.table td, .ui.table thead th {
+  padding: 14px 16px;
+}
+
+
+/* 👥 Estilos para los elementos especiales */
+.user-cell, .materia-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.time-text {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.rechazo-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #dc3545;
+}
+
+.no-rechazo {
+  color: #6c757d;
+  font-style: italic;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Labels */
+.ui.label {
+  font-weight: 500;
+  padding: 0.4em 0.6em;
+}
+
+/* Cantidad con burbuja */
+.quantity-bubble {
+  display: inline-block;
+  justify-content: center;
+  justify-items: center;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  border-radius: 50%;
+  background-color: #e0f2ff;
+  color: #2185d0;
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+/* Centrar completamente el contenido en esa celda */
+.ui.table td.quantity-cell {
+  display: flex;        
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle; 
+  height: 84px;
+}
+
+
+
+
+/* 🟢🟡🔴 Estado - círculo y texto */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.status-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+
+.status-dot.aprobada {
+  background-color: #28a745;
+  box-shadow: 0 0 6px rgba(40, 167, 69, 0.5);
+}
+
+.status-dot.pendiente {
+  background-color: #ffc107;
+  box-shadow: 0 0 6px rgba(255, 193, 7, 0.5);
+}
+
+.status-dot.rechazada {
+  background-color: #dc3545;
+  box-shadow: 0 0 6px rgba(220, 53, 69, 0.5);
+}
+
+.status-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Efecto hover para el círculo de estado */
+.status-dot:hover {
+  transform: scale(1.3);
+  box-shadow: 0 0 10px currentColor;
+}
+
+/* 🧑‍💻 Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+  .ui.table {
+    font-size: 0.9rem;
+  }
+  
+  .ui.table thead th {
+    padding: 10px 8px;
+    font-size: 0.8rem;
+  }
+  
+  .ui.table td {
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+}

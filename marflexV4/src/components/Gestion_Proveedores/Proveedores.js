@@ -3,143 +3,102 @@ import Swal from "sweetalert2";
 import React, { useEffect, useState } from "react";
 import "./styles/Proveedores.css";
 import { Button, Form, Table, Search, Icon } from "semantic-ui-react";
-import Pagination from "../Pagination";
 import { InputMask } from "primereact/inputmask";
+import Pagination from "../Pagination";
 
 function Proveedores() {
   const [proveedores, setProveedores] = useState([]);
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [proveedorEditando, setProveedorEditando] = useState(null);
-  const [formularioDatos, setFormularioDato] = useState({
-    Nombre: "",
-    Telefono: "",
-    Direccion: "",
-  });
+  const [formVisible, setFormVisible] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [formData, setFormData] = useState({ Nombre: "", Telefono: "", Direccion: "" });
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(6);
+  const itemsPerPage = 6;
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    mostrarProveedores();
+    fetchProveedores();
   }, []);
 
-  const mostrarProveedores = () => {
-    axios
-      .get("http://localhost:3000/proveedores")
-      .then((respuesta) => setProveedores(respuesta.data))
-      .catch((error) => console.error("Error al obtener los datos:", error));
+  const fetchProveedores = () => {
+    axios.get("http://localhost:3000/proveedores")
+      .then(({ data }) => setProveedores(data))
+      .catch((error) => console.error("Error al obtener proveedores:", error));
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormularioDato({ ...formularioDatos, [name]: value });
+  const resetForm = () => {
+    setFormData({ Nombre: "", Telefono: "", Direccion: "" });
+    setEditingId(null);
+    setFormVisible(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleInputChange = ({ target: { name, value } }) => {
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleFormSubmit = (e) => {
     e.preventDefault();
-    axios
-      .post("http://localhost:3000/agregar/proveedores", formularioDatos)
+    const request = editingId
+      ? axios.put(`http://localhost:3000/actualizar/proveedores/${editingId}`, formData)
+      : axios.post("http://localhost:3000/agregar/proveedores", formData);
+
+    request
       .then(() => {
-        setMostrarFormulario(false);
-        mostrarProveedores();
+        fetchProveedores();
+        resetForm();
         Swal.fire({
           position: "top-center",
           icon: "success",
-          title: "Registro guardado con éxito.",
+          title: editingId ? "Proveedor actualizado." : "Proveedor registrado.",
           showConfirmButton: false,
           timer: 1500,
         });
       })
-      .catch((error) => console.error("Error al insertar los datos:", error));
+      .catch((err) => console.error("Error al guardar proveedor:", err));
   };
 
-  const handleEditar = (id) => {
-    const proveedor = proveedores.find((item) => item.ID === id);
-    setProveedorEditando(proveedor.ID);
-    setFormularioDato({
-      Nombre: proveedor.Nombre,
-      Telefono: proveedor.Telefono,
-      Direccion: proveedor.Direccion,
-    });
-    setMostrarFormulario(true);
+  const handleEdit = (id) => {
+    const proveedor = proveedores.find((p) => p.ID === id);
+    setEditingId(id);
+    setFormData({ Nombre: proveedor.Nombre, Telefono: proveedor.Telefono, Direccion: proveedor.Direccion });
+    setFormVisible(true);
   };
 
-  const handleActualizar = (e) => {
-    e.preventDefault();
-    axios
-      .put(
-        `http://localhost:3000/actualizar/proveedores/${proveedorEditando}`,
-        formularioDatos
-      )
-      .then(() => {
-        setMostrarFormulario(false);
-        setProveedorEditando(null);
-        mostrarProveedores();
-        Swal.fire({
-          position: "top-center",
-          icon: "success",
-          title: "Proveedor actualizado con éxito.",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      })
-      .catch((error) => console.error("Error al actualizar los datos:", error));
-  };
-
-  const BtnEliminar = (id) => {
+  const handleDelete = (id) => {
     Swal.fire({
       title: "¿Estás seguro?",
-      text: "¡No podrás revertir esto!",
+      text: "No podrás revertir esto.",
       icon: "warning",
       showCancelButton: true,
+      confirmButtonText: "¡Sí, eliminar!",
+      cancelButtonText: "Cancelar",
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "¡Sí, elimínalo!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
-          .delete(`http://localhost:3000/eliminar/proveedores/${id}`)
+        axios.delete(`http://localhost:3000/eliminar/proveedores/${id}`)
           .then(() => {
-            mostrarProveedores();
-            Swal.fire({
-              title: "¡Eliminado!",
-              text: "Este proveedor ha sido eliminado con éxito.",
-              icon: "success",
-            });
+            fetchProveedores();
+            Swal.fire("Eliminado", "El proveedor fue eliminado exitosamente.", "success");
           })
-          .catch((error) =>
-            console.error("Error al eliminar los datos:", error)
-          );
+          .catch((err) => console.error("Error al eliminar proveedor:", err));
       }
     });
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const LimpiarFormulario = () => {
-    setFormularioDato({
-      Nombre: "",
-      Telefono: "",
-      Direccion: "",
-    });
-  };
-
-  const handleSearchChange = (e, { value }) => {
+  const handleSearchChange = (_, { value }) => {
     setSearchTerm(value.toLowerCase());
   };
 
-  const filteredItems = proveedores.filter(
-    (item) =>
-      item.ID.toString().includes(searchTerm) ||
-      item.Nombre.toLowerCase().includes(searchTerm)
+  const filteredProveedores = proveedores.filter(
+    (p) =>
+      p.ID.toString().includes(searchTerm) ||
+      p.Nombre.toLowerCase().includes(searchTerm)
   );
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentItems = filteredProveedores.slice(indexOfFirst, indexOfLast);
 
   return (
     <section>
@@ -147,20 +106,16 @@ function Proveedores() {
         <p>Proveedores</p>
       </div>
 
-      {mostrarFormulario && (
-        <Form
-          className="RegistroNuevoProveedor"
-          onSubmit={proveedorEditando ? handleActualizar : handleSubmit}
-        >
+      {formVisible && (
+        <Form className="RegistroNuevoProveedor" onSubmit={handleFormSubmit}>
           <div className="contenedor_formulario_Proveedores">
             <Form.Group widths="equal">
-              <Form.Field
-                value={formularioDatos.Nombre}
-                onChange={handleChange}
-                placeholder="Nombre"
-                control="input"
+              <Form.Input
                 label="Nombre"
                 name="Nombre"
+                placeholder="Nombre"
+                value={formData.Nombre}
+                onChange={handleInputChange}
                 required
               />
               <Form.Field required>
@@ -169,40 +124,31 @@ function Proveedores() {
                   mask="(999) 999-9999"
                   name="Telefono"
                   placeholder="(999) 999-9999"
-                  value={formularioDatos.Telefono}
-                  onChange={handleChange}
+                  value={formData.Telefono}
+                  onChange={handleInputChange}
                 />
               </Form.Field>
             </Form.Group>
-            <Form.Group widths="equal">
-              <Form.Field
-                name="Direccion"
-                value={formularioDatos.Direccion}
-                onChange={handleChange}
-                label="Dirección"
-                control="input"
-                placeholder="Dirección"
-                required
-              />
-            </Form.Group>
 
-            <Button type="submit" color="green">
-              {proveedorEditando ? "Actualizar" : "Registrar"}
+            <Form.Input
+              label="Dirección"
+              name="Direccion"
+              placeholder="Dirección"
+              value={formData.Direccion}
+              onChange={handleInputChange}
+              required
+            />
+
+            <Button color="green" type="submit">
+              {editingId ? "Actualizar" : "Registrar"}
             </Button>
-            <Button
-              type="button"
-              color="red"
-              onClick={() => {
-                setMostrarFormulario(false);
-                setProveedorEditando(null);
-                LimpiarFormulario();
-              }}
-            >
+            <Button color="red" type="button" onClick={resetForm}>
               Cancelar
             </Button>
           </div>
         </Form>
       )}
+
       <div className="Filtro">
         <div className="Contenedor-1">
           <Search
@@ -224,15 +170,12 @@ function Proveedores() {
             <i className="pi pi-upload" style={{ fontSize: "1.5rem" }}></i>
             <span>Exportar</span>
           </span>
-          <Button
-            onClick={() => setMostrarFormulario(!mostrarFormulario)}
-            color="green"
-          >
+          <Button color="green" onClick={() => setFormVisible(!formVisible)}>
             <i className="pi pi-plus" /> Proveedor
           </Button>
         </div>
       </div>
-      <article className="Dasboard-Proveedores"></article>
+
       <Table celled>
         <Table.Header>
           <Table.Row>
@@ -245,25 +188,17 @@ function Proveedores() {
         </Table.Header>
 
         <Table.Body>
-          {currentItems.map((proveedor, index) => (
-            <Table.Row key={proveedor.ID}>
-              <Table.Cell>{index + 1 + indexOfFirstItem}</Table.Cell>
-              <Table.Cell>{proveedor.Nombre}</Table.Cell>
-              <Table.Cell>{proveedor.Telefono}</Table.Cell>
-              <Table.Cell>{proveedor.Direccion}</Table.Cell>
+          {currentItems.map((p, index) => (
+            <Table.Row key={p.ID}>
+              <Table.Cell>{index + 1 + indexOfFirst}</Table.Cell>
+              <Table.Cell>{p.Nombre}</Table.Cell>
+              <Table.Cell>{p.Telefono}</Table.Cell>
+              <Table.Cell>{p.Direccion}</Table.Cell>
               <Table.Cell>
-                <Button
-                  icon
-                  color="blue"
-                  onClick={() => handleEditar(proveedor.ID)}
-                >
+                <Button icon color="blue" onClick={() => handleEdit(p.ID)}>
                   <Icon name="edit" />
                 </Button>
-                <Button
-                  icon
-                  color="red"
-                  onClick={() => BtnEliminar(proveedor.ID)}
-                >
+                <Button icon color="red" onClick={() => handleDelete(p.ID)}>
                   <Icon name="trash" />
                 </Button>
               </Table.Cell>
@@ -271,10 +206,11 @@ function Proveedores() {
           ))}
         </Table.Body>
       </Table>
+
       <Pagination
         currentPage={currentPage}
-        totalPages={Math.ceil(proveedores.length / itemsPerPage)}
-        handlePageChange={handlePageChange}
+        totalPages={Math.ceil(filteredProveedores.length / itemsPerPage)}
+        handlePageChange={setCurrentPage}
       />
     </section>
   );
