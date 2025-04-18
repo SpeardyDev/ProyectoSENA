@@ -1,17 +1,11 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-<<<<<<< HEAD
 const connectMongoDB = require("./config/dbMongo"); 
 const { swaggerDocs: V1SwaggerDocs } = require("./swagger");
 const path = require("path");
 
 // Importar rutas
-=======
-const connectMongoDB = require("./config/dbMongo"); // Conectar a MongoDB
-const { swaggerDocs: V1SwaggerDocs } = require("./swagger");
-const path = require("path");
->>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 const authRoutes = require("./routes/authRoutes");
 const colchonesRoutes = require("./routes/colchonesRoutes");
 const detalleRoutes = require("./routes/detalleRoutes");
@@ -23,17 +17,13 @@ const reportes = require("./routes/reportes");
 const solicitudesRoutes = require("./routes/solicitudesRoutes");
 const usuariosRoutes = require("./routes/userRoutes");
 
-<<<<<<< HEAD
 const http = require("http");
 const { Server } = require("socket.io");
 
-=======
->>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 const app = express();
 const puerto = process.env.PORT || 3000;
 
 // Conectar a MongoDB
-<<<<<<< HEAD
 connectMongoDB().then(() => {
   console.log("Conexión a MongoDB exitosa");
 }).catch((err) => {
@@ -69,15 +59,6 @@ app.use((req, res, next) => {
 });
 
 // Montar rutas (incluyendo la instancia `io` en aquellas que lo necesiten)
-=======
-connectMongoDB();
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Rutas
->>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 app.use(authRoutes);
 app.use(colchonesRoutes);
 app.use(detalleRoutes);
@@ -86,7 +67,6 @@ app.use(materiaprimaRoutes);
 app.use(movimientosRoutes);
 app.use(proveedoresRoutes);
 app.use(reportes);
-<<<<<<< HEAD
 app.use(solicitudesRoutes(io)); // Pasar `io` como parámetro para su uso en rutas
 app.use(usuariosRoutes);
 
@@ -105,13 +85,3 @@ servidor.listen(puerto, () => {
 });
 
 module.exports = { app, servidor, io };
-=======
-app.use(solicitudesRoutes);
-app.use(usuariosRoutes);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-app.listen(puerto, () => {
-  console.log(`Servidor corriendo en el puerto ${puerto}`);
-  V1SwaggerDocs(app, puerto);
-});
->>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033

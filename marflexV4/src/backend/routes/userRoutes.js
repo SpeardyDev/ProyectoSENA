@@ -4,10 +4,6 @@ const bcrypt = require("bcrypt");
 const db = require("../config/dbMysql");
 const models = require("../models/User");
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 /**
  * @swagger
  * tags:

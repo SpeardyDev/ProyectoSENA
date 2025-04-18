@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-<<<<<<< HEAD
 import { Table, Search, Icon} from "semantic-ui-react";
 import axios from "axios";
 import Pagination from "../Pagination";
@@ -8,23 +7,13 @@ import 'primeicons/primeicons.css';
 import { Avatar } from 'primereact/avatar';
         
         
-=======
-import { Table, Search } from "semantic-ui-react";
-import axios from "axios";
-import Pagination from "../Pagination";
-import "./styles/solicitudes.css";
->>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 
 const SolicitudAdmin = () => {
   const [solicitudes, setSolicitudes] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
   const [materiasPrimas, setMateriasPrimas] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-<<<<<<< HEAD
   const [itemsPerPage] = useState(6);
-=======
-  const [itemsPerPage] = useState(8);
->>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -138,7 +127,6 @@ const SolicitudAdmin = () => {
         </div>
       </div>
       <article className="Dasboard"></article>
-<<<<<<< HEAD
       <Table celled className="solicitudes-table" style={{ marginTop: '20px' }}>
   <Table.Header>
     <Table.Row>
@@ -205,41 +193,6 @@ const SolicitudAdmin = () => {
     ))}
   </Table.Body>
 </Table>
-=======
-      <Table celled>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>ID</Table.HeaderCell>
-            <Table.HeaderCell>Usuario</Table.HeaderCell>
-            <Table.HeaderCell>Materia Prima</Table.HeaderCell>
-            <Table.HeaderCell>Cantidad Solicitada</Table.HeaderCell>
-            <Table.HeaderCell>Fecha Solicitud</Table.HeaderCell>
-            <Table.HeaderCell>Estado</Table.HeaderCell>
-            <Table.HeaderCell>Motivo Rechazo</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {currentItems.map((solicitud) => (
-            <Table.Row key={solicitud.ID}>
-              <Table.Cell>{solicitud.ID}</Table.Cell>
-              <Table.Cell>
-                {usuarios.find((m) => m.value === solicitud.ID_Usuario)?.text ||
-                  "Desconocido"}
-              </Table.Cell>
-              <Table.Cell>
-                {materiasPrimas.find(
-                  (m) => String(m.value) === String(solicitud.ID_MateriaPrima)
-                )?.text || "Desconocido"}
-              </Table.Cell>
-              <Table.Cell>{solicitud.Cantidad_Solicitada}</Table.Cell>
-              <Table.Cell>{solicitud.Fecha_Solicitud}</Table.Cell>
-              <Table.Cell>{solicitud.Estado}</Table.Cell>
-              <Table.Cell>{solicitud.Motivo_Rechazo || "Nulo"}</Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table>
->>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
       <Pagination
         currentPage={currentPage}
         totalPages={Math.ceil(solicitudes.length / itemsPerPage)}

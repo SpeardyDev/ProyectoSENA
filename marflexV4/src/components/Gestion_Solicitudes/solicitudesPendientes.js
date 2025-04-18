@@ -1,25 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
-<<<<<<< HEAD
 import { Button, Table, Icon, Dropdown,Input, Search } from "semantic-ui-react";
 import axios from "axios";
 import Pagination from "../Pagination";
 import Swal from "sweetalert2";
 import { io } from "socket.io-client";
 const socket = io("http://localhost:3000"); 
-=======
-import {
-  Button,
-  Table,
-  Icon,
-  Dropdown,
-  Input,
-  Search,
-} from "semantic-ui-react";
-import axios from "axios";
-import Pagination from "../Pagination";
-import Swal from "sweetalert2";
->>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 
 const SolicitudPendientes = () => {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -32,16 +18,12 @@ const SolicitudPendientes = () => {
   const [itemsPerPage] = useState(8);
   const [searchTerm, setSearchTerm] = useState("");
 
-<<<<<<< HEAD
 
 
-=======
->>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
   useEffect(() => {
     obtenerSolicitudesPendientes();
     obtenerUsuarios();
     obtenerMateriasPrimas();
-<<<<<<< HEAD
 
     // Escucha los eventos en tiempo real cuando se agrega una nueva solicitud
     socket.on("nueva_solicitud", (nuevaSolicitud) => {
@@ -64,29 +46,20 @@ const SolicitudPendientes = () => {
     return () => {
       socket.off("nueva_solicitud");
     };
-=======
->>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
   }, []);
 
   const obtenerSolicitudesPendientes = () => {
     axios
       .get("http://localhost:3000/solicitudes/pendientes")
-<<<<<<< HEAD
       .then((response) => {
         console.log("Datos obtenidos del servidor:", response.data);
         setSolicitudes(response.data);
       })
-=======
-      .then((response) => setSolicitudes(response.data))
->>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
       .catch((error) =>
         console.error("Error al obtener las solicitudes pendientes:", error)
       );
   };
-<<<<<<< HEAD
   
-=======
->>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 
   const obtenerUsuarios = () => {
     axios
@@ -200,16 +173,10 @@ const SolicitudPendientes = () => {
     setSearchTerm(value.toLowerCase());
   };
 
-<<<<<<< HEAD
   const filteredItems = solicitudes.filter(
     (item) => item.ID && item.ID.toString().includes(searchTerm)
   );
   
-=======
-  const filteredItems = solicitudes.filter((item) =>
-    item.ID.toString().includes(searchTerm)
-  );
->>>>>>> 32593c77ee071499f6737993ec7c3157a8bfa033
 
   const handlePageChange = (page) => setCurrentPage(page);
 
