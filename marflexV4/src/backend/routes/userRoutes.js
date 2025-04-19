@@ -44,6 +44,36 @@ router.get("/usuarios", async (req, res) => {
   }
 });
 
+router.post("/verificar-o-registrar", async (req, res) => {
+  const { Nombre, Rol, FotoPerfil, Username } = req.body;
+
+  try {
+    const [usuario] = await db.execute("SELECT * FROM usuarios WHERE Nombre = ?", [Nombre]);
+
+    if (usuario.length > 0) {
+      return res.status(200).json({
+        message: "El nombre de usuario ya existe.",
+        ID: usuario[0].ID
+      });
+    }
+
+    const [resultado] = await db.execute(
+      "INSERT INTO usuarios (Nombre, Rol, FotoPerfil, Usuario ) VALUES (?, ?, ?, ?)",
+      [Nombre, Rol, FotoPerfil, Username]
+    );
+
+    const insertId = resultado.insertId;
+
+    res.status(201).json({
+      message: "Usuario registrado exitosamente.",
+      ID: insertId
+    });
+  } catch (error) {
+    console.error("Error al verificar o registrar usuario:", error);
+    res.status(500).json({ error: "Error en el servidor." });
+  }
+});
+
 /**
  * @swagger
  * /api/editar/usuarios/{id}:

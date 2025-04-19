@@ -21,6 +21,15 @@ const SolicitudEmp = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8);
   const [searchTerm, setSearchTerm] = useState("");
+  const usuarioLogueado = localStorage.getItem("nombre");
+const opcionesUsuario = [
+  {
+    key: 1,
+    text: usuarioLogueado,
+    value: usuarioLogueado, 
+  }
+];
+
 
   useEffect(() => {
     mostrarSolicitudes();
@@ -74,31 +83,52 @@ const SolicitudEmp = () => {
     setFormularioDatos({ ...formularioDatos, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = editandoID
-      ? `http://localhost:3000/actualizar/solicitudes_materia_prima/${editandoID}`
-      : "http://localhost:3000/agregar/solicitudes_materia_prima";
-
-    const method = editandoID ? axios.put : axios.post;
-
-    method(url, formularioDatos)
-      .then(() => {
-        setMostrarFormulario(false);
-        setEditandoID(null);
-        mostrarSolicitudes();
-        Swal.fire({
-          position: "top-center",
-          icon: "success",
-          title: editandoID
-            ? "Registro actualizado con éxito."
-            : "Registro guardado con éxito.",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      })
-      .catch((error) => console.error("Error al guardar los datos:", error));
+  
+    const userData = {
+      Nombre: localStorage.getItem("nombre")?.trim() || "",
+      Username: localStorage.getItem("username")?.trim() || "",
+      Rol: localStorage.getItem("rol")?.trim() || "",
+      FotoPerfil: localStorage.getItem("fotoPerfil")?.trim() || ""
+    };
+    
+  
+    try {
+      const response = await axios.post("http://localhost:3000/verificar-o-registrar", userData);
+      const userID = response.data.ID;
+  
+      const updatedData = {
+        ...formularioDatos,
+        ID_Usuario: userID
+      };
+  
+      const url = editandoID
+        ? `http://localhost:3000/actualizar/solicitudes_materia_prima/${editandoID}`
+        : "http://localhost:3000/agregar/solicitudes_materia_prima";
+  
+      const method = editandoID ? axios.put : axios.post;
+      await method(url, updatedData);
+  
+      setMostrarFormulario(false);
+      setEditandoID(null);
+      mostrarSolicitudes();
+  
+      Swal.fire({
+        position: "top-center",
+        icon: "success",
+        title: editandoID ? "Registro actualizado con éxito." : "Registro guardado con éxito.",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      mostrarSolicitudes();
+    } catch (error) {
+      console.error("Error en el proceso:", error);
+    }
   };
+  
+  
+  
 
   const handleEliminar = (id) => {
     Swal.fire({
@@ -181,15 +211,13 @@ const SolicitudEmp = () => {
                 placeholder="Seleccionar Usuario"
                 fluid
                 selection
-                options={usuarios}
+                options={opcionesUsuario}
                 name="ID_Usuario"
-                value={formularioDatos.ID_Usuario}
-                onChange={(e, { name, value }) =>
-                  setFormularioDatos({ ...formularioDatos, [name]: value })
-                }
-                required
+                value={usuarioLogueado}
+                disabled
               />
             </Form.Field>
+
             <Form.Field>
               <label>Materia Prima</label>
               <Dropdown

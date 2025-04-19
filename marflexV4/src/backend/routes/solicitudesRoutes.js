@@ -26,29 +26,44 @@ module.exports = (io) => {
  *         description: Error en el servidor
  */
 
- // Obtener todas las solicitudes
- router.get("/solicitudes_materia_prima", async (req, res) => {
+ // Obtener todas las solicitudes y foto del usuario
+router.get("/solicitudes_materia_prima", async (req, res) => {
   try {
-    const [results] = await db.query("SELECT * FROM solicitudes_materia_prima");
+    const [results] = await db.query(`
+      SELECT 
+        s.*,
+        u.Nombre AS NombreUsuario,
+        u.FotoPerfil
+      FROM 
+        solicitudes_materia_prima s
+      JOIN 
+        usuarios u ON s.ID_Usuario = u.ID
+    `);
     
     // Formatear cada resultado
     const formattedResults = results.map(item => {
-      // Clonar el objeto para no modificar el original
-      const formattedItem = {...item};
-      
+      const formattedItem = { ...item };
+
       // Formatear fecha
       if (item.Fecha_Solicitud) {
-        formattedItem.Fecha_Solicitud_Date = moment(item.Fecha_Solicitud).tz('America/Bogota').format('YYYY-MM-DD');
-        formattedItem.Fecha_Solicitud_Time = moment(item.Fecha_Solicitud).tz('America/Bogota').format('HH:mm:ss');
+        formattedItem.Fecha_Solicitud_Date = moment(item.Fecha_Solicitud)
+          .tz('America/Bogota')
+          .format('YYYY-MM-DD');
+        formattedItem.Fecha_Solicitud_Time = moment(item.Fecha_Solicitud)
+          .tz('America/Bogota')
+          .format('HH:mm:ss');
       }
+      formattedItem.FotoPerfilUrl = `http://localhost:3000/uploads/${item.FotoPerfil}`;
+
       return formattedItem;
     });
-    
+
     res.json(formattedResults);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 /**
  * @swagger
