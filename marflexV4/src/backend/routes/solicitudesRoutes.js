@@ -51,7 +51,7 @@ router.get("/solicitudes_materia_prima", async (req, res) => {
           .format('YYYY-MM-DD');
         formattedItem.Fecha_Solicitud_Time = moment(item.Fecha_Solicitud)
           .tz('America/Bogota')
-          .format('HH:mm:ss');
+          .format('h:mm:ss A');
       }
       formattedItem.FotoPerfilUrl = `http://localhost:3000/uploads/${item.FotoPerfil}`;
 
@@ -292,11 +292,33 @@ router.get("/solicitudes/pendientes", async (req, res) => {
     const [results] = await db.query(
       "SELECT * FROM solicitudes_materia_prima WHERE Estado = 'pendiente'"
     );
-    res.json(results);
+
+    // Formatear cada resultado
+    const formattedResults = results.map(item => {
+      const formattedItem = { ...item };
+
+      // Formatear fecha
+      if (item.Fecha_Solicitud) {
+        formattedItem.Fecha_Solicitud_Date = moment(item.Fecha_Solicitud)
+          .tz('America/Bogota')
+          .format('YYYY-MM-DD');
+        formattedItem.Fecha_Solicitud_Time = moment(item.Fecha_Solicitud)
+          .tz('America/Bogota')
+          .format('h:mm:ss A');
+      }
+
+      return formattedItem;
+    });
+
+    res.json(formattedResults);
   } catch (err) {
-    res.status(500).json({ error: "Error en el servidor" });
+    console.error("Error en /solicitudes/pendientes:", err);
+    res.status(500).json({ 
+      error: "Error en el servidor",
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
-})
+});
 
 /**
  * @swagger

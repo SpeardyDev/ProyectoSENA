@@ -3,7 +3,7 @@ import logo from "../img/LogoMarflex.png";
 import icono from "../img/forklift_30dp_DA954B_FILL0_wght400_GRAD0_opsz24.png";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faXmark  } from "@fortawesome/free-solid-svg-icons";
 import "./styles/HomeAdmin.css";
 import Colchones from "./Gestion_Colchones/Colchones.js";
 import Detalle from "./Gestion_Detalles/Detalle.js";
@@ -31,6 +31,7 @@ const HomeEmpleado = () => {
     }));
   };
 
+  const [BtnMenu, setBtnMenu] = useState(false);
   const defaultAvatar = require("../backend/uploads/foto-perfil.jpg");
   const [avatar, setAvatar] = useState(defaultAvatar);
 
@@ -128,28 +129,44 @@ const HomeEmpleado = () => {
           </nav>
         </header>
         <section className="mayor">
-          <FontAwesomeIcon className="menu-amburguesa" icon={faBars} />
-          <section className="menu">
+        <FontAwesomeIcon
+            onClick={() => setBtnMenu(!BtnMenu)}
+            className="menu-amburguesa"
+            icon={faBars}
+          />
+          <section
+            className="menu"
+            style={{ display: BtnMenu ? "none" : "block" }}
+          >
             <div className="contenido-usuario">
-              <img
-                id="profile-pic"
-                src={avatar || require("../backend/uploads/foto-perfil.jpg")}
-                alt="Foto de perfil"
-                className="profile-pic"
+              <FontAwesomeIcon
+                onClick={() => setBtnMenu(!BtnMenu)}
+                className="Btn_ocultar"
+                icon={faXmark}
               />
-              <input
-                type="file"
-                id="fileInput"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleImageChange}
-              />
-              <button
-                onClick={() => document.getElementById("fileInput").click()}
-                className="btn-upload"
-              >
-                <i class="fa-solid fa-camera"></i>
-              </button>
+            
+              <div className="profile-container">
+                <img
+                  id="profile-pic"
+                  src={avatar || require("../backend/uploads/foto-perfil.jpg")}
+                  alt="Foto de perfil"
+                  className="profile-pic"
+                />
+                <input
+                  type="file"
+                  id="fileInput"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleImageChange}
+                />
+                <button
+                  onClick={() => document.getElementById("fileInput").click()}
+                  className="btn-upload"
+                >
+                  <i className="fa-solid fa-camera"></i>
+                </button>
+              </div>
+            
               {avatar !== defaultAvatar && (
                 <Button
                   icon
@@ -160,10 +177,7 @@ const HomeEmpleado = () => {
                   Eliminar Foto
                 </Button>
               )}
-
-              <div className="perfil-nombre">
-                <p id="Nombre">{nombre}</p>
-              </div>
+              <p id="Nombre">{nombre}</p>
             </div>
             <div className="contenido-menu">
               <div className="texto-menu">

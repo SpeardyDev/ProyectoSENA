@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { Button, Table, Icon, Dropdown,Input, Search } from "semantic-ui-react";
 import axios from "axios";
+import "./styles/solicitudes.css";
 import Pagination from "../Pagination";
 import Swal from "sweetalert2";
 import { io } from "socket.io-client";
@@ -245,7 +246,15 @@ const SolicitudPendientes = () => {
                   {materiaPrima ? materiaPrima.text : "Desconocido"}
                 </Table.Cell>
                 <Table.Cell>{solicitud.Cantidad_Solicitada}</Table.Cell>
-                <Table.Cell>{solicitud.Fecha_Solicitud}</Table.Cell>
+                <Table.Cell>
+                          <div className="date-cell">
+                            <Icon name="calendar alternate" />
+                            {solicitud.Fecha_Solicitud_Date}
+                            <div className="time-text">
+                              {solicitud.Fecha_Solicitud_Time}
+                            </div>
+                          </div>
+                        </Table.Cell>
                 <Table.Cell>
                   {editingSolicitud === solicitud.ID ? (
                     <Dropdown

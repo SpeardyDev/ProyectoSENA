@@ -92,7 +92,7 @@
 }
 
 
-/* 👥 Estilos para los elementos especiales */
+/* Estilos para los elementos especiales */
 .user-cell, .materia-cell {
   display: flex;
   align-items: center;
@@ -155,7 +155,10 @@
   vertical-align: middle; 
   height: 84px;
 }
-
+.ui.selection.active.dropdown:hover .menu {
+  border-color: #96c8da;
+  box-shadow: 0 2px 3px 0 rgba(34, 36, 38, .15);
+}
 
 
 
@@ -201,7 +204,35 @@
   transform: scale(1.3);
   box-shadow: 0 0 10px currentColor;
 }
+/* Solución para el dropdown que se corta */
+.ui.table {
+  overflow: visible !important; /* Permite que los elementos hijos sobresalgan */
+}
 
+.ui.table tbody {
+  position: relative;
+  z-index: 1; /* Establece un contexto de apilamiento */
+}
+
+/* Estilos específicos para el dropdown dentro de la tabla */
+.ui.table .dropdown .menu {
+  position: absolute;
+  z-index: 1001; /* Mayor que el z-index de la tabla */
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Fuerza el menú a abrirse hacia arriba cuando está cerca del borde inferior */
+.ui.table .dropdown.upward .menu {
+  top: auto !important;
+  bottom: 100% !important;
+}
+
+/* Asegura que el contenedor del dropdown tenga espacio para el menú */
+.ui.table td {
+  overflow: visible !important;
+  position: static !important;
+}
 /* 🧑‍💻 Responsive para pantallas pequeñas */
 @media (max-width: 768px) {
   .ui.table {

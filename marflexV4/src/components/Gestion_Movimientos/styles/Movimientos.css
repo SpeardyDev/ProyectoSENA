@@ -42,3 +42,8 @@
   height: 5vh;
   background-color: rgba(75, 73, 72, 0.979);
 }
+.ui.selection.active.dropdown .menu {
+  border-color: #96c8da;
+  box-shadow: 0 2px 3px 0 rgba(34, 36, 38, .15);
+  max-height: 8.02857143rem;
+}
