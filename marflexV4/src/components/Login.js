@@ -20,10 +20,11 @@ function Login() {
         password,
       });
   
-      const { token, rol, userId, nombre, fotoPerfil } = response.data;
+      const { token, rol, userId, nombre, fotoPerfil, usuario } = response.data;
   
       // Guardar en localStorage
       localStorage.setItem("token", token);
+      localStorage.setItem("username", usuario);
       localStorage.setItem("userId", userId);
       localStorage.setItem("nombre", nombre); 
       localStorage.setItem("rol", rol); 

@@ -51,12 +51,21 @@ const HomeAdmin = () => {
   useEffect(() => {
     // Al cargar, obtener solicitudes pendientes
     obtenerSolicitudesPendientes();
+    
     // Escuchar evento en tiempo real para nuevas solicitudes
     socket.on("nueva_solicitud", (nuevaSolicitud) => {
       // Incrementa el número de notificaciones
       setCantidadNotificaciones((prev) => prev + 1);
       setTieneNotificaciones(true);
-    });
+    },
+    socket.on("solicitud_aprobada", () => {
+      obtenerSolicitudesPendientes();
+    }),
+
+    socket.on("solicitud_rechazada", () => {
+      obtenerSolicitudesPendientes();
+    })
+  );
 
     // Limpia el listener cuando el componente se desmonta
     return () => {
