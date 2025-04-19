@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-04-2025 a las 00:35:12
+-- Tiempo de generación: 19-04-2025 a las 02:34:34
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -198,7 +198,8 @@ CREATE TABLE `colchones` (
 INSERT INTO `colchones` (`ID`, `Modelo`, `Descripcion`, `Fecha_Fabricacion`, `Cantidad`) VALUES
 (1, 'Colchón Ortopédico Premium', 'Colchón con espuma HR y resortes Bonnell', '2025-03-07', 10),
 (2, 'Colchón Viscoelástico Deluxe', 'Colchón con espuma viscoelástica y forro Jacquard', '2025-03-07', 5),
-(3, 'Colchón Básico Espuma', 'Colchón económico solo de espuma HR', '2025-03-06', 15);
+(3, 'Colchón Básico Espuma', 'Colchón económico solo de espuma HR', '2025-03-06', 15),
+(8, 'ss', 'ssssssss', '2025-04-11', 50);
 
 -- --------------------------------------------------------
 
@@ -265,10 +266,10 @@ CREATE TABLE `materia_prima` (
 --
 
 INSERT INTO `materia_prima` (`ID`, `Nombre`, `Descripcion`, `Stock`, `Unidad`) VALUES
-(1, 'Espuma HR 30', 'Espuma de alta resiliencia para colchones', 14, 'kg'),
-(2, 'Tela Jacquard', 'Tela premium para forro de colchones', 210, 'metros'),
-(3, 'Resortes Bonnell', 'Resortes de acero para colchón ortopédico', 160, 'unidades'),
-(4, 'Pegamento PU', 'Pegamento de poliuretano para colchones', 50, 'litros');
+(1, 'Espuma HR 30', 'Espuma de alta resiliencia para colchones', 265, 'kg'),
+(2, 'Tela Jacquard', 'Tela premium para forro de colchones', 190, 'metros'),
+(3, 'Resortes Bonnell', 'Resortes de acero para colchón ortopédico', 50, 'unidades'),
+(4, 'Pegamento PU', 'Pegamento de poliuretano para colchones', 199, 'litros');
 
 -- --------------------------------------------------------
 
@@ -361,10 +362,11 @@ CREATE TABLE `solicitudes_materia_prima` (
 --
 
 INSERT INTO `solicitudes_materia_prima` (`ID`, `ID_Usuario`, `ID_MateriaPrima`, `Cantidad_Solicitada`, `Fecha_Solicitud`, `Estado`, `Motivo_Rechazo`) VALUES
-(1, 2, 1, 15, '2025-03-25 18:21:36', 'Rechazada', 'No Stock'),
-(2, 3, 4, 30, '2025-03-25 18:21:55', 'Aprobada', NULL),
-(3, 4, 3, 35, '2025-03-25 18:22:08', 'Aprobada', ''),
-(4, 4, 2, 10, '2025-03-25 18:22:32', 'Rechazada', 'No quiero');
+(29, 1, 1, 20, '2025-04-18 22:13:56', 'Aprobada', ''),
+(30, 1, 4, 222, '2025-04-18 22:21:49', 'Rechazada', 'No stock'),
+(31, 2, 2, 50, '2025-04-18 22:24:06', 'Pendiente', ''),
+(32, 2, 3, 20, '2025-04-18 23:24:40', 'Pendiente', ''),
+(36, 4, 4, 300, '2025-04-19 00:06:25', 'Pendiente', '');
 
 -- --------------------------------------------------------
 
@@ -378,18 +380,18 @@ CREATE TABLE `usuarios` (
   `Usuario` varchar(50) NOT NULL,
   `Password` varchar(255) NOT NULL,
   `Rol` enum('Adminitrador','Empleado') NOT NULL DEFAULT 'Empleado',
-  `ID_Estado` tinyint(4) NOT NULL DEFAULT 1
+  `ID_Estado` tinyint(4) NOT NULL DEFAULT 1,
+  `FotoPerfil` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`ID`, `Nombre`, `Usuario`, `Password`, `Rol`, `ID_Estado`) VALUES
-(1, 'Admin', 'admin@gmail.com', '$2b$10$zESD.e.fq4MoMzd2UIFCW.UXA1.rAb8u3AFvmdkr.W1m5EQtiHm1u', 'Adminitrador', 2),
-(2, 'José', 'frbsfrbs1@gmail.com', '$2b$10$JY3x80dKB6PQxYp65NM0yuC2u4W1quQhmvKWllKA6fCqgjDBm8.v6', 'Empleado', 2),
-(3, 'Reynaldo', 'rey@gmail.com', '$2b$10$dK5Jxq6FZRiMB7ztRAMOLuavfdv.Jm0YqMXeUqbrYYy8MIxqAup72', 'Adminitrador', 1),
-(4, 'Sandra', 'sandritha1000@gmail.com', '$2b$10$b5If9zeS.f2evu1edlBq0ezs2e1MveiokJrlRgONMhgPvRYOD0Mge', 'Empleado', 1);
+INSERT INTO `usuarios` (`ID`, `Nombre`, `Usuario`, `Password`, `Rol`, `ID_Estado`, `FotoPerfil`) VALUES
+(1, 'Nicolas Mahecha Martínez', 'nicolasmahechamartinez@gmail.com', '', 'Empleado', 1, 'foto-perfil.jpg'),
+(2, 'Paula Andrea Garcia Cifuentes', 'andrea.paula0127@gmail.com', '', 'Empleado', 1, '1745016963902.jpg'),
+(4, 'Ivan Pérez Castañeda', 'ivanalejandroperez2005@gmail.com', '', 'Empleado', 1, '1745021072565.jpg');
 
 --
 -- Índices para tablas volcadas
@@ -449,6 +451,7 @@ ALTER TABLE `solicitudes_materia_prima`
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`ID`),
   ADD UNIQUE KEY `usuario` (`Usuario`),
+  ADD UNIQUE KEY `Nombre` (`Nombre`),
   ADD KEY `estado_id` (`ID_Estado`);
 
 --
@@ -459,7 +462,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `colchones`
 --
 ALTER TABLE `colchones`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_colchon`
@@ -471,7 +474,7 @@ ALTER TABLE `detalle_colchon`
 -- AUTO_INCREMENT de la tabla `materia_prima`
 --
 ALTER TABLE `materia_prima`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `movimientos`
@@ -489,7 +492,7 @@ ALTER TABLE `proveedores`
 -- AUTO_INCREMENT de la tabla `solicitudes_materia_prima`
 --
 ALTER TABLE `solicitudes_materia_prima`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
