@@ -20,7 +20,7 @@ const Movimientos = () => {
   });
   const [editandoID, setEditandoID] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(9);
+  const [itemsPerPage] = useState(8);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -283,7 +283,14 @@ const Movimientos = () => {
                 <Table.Cell>{mov.Tipo}</Table.Cell>
                 <Table.Cell>{mov.Cantidad}</Table.Cell>
                 <Table.Cell>{proveedores.find((p) => p.ID === mov.ID_Proveedor)?.Nombre || "N/A"}</Table.Cell>
-                <Table.Cell>{new Date(mov.Fecha).toISOString().slice(0, 10)}</Table.Cell>
+                <Table.Cell>
+                                          <div className="date-cell">                               
+                                            {mov.Fecha_Date}
+                                            <div className="time-text">
+                                              {mov.Fecha_Time}
+                                            </div>
+                                          </div>
+                                        </Table.Cell>
                 <Table.Cell>
                   <Button icon color="blue" onClick={() => handleEditar(mov.ID)}><Icon name="edit" /></Button>
                   <Button icon color="red" onClick={() => handleEliminar(mov.ID)}><Icon name="trash" /></Button>

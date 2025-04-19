@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/dbMysql");
+const moment = require('moment-timezone');
 
 /**
  * @swagger
@@ -27,14 +28,29 @@ router.get("/movimientos", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT * FROM movimientos");
 
-    const datosFormateados = rows.map((item) => ({
-      ...item,
-      Fecha: item.Fecha ? new Date(item.Fecha).toISOString().split("T")[0] : null,
-    }));
+    const datosFormateados = rows.map((item) => {
+      const formattedItem = { ...item };
+
+      // Formatear fecha igual que en solicitudes/pendientes
+      if (item.Fecha) {
+        formattedItem.Fecha_Date = moment(item.Fecha)
+          .tz('America/Bogota')
+          .format('YYYY-MM-DD');
+        formattedItem.Fecha_Time = moment(item.Fecha)
+          .tz('America/Bogota')
+          .format('h:mm:ss A'); // Formato 12h con AM/PM
+      }
+
+      return formattedItem;
+    });
 
     res.json(datosFormateados);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error en /movimientos:", error);
+    res.status(500).json({ 
+      error: "Error en el servidor",
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 
