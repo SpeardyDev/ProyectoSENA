@@ -1,10 +1,12 @@
-import { useState } from "react";
-import {FiInfo, FiLogOut, FiChevronDown, FiChevronUp} from "react-icons/fi";
-import "./styles/menuPerfil.css";
+import { useState, useContext } from "react";
+import { FiInfo, FiLogOut, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import defaultAvatar from "../backend/uploads/foto-perfil.jpg"; 
+import "./styles/menuPerfil.css";
 
 const MenuDePerfil = ({ avatar }) => {
+  const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState("");
@@ -14,30 +16,17 @@ const MenuDePerfil = ({ avatar }) => {
     setActiveDropdown(activeDropdown === dropdown ? "" : dropdown);
   };
 
+  // Función para cerrar sesión
   const CerrarSesion = async () => {
     alert("Saliendo de la sesión");
     try {
-      const response = await fetch("http://localhost:3000/cerrarsesion", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      // Limpiar almacenamiento local
+      localStorage.clear();
+      logout();
+      navigate("/login"); // Evita volver atrás
 
-      if (typeof response.json !== "function") {
-        throw new Error("La respuesta no es un objeto JSON válido");
-      }
-
-      const result = await response.json();
-
-      if (response.ok) {
-        console.log(result.message);
-        navigate("/Login");
-      } else {
-        console.error("Error al cerrar sesión:", result.message);
-      }
     } catch (error) {
-      console.error("Error en el servidor:", error);
+      console.error("Error al cerrar sesión:", error);
     }
   };
 

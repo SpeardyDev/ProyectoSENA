@@ -2,7 +2,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers } from "@fortawesome/free-solid-svg-icons";
 import logo from "../img/LogoMarflex.png";
 import { useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState, useEffect } from "react";
+import { AuthContext } from "../context/AuthContext";
 import "./styles/Login.css"; 
 import axios from "axios";
 
@@ -11,6 +12,18 @@ function Login() {
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
+  const { isAuthenticated, login } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const rol = localStorage.getItem("rol");
+      if (rol === "Administrador") {
+        navigate("/HomeAdmin", { replace: true });
+      } else if (rol === "Empleado") {
+        navigate("/HomeEmpleado", { replace: true });
+      }
+    }
+  }, [isAuthenticated, navigate]);
 
   const IniciarLogin = async (e) => {
     e.preventDefault();
@@ -29,14 +42,9 @@ function Login() {
       localStorage.setItem("nombre", nombre); 
       localStorage.setItem("rol", rol); 
       localStorage.setItem("fotoPerfil", fotoPerfil || "foto-perfil.jpg");
-  
-      if (rol === "Administrador") {
-        alert("Login exitoso administrador");
-        navigate("/HomeAdmin");
-      } else if (rol === "Empleado") {
-        alert("Login exitoso empleado");
-        navigate("/HomeEmpleado");
-      }
+
+      login(token); // Autentica al usuario en el contexto
+      
     } catch (error) {
       console.error("Error en el login:", error);
       alert("Usuario o contraseña incorrectos");
