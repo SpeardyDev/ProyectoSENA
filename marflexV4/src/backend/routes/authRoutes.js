@@ -4,12 +4,12 @@ const upload = require('../middleware/upload');
 const auth = require('../middleware/authMiddleware');
 const fs = require('fs');
 const path = require('path');
-const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 dotenv.config();
+const bd = require("../config/dbMysql");
 const otpStore = {};
 
 /**
@@ -46,23 +46,30 @@ const otpStore = {};
 // Registro de usuario
 router.post("/registrar", async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
+    const { documento, nombre, username, password, telefono, estado, rol } = req.body;
+
+    // Verifica si el usuario existe
+    const [existing] = await bd.execute(
+      "SELECT id FROM users WHERE username = ?",
+      [username]
+    );
+    if (existing.length > 0) {
       return res.status(400).send({ message: "El usuario ya existe." });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ ...req.body, password: hashedPassword });
 
-    await newUser.save();
+    // Inserta siguiendo el orden del initialFormState
+    await bd.execute(
+      "INSERT INTO users (documento, nombre, username, password, telefono, estado, rol) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [documento, nombre, username, hashedPassword, telefono, estado, rol || 'usuario']
+    );
     res.status(201).send({ message: "Usuario registrado exitosamente" });
   } catch (error) {
     console.error("Error al registrar usuario:", error);
     res.status(400).send({ message: "Error al registrar usuario", error });
   }
 });
-
 /**
  * @swagger
  * /auth/login:
@@ -89,42 +96,43 @@ router.post("/registrar", async (req, res) => {
  *         description: Error en el servidor
  */
 
+
 // Inicio de sesión
 router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
-
-    const user = await User.findOne({ username });
-    if (!user) {
+    const [rows] = await bd.execute(
+      "SELECT id, username, password, nombre, rol, fotoPerfil FROM users WHERE username = ?",
+      [username]
+    );
+    if (rows.length === 0) {
       return res.status(400).send({ message: "Usuario o contraseña incorrectos" });
     }
-
+    const user = rows[0];
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).send({ message: "Usuario o contraseña incorrectos" });
     }
-
     const token = jwt.sign(
-      { id: user._id, rol: user.rol },
+      { id: user.id, rol: user.rol },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-
     res.send({
       message: "Ingreso exitoso",
       success: true,
       token,
       nombre: user.nombre,
       rol: user.rol,
-      userId: user._id,
+      userId: user.id,
       fotoPerfil: user.fotoPerfil || null
     });
-    
   } catch (error) {
     console.error("Error en el servidor:", error);
     res.status(500).send({ message: "Error en el servidor" });
   }
 });
+
 
 /**
  * @swagger
@@ -150,6 +158,7 @@ router.post("/cerrarsesion", (req, res) => {
   }
 });
 
+// Configuración de nodemailer
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -183,22 +192,22 @@ const transporter = nodemailer.createTransport({
 // Enviar código OTP para la recuperación de contraseña
 router.post("/recuperar-password", async (req, res) => {
   const { username } = req.body;
-  const usuario = await User.findOne({ username });
-
-  if (!usuario) {
+  const [rows] = await bd.execute(
+    "SELECT id, username FROM users WHERE username = ?",
+    [username]
+  );
+  if (rows.length === 0) {
     return res.status(404).json({ message: "Usuario no encontrado." });
   }
-
+  const usuario = rows[0];
   const otp = Math.floor(100000 + Math.random() * 900000);
   otpStore[username] = { otp, expires: Date.now() + 5 * 60 * 1000 };
-
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: usuario.username,
     subject: "Código de Recuperación",
     html: `<p>Tu código de recuperación es: <strong>${otp}</strong></p><p>Expira en 5 minutos.</p>`,
   };
-
   await transporter.sendMail(mailOptions);
   res.json({ message: "Código enviado al correo." });
 });
@@ -231,11 +240,9 @@ router.post("/recuperar-password", async (req, res) => {
 router.post("/verificar-otp", (req, res) => {
   const { username, otp } = req.body;
   const storedOtp = otpStore[username];
-
   if (!storedOtp || storedOtp.otp !== parseInt(otp) || storedOtp.expires < Date.now()) {
     return res.status(400).json({ message: "Código inválido o expirado." });
   }
-
   res.json({ message: "Código correcto. Puedes cambiar tu contraseña." });
 });
 
@@ -268,24 +275,26 @@ router.post("/verificar-otp", (req, res) => {
 // Restablecer contraseña
 router.post('/reset-password', async (req, res) => {
   const { username, password } = req.body;
-
   try {
-    const usuario = await User.findOne({ username });
-
-    if (!usuario) {
+    const [rows] = await bd.execute(
+      "SELECT id FROM users WHERE username = ?",
+      [username]
+    );
+    if (rows.length === 0) {
       return res.status(400).json({ message: "Usuario no encontrado." });
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-    usuario.password = hashedPassword;
-
-    await usuario.save();
+    await bd.execute(
+      "UPDATE users SET password = ? WHERE username = ?",
+      [hashedPassword, username]
+    );
     res.json({ message: "Contraseña restablecida con éxito." });
   } catch (error) {
     console.error("Error al actualizar la contraseña:", error);
     res.status(500).json({ message: "Error del servidor. Inténtalo de nuevo." });
   }
 });
+
 
 /**
  * @swagger
@@ -318,19 +327,24 @@ router.post('/reset-password', async (req, res) => {
 router.post('/usuarios/foto', auth, upload.single('fotoPerfil'), async (req, res) => {
   try {
     const userId = req.user.id;
-
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
-
-    user.fotoPerfil = req.file.filename;
-    await user.save();
-
-    res.json({ message: 'Foto actualizada', fotoPerfil: user.fotoPerfil });
+    // Busca el usuario
+    const [rows] = await bd.execute(
+      "SELECT fotoPerfil FROM users WHERE id = ?",
+      [userId]
+    );
+    if (rows.length === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
+    // Actualiza el nombre de la foto en la base de datos
+    await bd.execute(
+      "UPDATE users SET fotoPerfil = ? WHERE id = ?",
+      [req.file.filename, userId]
+    );
+    res.json({ message: 'Foto actualizada', fotoPerfil: req.file.filename });
   } catch (error) {
     console.error("Error actualizando foto de perfil:", error);
     res.status(500).json({ error: 'Error actualizando foto' });
   }
 });
+
 
 /**
  * @swagger
@@ -353,24 +367,28 @@ router.post('/usuarios/foto', auth, upload.single('fotoPerfil'), async (req, res
 router.delete('/eliminar/usuarios/foto', auth, async (req, res) => {
   try {
     const userId = req.user.id;
-    const user = await User.findById(userId);
-
-    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
-
-    if (user.fotoPerfil) {
-      const filePath = path.join(__dirname, '../uploads', user.fotoPerfil);
+    const [rows] = await bd.execute(
+      "SELECT fotoPerfil FROM users WHERE id = ?",
+      [userId]
+    );
+    if (rows.length === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
+    const fotoPerfil = rows[0].fotoPerfil;
+    if (fotoPerfil) {
+      const filePath = path.join(__dirname, '../uploads', fotoPerfil);
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
       }
-      user.fotoPerfil = undefined;
-      await user.save();
+      await bd.execute(
+        "UPDATE users SET fotoPerfil = NULL WHERE id = ?",
+        [userId]
+      );
     }
-
     res.json({ message: 'Foto eliminada con éxito' });
   } catch (error) {
     console.error("Error al eliminar foto:", error);
     res.status(500).json({ error: 'Error al eliminar la foto' });
   }
 });
+
 
 module.exports = router;
