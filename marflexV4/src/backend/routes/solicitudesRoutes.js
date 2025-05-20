@@ -32,12 +32,12 @@ router.get("/solicitudes_materia_prima", async (req, res) => {
     const [results] = await db.query(`
       SELECT 
         s.*,
-        u.Nombre AS NombreUsuario,
-        u.FotoPerfil
+        u.nombre AS NombreUsuario,
+        u.fotoPerfil
       FROM 
         solicitudes_materia_prima s
       JOIN 
-        usuarios u ON s.ID_Usuario = u.ID
+        users u ON s.ID_Usuario = u.ID
     `);
     
     // Formatear cada resultado
@@ -53,7 +53,7 @@ router.get("/solicitudes_materia_prima", async (req, res) => {
           .tz('America/Bogota')
           .format('h:mm:ss A');
       }
-      formattedItem.FotoPerfilUrl = `http://localhost:3000/uploads/${item.FotoPerfil}`;
+      formattedItem.FotoPerfilUrl = `http://localhost:3000/uploads/${item.fotoPerfil}`;
 
       return formattedItem;
     });
@@ -134,7 +134,6 @@ router.get("/solicitudes_materia_prima", async (req, res) => {
  *         description: Error en el servidor
  */
 
-// Crear una nueva solicitud
 router.post("/agregar/solicitudes_materia_prima", async (req, res) => {
   const {
     ID_Usuario,
@@ -148,8 +147,6 @@ router.post("/agregar/solicitudes_materia_prima", async (req, res) => {
       "INSERT INTO solicitudes_materia_prima (ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo) VALUES (?, ?, ?, ?, ?)",
       [ID_Usuario, ID_MateriaPrima, Cantidad_Solicitada, Estado, Motivo_Rechazo]
     );
-
-    // Emitir notificación en tiempo real a todos los clientes
     io.emit("nueva_solicitud", {
       id: result.insertId,
       ID_Usuario,
@@ -159,9 +156,9 @@ router.post("/agregar/solicitudes_materia_prima", async (req, res) => {
       Motivo_Rechazo,
       message: "Nueva solicitud de materia prima creada"
     });
-
     res.status(201).json({ id: result.insertId, ...req.body });
   } catch (err) {
+    console.error("Error al insertar solicitud:", err); // <-- agrega esto
     res.status(500).json({ error: err.message });
   }
 });
