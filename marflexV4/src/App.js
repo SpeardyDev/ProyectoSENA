@@ -1,4 +1,3 @@
-import React from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -12,7 +11,6 @@ import Login from "./components/Login.js";
 import RecuperarContraseña from "./components/Recuperar_Contraseña/RecuperarContraseña.js";
 import VerificarCodigo from "./components/Verificar_Codigo/VerificarCodigo.js";
 
-// Importar AuthProvider y RutaPrivada
 import { AuthProvider } from "./context/AuthContext.js";
 import RutaPrivada from "./backend/routes/privateRoute";
 

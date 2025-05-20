@@ -4,7 +4,6 @@ import { AuthContext } from "../../context/AuthContext";
 
 const RutaPrivada = ({ children }) => {
   const { isAuthenticated } = useContext(AuthContext);
-
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 

@@ -2,48 +2,51 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers } from "@fortawesome/free-solid-svg-icons";
 import logo from "../img/LogoMarflex.png";
 import { useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import "./styles/Login.css"; 
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const IniciarLogin = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await axios.post("http://localhost:3000/login", {
-      username: username.trim().toLowerCase(),
-      password,
-    });
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:3000/login", {
+        username: username.trim().toLowerCase(),
+        password,
+      });
 
-    // Extrae los datos de la respuesta
-    const { token, rol, userId, nombre, fotoPerfil, username: usuario } = response.data;
+      // Extrae los datos de la respuesta
+      const { token, rol, userId, nombre, fotoPerfil, username: usuario } = response.data;
 
-    // Guardar en localStorage
-    localStorage.setItem("token", token);
-    localStorage.setItem("username", usuario); 
-    localStorage.setItem("userId", userId);
-    localStorage.setItem("nombre", nombre);
-    localStorage.setItem("rol", rol);
-    localStorage.setItem("fotoPerfil", fotoPerfil || "foto-perfil.jpg");
+      // Guardar en localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("username", usuario); 
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("nombre", nombre);
+      localStorage.setItem("rol", rol);
+      localStorage.setItem("fotoPerfil", fotoPerfil || "foto-perfil.jpg");
 
-    if (rol === "Administrador") {
-      alert("Login exitoso administrador");
-      navigate("/HomeAdmin");
-    } else if (rol === "Empleado") {
-      alert("Login exitoso empleado");
-      navigate("/HomeEmpleado");
+      login(); // Actualiza contexto
+
+      if (rol === "Administrador") {
+        alert("Login exitoso administrador");
+        navigate("/HomeAdmin");
+      } else if (rol === "Empleado") {
+        alert("Login exitoso empleado");
+        navigate("/HomeEmpleado");
+      }
+    } catch (error) {
+      console.error("Error en el login:", error);
+      alert("Usuario o contraseña incorrectos");
     }
-  } catch (error) {
-    console.error("Error en el login:", error);
-    alert("Usuario o contraseña incorrectos");
-  }
-};
-  
+  };
 
   const PasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
