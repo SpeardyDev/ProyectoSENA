@@ -31,7 +31,7 @@ services:
   backend:
     build:
       context: ./src/backend
-      dockerfile: dockerfile/Dockerfile.nodejs
+      dockerfile: dockerfile/Dockerfile.backend
     container_name: backend
     ports:
       - "3001:3001"
@@ -40,4 +40,13 @@ services:
       - /usr/src/app/node_modules
     environment:
       - NODE_ENV=development
+    restart: always
+
+  frontend:
+    build:
+      context: /workspaces/ProyectoSENA/marflexV4
+      dockerfile: dockerfile/Dockerfile.frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
     restart: always
