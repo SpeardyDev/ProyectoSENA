@@ -86,7 +86,7 @@ function Usuarios() {
   };
 
   const handleEditar = (id) => {
-    const usuario = usuarios.find((item) => item._id === id);
+    const usuario = usuarios.find((item) => item.id === id);
     if (usuario) {
       setFormularioDatos((prevState) => ({
         ...prevState,
@@ -141,11 +141,11 @@ function Usuarios() {
 
   const filteredItems = usuarios.filter(
     (item) =>
-      item.documento.toString().includes(searchTerm) ||
-      item.nombre.toString().includes(searchTerm) ||
-      item.username.toString().includes(searchTerm) ||
-      item.estado.toString().includes(searchTerm) ||
-      item.rol.toString().includes(searchTerm)
+      (item.documento ?? "").toString().toLowerCase().includes(searchTerm) ||
+      (item.nombre ?? "").toString().toLowerCase().includes(searchTerm) ||
+      (item.username ?? "").toString().toLowerCase().includes(searchTerm) ||
+      (item.estado ?? "").toString().toLowerCase().includes(searchTerm) ||
+      (item.rol ?? "").toString().toLowerCase().includes(searchTerm)
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -284,7 +284,7 @@ function Usuarios() {
         </Table.Header>
         <Table.Body>
           {currentItems.map((usuario, index) => (
-            <Table.Row key={usuario._id}>
+            <Table.Row key={usuario.id}>
               <Table.Cell>{index + 1 + indexOfFirstItem}</Table.Cell>
               <Table.Cell>{usuario.documento}</Table.Cell>
               <Table.Cell>{usuario.nombre}</Table.Cell>
@@ -296,14 +296,14 @@ function Usuarios() {
                 <Button
                   icon
                   color="blue"
-                  onClick={() => handleEditar(usuario._id)}
+                  onClick={() => handleEditar(usuario.id)}
                 >
                   <Icon name="edit" />
                 </Button>
                 <Button
                   icon
                   color="red"
-                  onClick={() => handleEliminar(usuario._id)}
+                  onClick={() => handleEliminar(usuario.id)}
                 >
                   <Icon name="trash" />
                 </Button>
