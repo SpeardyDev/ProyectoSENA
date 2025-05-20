@@ -32,10 +32,12 @@ services:
     build:
       context: ./src/backend
       dockerfile: dockerfile/Dockerfile.nodejs
+    container_name: backend
     ports:
       - "3001:3001"
     volumes:
       - ./src/backend:/usr/src/app
+      - /usr/src/app/node_modules
     environment:
       - NODE_ENV=development
     restart: always

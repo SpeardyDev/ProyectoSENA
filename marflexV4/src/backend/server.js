@@ -21,7 +21,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 const app = express();
-const puerto = process.env.PORT || 3000;
+const puerto = process.env.PORT || 3001;
 
 
 // Middlewares básicos
