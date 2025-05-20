@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const db = require("../config/dbMysql");
-const models = require("../models/User");
+
 
 /**
  * @swagger
@@ -24,55 +24,16 @@ const models = require("../models/User");
  *         description: Error en el servidor
  */
 
-// Obtener todos los usuarios (MongoDB)
+// Obtener todos los usuarios (MySQL)
 router.get("/api/usuarios", async (req, res) => {
   try {
-    const usuarios = await models.find();
+    const [usuarios] = await db.execute("SELECT * FROM users");
     res.json(usuarios);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener los usuarios", error });
   }
 });
 
-// Obtener todos los usuarios (MySQL)
-router.get("/usuarios", async (req, res) => {
-  try {
-    const [results] = await db.query("SELECT * FROM usuarios");
-    res.json(results);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-router.post("/verificar-o-registrar", async (req, res) => {
-  const { Nombre, Rol, FotoPerfil, Username } = req.body;
-
-  try {
-    const [usuario] = await db.execute("SELECT * FROM usuarios WHERE Nombre = ?", [Nombre]);
-
-    if (usuario.length > 0) {
-      return res.status(200).json({
-        message: "El nombre de usuario ya existe.",
-        ID: usuario[0].ID
-      });
-    }
-
-    const [resultado] = await db.execute(
-      "INSERT INTO usuarios (Nombre, Rol, FotoPerfil, Usuario ) VALUES (?, ?, ?, ?)",
-      [Nombre, Rol, FotoPerfil, Username]
-    );
-
-    const insertId = resultado.insertId;
-
-    res.status(201).json({
-      message: "Usuario registrado exitosamente.",
-      ID: insertId
-    });
-  } catch (error) {
-    console.error("Error al verificar o registrar usuario:", error);
-    res.status(500).json({ error: "Error en el servidor." });
-  }
-});
 
 /**
  * @swagger
@@ -109,32 +70,44 @@ router.post("/verificar-o-registrar", async (req, res) => {
  *         description: Error en el servidor
  */
 
-// Actualizar usuario (MongoDB)
+// Actualizar usuario (MySQL)
 router.put("/api/editar/usuarios/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const datosActualizados = req.body;
+    const datosActualizados = { ...req.body };
 
+    // Si hay contraseña, hasheala
     if (datosActualizados.password) {
-      datosActualizados.password = await bcrypt.hash(
-        datosActualizados.password,
-        10
-      );
+      datosActualizados.password = await bcrypt.hash(datosActualizados.password, 10);
     }
 
-    const usuarioActualizado = await models.findByIdAndUpdate(
-      id,
-      datosActualizados,
-      {
-        new: true,
-      }
+    // Construye la parte SET dinámica
+    const campos = [];
+    const valores = [];
+    for (let campo in datosActualizados) {
+      campos.push(`${campo} = ?`);
+      valores.push(datosActualizados[campo]);
+    }
+
+    if (campos.length === 0) {
+      return res.status(400).json({ message: "No hay datos para actualizar" });
+    }
+
+    valores.push(id);
+
+    // Actualiza
+    const [result] = await db.execute(
+      `UPDATE users SET ${campos.join(", ")} WHERE id = ?`,
+      valores
     );
 
-    if (!usuarioActualizado) {
+    if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
-    res.json(usuarioActualizado);
+    // Devuelve el usuario actualizado
+    const [usuarioActualizado] = await db.execute("SELECT * FROM users WHERE id = ?", [id]);
+    res.json(usuarioActualizado[0]);
   } catch (error) {
     res.status(500).json({ message: "Error al actualizar el usuario", error });
   }
@@ -188,16 +161,17 @@ router.put("/actualizar/usuarios/:id", async (req, res) => {
  *         description: Error en el servidor
  */
 
-// Eliminar usuario (MongoDB)
+// Eliminar usuario (MySQL)
 router.delete("/api/eliminar/usuarios/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const usuarioEliminado = await models.findByIdAndDelete(id);
-
-    if (!usuarioEliminado) {
+    // Primero verifica si existe
+    const [exist] = await db.execute("SELECT id FROM users WHERE id = ?", [id]);
+    if (exist.length === 0) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
-
+    // Elimina
+    await db.execute("DELETE FROM users WHERE id = ?", [id]);
     res.json({ message: "Usuario eliminado con éxito" });
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar el usuario", error });
