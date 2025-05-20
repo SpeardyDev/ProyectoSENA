@@ -1,0 +1,41 @@
+name: marflexV4
+
+services:
+  mysql:
+    build:
+      context: ./src/backend/dockerfile
+      dockerfile: Dockerfile.mysql
+    container_name: mysql
+    stdin_open: true
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456789
+      MYSQL_DATABASE: bdmarflex
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
+    ports:
+      - "3306:3306"
+    restart: always
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: 123456789
+    ports:
+      - "80:80"
+    restart: always
+
+  backend:
+    build:
+      context: ./src/backend
+      dockerfile: dockerfile/Dockerfile.nodejs
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./src/backend:/usr/src/app
+    environment:
+      - NODE_ENV=development
+    restart: always
