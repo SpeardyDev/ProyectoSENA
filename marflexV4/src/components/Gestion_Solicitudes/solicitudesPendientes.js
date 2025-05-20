@@ -53,7 +53,6 @@ const SolicitudPendientes = () => {
     axios
       .get("http://localhost:3000/solicitudes/pendientes")
       .then((response) => {
-        console.log("Datos obtenidos del servidor:", response.data);
         setSolicitudes(response.data);
       })
       .catch((error) =>
@@ -64,12 +63,12 @@ const SolicitudPendientes = () => {
 
   const obtenerUsuarios = () => {
     axios
-      .get("http://localhost:3000/usuarios")
+      .get("http://localhost:3000/api/usuarios")
       .then((response) => {
         const opciones = response.data.map((usuario) => ({
-          key: usuario.ID,
-          text: usuario.Nombre,
-          value: usuario.ID,
+          key: usuario.id,
+          text: usuario.nombre,
+          value: usuario.id,
         }));
         setUsuarios(opciones);
       })
