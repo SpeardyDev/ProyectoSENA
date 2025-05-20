@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const connectMongoDB = require("./config/dbMongo"); 
+
 const { swaggerDocs: V1SwaggerDocs } = require("./swagger");
 const path = require("path");
 
@@ -23,12 +23,6 @@ const { Server } = require("socket.io");
 const app = express();
 const puerto = process.env.PORT || 3000;
 
-// Conectar a MongoDB
-connectMongoDB().then(() => {
-  console.log("Conexión a MongoDB exitosa");
-}).catch((err) => {
-  console.error("Error al conectar a MongoDB:", err);
-});
 
 // Middlewares básicos
 app.use(cors());
@@ -67,7 +61,7 @@ app.use(materiaprimaRoutes);
 app.use(movimientosRoutes);
 app.use(proveedoresRoutes);
 app.use(reportes);
-app.use(solicitudesRoutes(io)); // Pasar `io` como parámetro para su uso en rutas
+app.use(solicitudesRoutes(io)); 
 app.use(usuariosRoutes);
 
 // Configuración de eventos de Socket.IO
@@ -85,3 +79,4 @@ servidor.listen(puerto, () => {
 });
 
 module.exports = { app, servidor, io };
+
