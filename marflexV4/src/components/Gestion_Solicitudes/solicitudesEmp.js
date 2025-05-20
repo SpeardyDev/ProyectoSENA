@@ -50,12 +50,12 @@ const opcionesUsuario = [
 
   const obtenerUsuarios = async () => {
     axios
-      .get("http://localhost:3000/usuarios")
+      .get("http://localhost:3000/api/usuarios")
       .then((response) => {
         const opciones = response.data.map((usuario) => ({
-          key: usuario.ID,
-          text: usuario.Nombre,
-          value: usuario.ID,
+          key: usuario.id,
+          text: usuario.nombre,
+          value: usuario.id,
         }));
         setUsuarios(opciones);
       })
@@ -83,49 +83,49 @@ const opcionesUsuario = [
     setFormularioDatos({ ...formularioDatos, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    const userData = {
-      Nombre: localStorage.getItem("nombre")?.trim() || "",
-      Username: localStorage.getItem("username")?.trim() || "",
-      Rol: localStorage.getItem("rol")?.trim() || "",
-      FotoPerfil: localStorage.getItem("fotoPerfil")?.trim() || ""
-    };
-    
-  
-    try {
-      const response = await axios.post("http://localhost:3000/verificar-o-registrar", userData);
-      const userID = response.data.ID;
-  
-      const updatedData = {
-        ...formularioDatos,
-        ID_Usuario: userID
-      };
-  
-      const url = editandoID
-        ? `http://localhost:3000/actualizar/solicitudes_materia_prima/${editandoID}`
-        : "http://localhost:3000/agregar/solicitudes_materia_prima";
-  
-      const method = editandoID ? axios.put : axios.post;
-      await method(url, updatedData);
-  
-      setMostrarFormulario(false);
-      setEditandoID(null);
-      mostrarSolicitudes();
-  
-      Swal.fire({
-        position: "top-center",
-        icon: "success",
-        title: editandoID ? "Registro actualizado con éxito." : "Registro guardado con éxito.",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      mostrarSolicitudes();
-    } catch (error) {
-      console.error("Error en el proceso:", error);
-    }
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  // Obtén el ID del usuario logueado desde localStorage o donde lo tengas guardado
+  const userID = localStorage.getItem("userId");
+
+  if (!userID) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se encontró el usuario logueado.",
+    });
+    return;
+  }
+
+  const updatedData = {
+    ...formularioDatos,
+    ID_Usuario: userID
   };
+
+  const url = editandoID
+    ? `http://localhost:3000/actualizar/solicitudes_materia_prima/${editandoID}`
+    : "http://localhost:3000/agregar/solicitudes_materia_prima";
+
+  const method = editandoID ? axios.put : axios.post;
+  try {
+    await method(url, updatedData);
+    setMostrarFormulario(false);
+    setEditandoID(null);
+    mostrarSolicitudes();
+
+    Swal.fire({
+      position: "top-center",
+      icon: "success",
+      title: editandoID ? "Registro actualizado con éxito." : "Registro guardado con éxito.",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    mostrarSolicitudes();
+  } catch (error) {
+    console.error("Error en el proceso:", error);
+  }
+};
   
   
   
@@ -327,7 +327,7 @@ const opcionesUsuario = [
               </Table.Cell>
               <Table.Cell>{solicitud.Cantidad_Solicitada}</Table.Cell>
               <Table.Cell>{solicitud.Estado}</Table.Cell>
-              <Table.Cell>{solicitud.Motivo_Rechazo || "Nulo"}</Table.Cell>
+              <Table.Cell>{solicitud.Motivo_Rechazo || "N/A"}</Table.Cell>
               <Table.Cell>
                 <Button
                   icon
