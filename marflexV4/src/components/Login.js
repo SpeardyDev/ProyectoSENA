@@ -25,7 +25,7 @@ function Login() {
 
     // Guardar en localStorage
     localStorage.setItem("token", token);
-    localStorage.setItem("username", usuario); // Usa el nombre correcto del backend
+    localStorage.setItem("username", usuario); 
     localStorage.setItem("userId", userId);
     localStorage.setItem("nombre", nombre);
     localStorage.setItem("rol", rol);
