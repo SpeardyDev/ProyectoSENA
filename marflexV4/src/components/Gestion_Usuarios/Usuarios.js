@@ -6,8 +6,8 @@ import Pagination from "../Pagination";
 import Swal from "sweetalert2";
 
 const Estados = [
-  { value: "Activo", text: "Activo" },
-  { value: "Inactivo", text: "Inactivo" },
+  { value: 1, text: "Activo" },
+  { value: 2, text: "Inactivo" },
 ];
 
 const Roles = [
@@ -21,8 +21,8 @@ const initialFormState = {
   username: "",
   password: "",
   telefono: "",
-  estado: "",
-  rol: "",
+  ID_Estado: 1, 
+  rol: "Empleado", 
 };
 
 function Usuarios() {
@@ -50,10 +50,16 @@ function Usuarios() {
   const handleChange = (e, data) => {
     if (data) {
       const { name, value } = data;
-      setFormularioDatos((prevState) => ({ ...prevState, [name]: value }));
+      setFormularioDatos((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
     } else {
       const { name, value } = e.target;
-      setFormularioDatos((prevState) => ({ ...prevState, [name]: value }));
+      setFormularioDatos((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
     }
   };
 
@@ -88,16 +94,15 @@ function Usuarios() {
   const handleEditar = (id) => {
     const usuario = usuarios.find((item) => item.id === id);
     if (usuario) {
-      setFormularioDatos((prevState) => ({
-        ...prevState,
-        documento: usuario.documento,
-        nombre: usuario.nombre,
-        username: usuario.username,
+      setFormularioDatos({
+        documento: usuario.documento || "",
+        nombre: usuario.nombre || "",
+        username: usuario.username || "",
         password: "",
-        telefono: usuario.telefono,
-        estado: usuario.estado,
-        rol: usuario.rol,
-      }));
+        telefono: usuario.telefono || "",
+        ID_Estado: usuario.ID_Estado || 1,
+        rol: usuario.rol || "Empleado",
+      });
       setEditarUsuario(id);
       setMostrarFormulario(true);
     }
@@ -124,15 +129,7 @@ function Usuarios() {
   };
 
   const LimpiarFormulario = () => {
-    setFormularioDatos({
-      documento: "",
-      nombre: "",
-      username: "",
-      password: "",
-      telefono: "",
-      estado: "",
-      rol: "",
-    });
+    setFormularioDatos(initialFormState);
   };
 
   const handleSearchChange = (e, { value }) => {
@@ -144,7 +141,10 @@ function Usuarios() {
       (item.documento ?? "").toString().toLowerCase().includes(searchTerm) ||
       (item.nombre ?? "").toString().toLowerCase().includes(searchTerm) ||
       (item.username ?? "").toString().toLowerCase().includes(searchTerm) ||
-      (item.estado ?? "").toString().toLowerCase().includes(searchTerm) ||
+      (item.ID_Estado
+        ? Estados.find((estado) => estado.value === item.ID_Estado)?.text.toLowerCase() || ""
+        : ""
+      ).includes(searchTerm) ||
       (item.rol ?? "").toString().toLowerCase().includes(searchTerm)
   );
 
@@ -205,9 +205,10 @@ function Usuarios() {
               <label>Estado</label>
               <Select
                 options={Estados}
-                name="estado"
-                value={formularioDatos.estado}
+                name="ID_Estado"
+                value={formularioDatos.ID_Estado}
                 onChange={(e, data) => handleChange(null, data)}
+                required
               />
             </Form.Field>
             <Form.Field>
@@ -217,6 +218,7 @@ function Usuarios() {
                 name="rol"
                 value={formularioDatos.rol}
                 onChange={(e, data) => handleChange(null, data)}
+                required
               />
             </Form.Field>
           </Form.Group>
@@ -290,7 +292,12 @@ function Usuarios() {
               <Table.Cell>{usuario.nombre}</Table.Cell>
               <Table.Cell>{usuario.username}</Table.Cell>
               <Table.Cell>{usuario.rol}</Table.Cell>
-              <Table.Cell>{usuario.estado}</Table.Cell>
+              <Table.Cell>
+                {
+                  Estados.find((estado) => estado.value === usuario.ID_Estado)
+                    ?.text || "Desconocido"
+                }
+              </Table.Cell>
               <Table.Cell>{usuario.telefono}</Table.Cell>
               <Table.Cell>
                 <Button

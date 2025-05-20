@@ -46,7 +46,23 @@ const otpStore = {};
 // Registro de usuario
 router.post("/registrar", async (req, res) => {
   try {
-    const { documento, nombre, username, password, telefono, estado, rol } = req.body;
+    let {
+      documento = null,
+      nombre = null,
+      username,
+      password,
+      telefono = null,
+      ID_Estado = 1, // Valor por defecto (Activo)
+      rol = 'Empleado'
+    } = req.body;
+
+    // Validación: ID_Estado debe ser 1 o 2 (Activo/Inactivo)
+    // Si viene vacío o no es válido, ponlo en 1 (Activo)
+    if (!ID_Estado || isNaN(ID_Estado) || ![1, 2].includes(Number(ID_Estado))) {
+      ID_Estado = 1;
+    } else {
+      ID_Estado = Number(ID_Estado);
+    }
 
     // Verifica si el usuario existe
     const [existing] = await bd.execute(
@@ -59,11 +75,22 @@ router.post("/registrar", async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Inserta siguiendo el orden del initialFormState
+    // Inserta los datos
     await bd.execute(
-      "INSERT INTO users (documento, nombre, username, password, telefono, estado, rol) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [documento, nombre, username, hashedPassword, telefono, estado, rol || 'usuario']
+      `INSERT INTO users 
+      (documento, nombre, username, password, telefono, ID_Estado, rol) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        documento,
+        nombre,
+        username,
+        hashedPassword,
+        telefono,
+        ID_Estado,
+        rol
+      ]
     );
+
     res.status(201).send({ message: "Usuario registrado exitosamente" });
   } catch (error) {
     console.error("Error al registrar usuario:", error);
