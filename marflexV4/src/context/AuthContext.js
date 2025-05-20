@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 
 export const AuthContext = createContext();
@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }) => {
     console.log("No hay token.");
   }
 }, []);
+
   const login = () => setIsAuthenticated(true);
 
   const logout = () => {

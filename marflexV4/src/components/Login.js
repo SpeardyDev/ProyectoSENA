@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers } from "@fortawesome/free-solid-svg-icons";
 import logo from "../img/LogoMarflex.png";
 import { useNavigate, Link } from "react-router-dom";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import "./styles/Login.css"; 
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
@@ -12,7 +12,18 @@ function Login() {
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { isAuthenticated, login } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const rol = localStorage.getItem("rol");
+      if (rol === "Administrador") {
+        navigate("/HomeAdmin", { replace: true });
+      } else if (rol === "Empleado") {
+        navigate("/HomeEmpleado", { replace: true });
+      }
+    }
+  }, [isAuthenticated, navigate]);
 
   const IniciarLogin = async (e) => {
     e.preventDefault();
@@ -33,7 +44,7 @@ function Login() {
       localStorage.setItem("rol", rol);
       localStorage.setItem("fotoPerfil", fotoPerfil || "foto-perfil.jpg");
 
-      login(); // Actualiza contexto
+      login(token); // Actualiza contexto
 
       if (rol === "Administrador") {
         alert("Login exitoso administrador");
