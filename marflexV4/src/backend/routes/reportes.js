@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/dbMysql");
-const Usuario = require("../models/User.js");
+
 
 /**
  * @swagger
@@ -363,15 +363,23 @@ router.post("/reporte-produccion-fechas", async (req, res) => {
 
 router.get("/Todos", async (req, res) => {
   try {
-    const usuariosMongo = await Usuario.find({}, "nombre username rol").lean();
+    // Obtener usuarios de MySQL
+    const [usuarios] = await db.query(
+      "SELECT id, nombre, username, rol FROM users"
+    );
+
+    // Obtener proveedores
     const [proveedores] = await db.query(
       "SELECT ID, Nombre, Telefono, Direccion FROM proveedores"
     );
+
+    // Obtener materia prima
     const [materia_prima] = await db.query(
       "SELECT ID, Nombre, Stock, Unidad FROM materia_prima"
     );
+
     res.json({
-      usuarios: usuariosMongo,
+      usuarios,
       proveedores,
       materia_prima,
     });
