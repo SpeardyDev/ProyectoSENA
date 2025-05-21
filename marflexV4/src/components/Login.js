@@ -28,7 +28,8 @@ function Login() {
   const IniciarLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3000/login", {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const response = await axios.post(`${backendUrl}/login`, {
         username: username.trim().toLowerCase(),
         password,
       });

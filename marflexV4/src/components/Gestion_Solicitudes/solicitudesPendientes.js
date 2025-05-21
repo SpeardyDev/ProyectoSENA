@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
-import { Button, Table, Icon, Dropdown,Input, Search } from "semantic-ui-react";
+import { Button, Table, Icon, Dropdown, Input, Search } from "semantic-ui-react";
 import axios from "axios";
 import "./styles/solicitudes.css";
 import Pagination from "../Pagination";
 import Swal from "sweetalert2";
 import { io } from "socket.io-client";
-const socket = io("http://localhost:3000"); 
+
+// Centraliza la URL del backend
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+const socket = io(backendUrl);
 
 const SolicitudPendientes = () => {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -19,8 +22,6 @@ const SolicitudPendientes = () => {
   const [itemsPerPage] = useState(8);
   const [searchTerm, setSearchTerm] = useState("");
 
-
-
   useEffect(() => {
     obtenerSolicitudesPendientes();
     obtenerUsuarios();
@@ -28,10 +29,7 @@ const SolicitudPendientes = () => {
 
     // Escucha los eventos en tiempo real cuando se agrega una nueva solicitud
     socket.on("nueva_solicitud", (nuevaSolicitud) => {
-      // Actualiza la lista de solicitudes sin recargar la página
       setSolicitudes((prevSolicitudes) => [nuevaSolicitud, ...prevSolicitudes]);
-
-      // Mostrar una notificación al administrador
       Swal.fire({
         title: "Nueva Solicitud Recibida",
         text: `Se ha agregado una nueva solicitud del usuario con ID: ${nuevaSolicitud.ID_Usuario}.`,
@@ -42,16 +40,17 @@ const SolicitudPendientes = () => {
       obtenerUsuarios();
       obtenerMateriasPrimas();
     });
-    
+
     // Limpiar listener cuando el componente se desmonte
     return () => {
       socket.off("nueva_solicitud");
     };
+    // eslint-disable-next-line
   }, []);
 
   const obtenerSolicitudesPendientes = () => {
     axios
-      .get("http://localhost:3000/solicitudes/pendientes")
+      .get(`${backendUrl}/solicitudes/pendientes`)
       .then((response) => {
         setSolicitudes(response.data);
       })
@@ -59,11 +58,10 @@ const SolicitudPendientes = () => {
         console.error("Error al obtener las solicitudes pendientes:", error)
       );
   };
-  
 
   const obtenerUsuarios = () => {
     axios
-      .get("http://localhost:3000/api/usuarios")
+      .get(`${backendUrl}/api/usuarios`)
       .then((response) => {
         const opciones = response.data.map((usuario) => ({
           key: usuario.id,
@@ -77,7 +75,7 @@ const SolicitudPendientes = () => {
 
   const obtenerMateriasPrimas = () => {
     axios
-      .get("http://localhost:3000/materia_prima")
+      .get(`${backendUrl}/materia_prima`)
       .then((response) => {
         const opciones = response.data.map((materia) => ({
           key: materia.ID,
@@ -101,7 +99,7 @@ const SolicitudPendientes = () => {
     try {
       if (newEstado === "Aprobada") {
         const response = await axios.post(
-          "http://localhost:3000/aprobar-solicitud",
+          `${backendUrl}/aprobar-solicitud`,
           { ID: id }
         );
 
@@ -115,7 +113,7 @@ const SolicitudPendientes = () => {
         console.log("Solicitud aprobada:", response.data);
       } else if (newEstado === "Rechazada" && motivoRechazo.trim()) {
         const response = await axios.post(
-          "http://localhost:3000/rechazar-solicitud",
+          `${backendUrl}/rechazar-solicitud`,
           {
             ID: id,
             Motivo_Rechazo: motivoRechazo.trim(),
@@ -176,7 +174,6 @@ const SolicitudPendientes = () => {
   const filteredItems = solicitudes.filter(
     (item) => item.ID && item.ID.toString().includes(searchTerm)
   );
-  
 
   const handlePageChange = (page) => setCurrentPage(page);
 
@@ -246,14 +243,14 @@ const SolicitudPendientes = () => {
                 </Table.Cell>
                 <Table.Cell>{solicitud.Cantidad_Solicitada}</Table.Cell>
                 <Table.Cell>
-                          <div className="date-cell">
-                            <Icon name="calendar alternate" />
-                            {solicitud.Fecha_Solicitud_Date}
-                            <div className="time-text">
-                              {solicitud.Fecha_Solicitud_Time}
-                            </div>
-                          </div>
-                        </Table.Cell>
+                  <div className="date-cell">
+                    <Icon name="calendar alternate" />
+                    {solicitud.Fecha_Solicitud_Date}
+                    <div className="time-text">
+                      {solicitud.Fecha_Solicitud_Time}
+                    </div>
+                  </div>
+                </Table.Cell>
                 <Table.Cell>
                   {editingSolicitud === solicitud.ID ? (
                     <Dropdown

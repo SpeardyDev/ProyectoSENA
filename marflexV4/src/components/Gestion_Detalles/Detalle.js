@@ -6,6 +6,9 @@ import axios from "axios";
 import Pagination from "../Pagination";
 import "./styles/detalles.css";
 
+// Centraliza la URL del backend
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+
 const Detalle = () => {
   const [detalles, setDetalles] = useState([]);
   const [colchones, setColchones] = useState([]);
@@ -25,11 +28,12 @@ const Detalle = () => {
     Promise.all([obtenerColchones(), obtenerMateriasPrimas()]).then(() =>
       mostrarDetalles()
     );
-  });
+    // eslint-disable-next-line
+  }, []);
 
   const mostrarDetalles = () => {
     axios
-      .get("http://localhost:3000/detalle_colchon")
+      .get(`${backendUrl}/detalle_colchon`)
       .then((response) => {
         const detallesConNombres = response.data.map((detalle) => {
           const materiaPrima = materiasPrimas.find(
@@ -53,7 +57,7 @@ const Detalle = () => {
 
   const obtenerColchones = () => {
     return axios
-      .get("http://localhost:3000/colchones")
+      .get(`${backendUrl}/colchones`)
       .then((response) => {
         const opciones = response.data.map((colchon) => ({
           key: colchon.ID,
@@ -69,7 +73,7 @@ const Detalle = () => {
 
   const obtenerMateriasPrimas = () => {
     return axios
-      .get("http://localhost:3000/materia_prima")
+      .get(`${backendUrl}/materia_prima`)
       .then((response) => {
         const opciones = response.data.map((materia) => ({
           key: materia.ID,
@@ -90,8 +94,8 @@ const Detalle = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const url = editandoID
-      ? `http://localhost:3000/actualizar/detalle_colchon/${editandoID}`
-      : "http://localhost:3000/agregar/detalle_colchon";
+      ? `${backendUrl}/actualizar/detalle_colchon/${editandoID}`
+      : `${backendUrl}/agregar/detalle_colchon`;
 
     const method = editandoID ? axios.put : axios.post;
 
@@ -125,7 +129,7 @@ const Detalle = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`http://localhost:3000/eliminar/detalle_colchon/${id}`)
+          .delete(`${backendUrl}/eliminar/detalle_colchon/${id}`)
           .then(() => {
             mostrarDetalles();
             Swal.fire(

@@ -6,6 +6,9 @@ import socket from "../../socket";
 import Pagination from "../Pagination";
 import "./styles/MateriaPrima.css";
 
+// Centraliza la URL del backend
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+
 const MateriasPrimas = () => {
   const [materiasp, setMateriasp] = useState([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
@@ -21,16 +24,16 @@ const MateriasPrimas = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [loading, setLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Nuevo estado para carga inicial
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
     const socketListeners = [];
-  
+
     const loadInitialData = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("http://localhost:3000/materia_prima");
+        const response = await axios.get(`${backendUrl}/materia_prima`);
         if (isMounted) {
           setMateriasp(response.data);
         }
@@ -49,7 +52,7 @@ const MateriasPrimas = () => {
         }
       }
     };
-  
+
     const setupSocket = () => {
       const handlers = {
         connect: () => {
@@ -74,23 +77,22 @@ const MateriasPrimas = () => {
         materia_prima_eliminada: (id) => {
           console.log("🗑️ Recibida eliminación:", id);
           if (isMounted) {
-            // Si es necesario, asegúrate de que tipo de id coincide (string vs number)
             setMateriasp(prev => prev.filter(item => Number(item.ID) !== Number(id)));
           }
         }
       };
-  
+
       Object.entries(handlers).forEach(([event, handler]) => {
         socket.on(event, handler);
         socketListeners.push({ event, handler });
       });
-  
+
       return handlers;
     };
-  
+
     setupSocket();
     loadInitialData();
-  
+
     return () => {
       isMounted = false;
       socketListeners.forEach(({ event, handler }) => {
@@ -98,7 +100,6 @@ const MateriasPrimas = () => {
       });
     };
   }, []);
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -108,8 +109,7 @@ const MateriasPrimas = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
-    // Validar campos requeridos
+
     if (!formularioDatos.Nombre || !formularioDatos.Unidad) {
       Swal.fire({
         position: 'center',
@@ -121,26 +121,21 @@ const MateriasPrimas = () => {
       setLoading(false);
       return;
     }
-  
-    // Preparar los datos a enviar, convirtiendo Stock en número (o 0 si no es válido)
+
     const datosEnviar = {
       ...formularioDatos,
       Stock: Number(formularioDatos.Stock) || 0
     };
-  
+
     try {
-      // Si editandoID existe, se actualiza; en caso contrario se agrega
       const url = editandoID
-        ? `http://localhost:3000/actualizar/materia_prima/${editandoID}`
-        : "http://localhost:3000/agregar/materia_prima";
-  
-      // Seleccionar método acorde al modo: PUT para editar, POST para agregar
+        ? `${backendUrl}/actualizar/materia_prima/${editandoID}`
+        : `${backendUrl}/agregar/materia_prima`;
+
       const requestMethod = editandoID ? axios.put : axios.post;
-  
-      // Realizar la solicitud
+
       const { data } = await requestMethod(url, datosEnviar);
-  
-      // Si la operación fue exitosa, se reinician los campos y se muestra la notificación
+
       if (data.success) {
         setMostrarFormulario(false);
         setEditandoID(null);
@@ -150,7 +145,7 @@ const MateriasPrimas = () => {
           Stock: "",
           Unidad: "",
         });
-  
+
         Swal.fire({
           position: 'top-end',
           icon: 'success',
@@ -160,7 +155,6 @@ const MateriasPrimas = () => {
           toast: true
         });
       } else {
-        // En caso de error (por ejemplo, validación en base de datos)
         Swal.fire({
           position: 'center',
           icon: 'error',
@@ -183,7 +177,6 @@ const MateriasPrimas = () => {
       setLoading(false);
     }
   };
-  
 
   const handleEliminar = (id) => {
     Swal.fire({
@@ -198,8 +191,8 @@ const MateriasPrimas = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const { data } = await axios.delete(`http://localhost:3000/eliminar/materia_prima/${id}`);
-          
+          const { data } = await axios.delete(`${backendUrl}/eliminar/materia_prima/${id}`);
+
           if (data.success) {
             Swal.fire({
               position: 'top-end',
@@ -210,7 +203,7 @@ const MateriasPrimas = () => {
               showConfirmButton: false,
               toast: true
             });
-            // Aquí podrías actualizar el estado para remover el ítem eliminado
+            // El socket se encarga de actualizar la lista
           } else {
             Swal.fire({
               position: 'center',
@@ -234,7 +227,6 @@ const MateriasPrimas = () => {
       }
     });
   };
-  
 
   const handleEditar = (id) => {
     const producto = materiasp.find((item) => item.ID === id);
@@ -349,19 +341,19 @@ const MateriasPrimas = () => {
                 showNoResults={false}
               />
               <span className="icon-text">
-            <i className="pi pi-filter" style={{ fontSize: "1.5rem" }}></i>
-            <span>Filtro</span>
-          </span>
+                <i className="pi pi-filter" style={{ fontSize: "1.5rem" }}></i>
+                <span>Filtro</span>
+              </span>
             </div>
             <div className="Contenedor-2">
-            <span className="icon-text">
-            <i className="pi pi-tag" style={{ fontSize: "1.5rem" }}></i>
-            <span>Categorías</span>
-          </span>
-          <span className="icon-text">
-            <i className="pi pi-upload" style={{ fontSize: "1.5rem" }}></i>
-            <span>Exportar</span>
-          </span>
+              <span className="icon-text">
+                <i className="pi pi-tag" style={{ fontSize: "1.5rem" }}></i>
+                <span>Categorías</span>
+              </span>
+              <span className="icon-text">
+                <i className="pi pi-upload" style={{ fontSize: "1.5rem" }}></i>
+                <span>Exportar</span>
+              </span>
               <Button
                 onClick={() => {
                   setMostrarFormulario(!mostrarFormulario);

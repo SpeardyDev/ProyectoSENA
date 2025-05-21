@@ -13,14 +13,14 @@ import Reportes from "./Gestion_de_Reportes/Reportes";
 import Movimientos from "./Gestion_Movimientos/Movimientos";
 import SolicitudesP from "./Gestion_Solicitudes/solicitudesPendientes";
 import Solicitudes from "./Gestion_Solicitudes/solicitudesAdmin";
-import NotificationIcon from "./Gestion_Solicitudes/NotificationIcon"
+import NotificationIcon from "./Gestion_Solicitudes/NotificationIcon";
 import { Button } from "semantic-ui-react";
 import axios from "axios";
 import { io } from "socket.io-client";
-const socket = io("http://localhost:3000");
 
-
-
+// Centraliza la URL del backend
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+const socket = io(backendUrl);
 
 const HomeAdmin = () => {
   const [visibleComponents, setVisibleComponents] = useState({
@@ -35,9 +35,10 @@ const HomeAdmin = () => {
 
   const [tieneNotificaciones, setTieneNotificaciones] = useState(false);
   const [cantidadNotificaciones, setCantidadNotificaciones] = useState(0);
+
   const obtenerSolicitudesPendientes = () => {
     axios
-      .get("http://localhost:3000/solicitudes/pendientes")
+      .get(`${backendUrl}/solicitudes/pendientes`)
       .then((response) => {
         const cantidad = response.data.length;
         setCantidadNotificaciones(cantidad);
@@ -51,27 +52,30 @@ const HomeAdmin = () => {
   useEffect(() => {
     // Al cargar, obtener solicitudes pendientes
     obtenerSolicitudesPendientes();
-    
-    // Escuchar evento en tiempo real para nuevas solicitudes
+
+    // Escuchar eventos en tiempo real para nuevas solicitudes
     socket.on("nueva_solicitud", (nuevaSolicitud) => {
-      // Incrementa el número de notificaciones
       setCantidadNotificaciones((prev) => prev + 1);
       setTieneNotificaciones(true);
-    },
+    });
+
     socket.on("solicitud_aprobada", () => {
       obtenerSolicitudesPendientes();
-    }),
+    });
 
     socket.on("solicitud_rechazada", () => {
       obtenerSolicitudesPendientes();
-    })
-  );
+    });
 
-    // Limpia el listener cuando el componente se desmonta
+    // Limpia los listeners cuando el componente se desmonta
     return () => {
       socket.off("nueva_solicitud");
+      socket.off("solicitud_aprobada");
+      socket.off("solicitud_rechazada");
     };
+    // eslint-disable-next-line
   }, []);
+
   const handleButtonClick = (componentName) => {
     setVisibleComponents((prevState) => ({
       ...prevState,
@@ -101,7 +105,7 @@ const HomeAdmin = () => {
       const token = localStorage.getItem("token");
 
       try {
-        const res = await fetch("http://localhost:3000/usuarios/foto", {
+        const res = await fetch(`${backendUrl}/usuarios/foto`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -112,7 +116,7 @@ const HomeAdmin = () => {
         const data = await res.json();
 
         if (data.fotoPerfil) {
-          setAvatar(`http://localhost:3000/uploads/${data.fotoPerfil}`);
+          setAvatar(`${backendUrl}/uploads/${data.fotoPerfil}`);
         } else {
           console.error("No se recibió fotoPerfil:", data);
         }
@@ -121,7 +125,8 @@ const HomeAdmin = () => {
       }
     }
   };
-  //////trae el nombre de usuario 
+
+  // trae el nombre de usuario 
   const [nombre, setNombre] = useState(""); 
 
   useEffect(() => {
@@ -133,20 +138,20 @@ const HomeAdmin = () => {
   
   useEffect(() => {
     const storedFoto = localStorage.getItem("fotoPerfil");
-    
 
     if (storedFoto) {
-      setAvatar(`http://localhost:3000/uploads/${storedFoto}`);
+      setAvatar(`${backendUrl}/uploads/${storedFoto}`);
     } else {
       setAvatar(require("../backend/uploads/foto-perfil.jpg"));
     }
+    // eslint-disable-next-line
   }, []);
 
   const eliminarFoto = async () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("http://localhost:3000/eliminar/usuarios/foto", {
+      const res = await fetch(`${backendUrl}/eliminar/usuarios/foto`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -196,46 +201,46 @@ const HomeAdmin = () => {
             style={{ display: BtnMenu ? "none" : "block" }}
           >
             <div className="contenido-usuario">
-  <FontAwesomeIcon
-    onClick={() => setBtnMenu(!BtnMenu)}
-    className="Btn_ocultar"
-    icon={faXmark}
-  />
+              <FontAwesomeIcon
+                onClick={() => setBtnMenu(!BtnMenu)}
+                className="Btn_ocultar"
+                icon={faXmark}
+              />
 
-  <div className="profile-container">
-    <img
-      id="profile-pic"
-      src={avatar || require("../backend/uploads/foto-perfil.jpg")}
-      alt="Foto de perfil"
-      className="profile-pic"
-    />
-    <input
-      type="file"
-      id="fileInput"
-      accept="image/*"
-      style={{ display: "none" }}
-      onChange={handleImageChange}
-    />
-    <button
-      onClick={() => document.getElementById("fileInput").click()}
-      className="btn-upload"
-    >
-      <i className="fa-solid fa-camera"></i>
-    </button>
-  </div>
+              <div className="profile-container">
+                <img
+                  id="profile-pic"
+                  src={avatar || require("../backend/uploads/foto-perfil.jpg")}
+                  alt="Foto de perfil"
+                  className="profile-pic"
+                />
+                <input
+                  type="file"
+                  id="fileInput"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleImageChange}
+                />
+                <button
+                  onClick={() => document.getElementById("fileInput").click()}
+                  className="btn-upload"
+                >
+                  <i className="fa-solid fa-camera"></i>
+                </button>
+              </div>
 
-  {avatar !== defaultAvatar && (
-    <Button
-      icon
-      color="red"
-      style={{ marginTop: "25px" }}
-      onClick={eliminarFoto}
-    >
-      Eliminar Foto
-    </Button>
-  )}
-  <p id="Nombre">{nombre}</p>
-</div>
+              {avatar !== defaultAvatar && (
+                <Button
+                  icon
+                  color="red"
+                  style={{ marginTop: "25px" }}
+                  onClick={eliminarFoto}
+                >
+                  Eliminar Foto
+                </Button>
+              )}
+              <p id="Nombre">{nombre}</p>
+            </div>
 
             <div className="contenido-menu">
               <div className="texto-menu">
@@ -482,6 +487,7 @@ const HomeAdmin = () => {
     </div>
   );
 };
+
 const MenuItem = ({ title, icon, children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [color, setColor] = useState("");

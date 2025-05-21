@@ -6,6 +6,9 @@ import axios from "axios";
 import Pagination from "../Pagination";
 import "./styles/Movimientos.css";
 
+// Centraliza la URL del backend
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+
 const Movimientos = () => {
   const [movimientos, setMovimientos] = useState([]);
   const [materiasPrimas, setMateriasPrimas] = useState([]);
@@ -26,15 +29,16 @@ const Movimientos = () => {
 
   useEffect(() => {
     obtenerDatosIniciales();
+    // eslint-disable-next-line
   }, []);
 
   const obtenerDatosIniciales = async () => {
     try {
       setLoading(true);
       const [movsRes, mpRes, provRes] = await Promise.all([
-        axios.get("http://localhost:3000/movimientos"),
-        axios.get("http://localhost:3000/materia_prima"),
-        axios.get("http://localhost:3000/proveedores"),
+        axios.get(`${backendUrl}/movimientos`),
+        axios.get(`${backendUrl}/materia_prima`),
+        axios.get(`${backendUrl}/proveedores`),
       ]);
 
       setMovimientos(movsRes.data);
@@ -57,8 +61,8 @@ const Movimientos = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = editandoID
-      ? `http://localhost:3000/actualizar/movimientos/${editandoID}`
-      : "http://localhost:3000/agregar/movimientos";
+      ? `${backendUrl}/actualizar/movimientos/${editandoID}`
+      : `${backendUrl}/agregar/movimientos`;
 
     try {
       if (editandoID) {
@@ -96,7 +100,7 @@ const Movimientos = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://localhost:3000/eliminar/movimientos/${id}`);
+          await axios.delete(`${backendUrl}/eliminar/movimientos/${id}`);
           Swal.fire("Eliminado!", "El registro ha sido eliminado.", "success");
           obtenerDatosIniciales();
         } catch (error) {
@@ -284,13 +288,13 @@ const Movimientos = () => {
                 <Table.Cell>{mov.Cantidad}</Table.Cell>
                 <Table.Cell>{proveedores.find((p) => p.ID === mov.ID_Proveedor)?.Nombre || "N/A"}</Table.Cell>
                 <Table.Cell>
-                                          <div className="date-cell">                               
-                                            {mov.Fecha_Date}
-                                            <div className="time-text">
-                                              {mov.Fecha_Time}
-                                            </div>
-                                          </div>
-                                        </Table.Cell>
+                  <div className="date-cell">
+                    {mov.Fecha_Date}
+                    <div className="time-text">
+                      {mov.Fecha_Time}
+                    </div>
+                  </div>
+                </Table.Cell>
                 <Table.Cell>
                   <Button icon color="blue" onClick={() => handleEditar(mov.ID)}><Icon name="edit" /></Button>
                   <Button icon color="red" onClick={() => handleEliminar(mov.ID)}><Icon name="trash" /></Button>

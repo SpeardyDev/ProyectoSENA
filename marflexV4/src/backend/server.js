@@ -1,9 +1,9 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 const { swaggerDocs: V1SwaggerDocs } = require("./swagger");
-const path = require("path");
 
 // Importar rutas
 const authRoutes = require("./routes/authRoutes");
@@ -23,19 +23,22 @@ const { Server } = require("socket.io");
 const app = express();
 const puerto = process.env.PORT || 3001;
 
+// SOLO UNA configuración de CORS para Express (REST)
+app.use(cors({
+  origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+  credentials: true,
+}));
 
-// Middlewares básicos
-app.use(cors());
 app.use(express.json());
 
 // Servir archivos estáticos (por ejemplo, para subidas)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Configuración de Socket.IO
+// Configuración de Socket.IO (CORS para frontend)
 const servidor = http.createServer(app);
 const io = new Server(servidor, {
   cors: {
-    origin: ["http://localhost:3001", "http://127.0.0.1:3001"],
+    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   },
@@ -79,4 +82,3 @@ servidor.listen(puerto, () => {
 });
 
 module.exports = { app, servidor, io };
-

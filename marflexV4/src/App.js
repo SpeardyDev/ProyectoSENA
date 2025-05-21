@@ -1,7 +1,7 @@
+import React from "react";
 import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
+  createBrowserRouter,
+  RouterProvider,
   Navigate,
 } from "react-router-dom";
 
@@ -11,40 +11,54 @@ import Login from "./components/Login.js";
 import RecuperarContraseña from "./components/Recuperar_Contraseña/RecuperarContraseña.js";
 import VerificarCodigo from "./components/Verificar_Codigo/VerificarCodigo.js";
 
-import { AuthProvider } from "./context/AuthContext.js";
 import RutaPrivada from "./backend/routes/privateRoute";
 
-const App = () => {
-  return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/RecuperarContraseña" element={<RecuperarContraseña />} />
-          <Route path="/VerificarCodigo" element={<VerificarCodigo />} />
+// Define tus rutas como un array
+const routes = [
+  {
+    path: "/",
+    element: <Navigate to="/login" />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/RecuperarContraseña",
+    element: <RecuperarContraseña />,
+  },
+  {
+    path: "/VerificarCodigo",
+    element: <VerificarCodigo />,
+  },
+  {
+    path: "/HomeAdmin",
+    element: (
+      <RutaPrivada>
+        <HomeAdmin />
+      </RutaPrivada>
+    ),
+  },
+  {
+    path: "/HomeEmpleado",
+    element: (
+      <RutaPrivada>
+        <HomeEmpleado />
+      </RutaPrivada>
+    ),
+  },
+];
 
-          {/* Rutas protegidas */}
-          <Route
-            path="/HomeAdmin"
-            element={
-              <RutaPrivada>
-                <HomeAdmin />
-              </RutaPrivada>
-            }
-          />
-          <Route
-            path="/HomeEmpleado"
-            element={
-              <RutaPrivada>
-                <HomeEmpleado />
-              </RutaPrivada>
-            }
-          />
-        </Routes>
-      </Router>
-    </AuthProvider>
-  );
-};
+// Crea el router con los future flags
+const router = createBrowserRouter(routes, {
+  future: {
+    v7_startTransition: true,
+    v7_relativeSplatPath: true,
+  },
+});
+
+const App = () => (
+  <RouterProvider router={router} />
+);
 
 export default App;

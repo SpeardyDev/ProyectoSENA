@@ -6,6 +6,9 @@ import { faUsers, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import "../styles/Login.css";
 import "../styles/Recuperar_contraseña.css";
 
+// Centraliza la URL del backend
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+
 function RecuperarContraseña() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,7 +19,7 @@ function RecuperarContraseña() {
     setLoading(true);
 
     try {
-      await axios.post("http://localhost:3000/recuperar-password", {
+      await axios.post(`${backendUrl}/recuperar-password`, {
         username,
       });
       localStorage.setItem("username", username);

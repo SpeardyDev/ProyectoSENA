@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import logo from "../img/LogoMarflex.png";
 import icono from "../img/forklift_30dp_DA954B_FILL0_wght400_GRAD0_opsz24.png";
-import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faXmark  } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import "./styles/HomeAdmin.css";
 import Colchones from "./Gestion_Colchones/Colchones.js";
 import Detalle from "./Gestion_Detalles/Detalle.js";
@@ -12,12 +11,16 @@ import Solicitud from "./Gestion_Solicitudes/solicitudesEmp.js";
 import Reportes from "./Gestion_de_Reportes/Reportes.js";
 import { Button } from "semantic-ui-react";
 
+// Centraliza la URL del backend
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+
 const HomeEmpleado = () => {
   const [visibleComponents, setVisibleComponents] = useState({
     dashboard: true,
     colchones: false,
     detalle: false,
     solicitud: false,
+    reportes: false,
   });
 
   const handleButtonClick = (componentName) => {
@@ -45,7 +48,7 @@ const HomeEmpleado = () => {
       const token = localStorage.getItem("token");
 
       try {
-        const res = await fetch("http://localhost:3000/usuarios/foto", {
+        const res = await fetch(`${backendUrl}/usuarios/foto`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -56,7 +59,7 @@ const HomeEmpleado = () => {
         const data = await res.json();
 
         if (data.fotoPerfil) {
-          setAvatar(`http://localhost:3000/uploads/${data.fotoPerfil}`);
+          setAvatar(`${backendUrl}/uploads/${data.fotoPerfil}`);
         } else {
           console.error("No se recibió fotoPerfil:", data);
         }
@@ -65,32 +68,33 @@ const HomeEmpleado = () => {
       }
     }
   };
-  
-   //////trae el nombre de usuario 
-   const [nombre, setNombre] = useState(""); 
 
-   useEffect(() => {
-     const storedNombre = localStorage.getItem("nombre");
-     if (storedNombre) {
-       setNombre(storedNombre);
-     }
-   }, []);
+  // Trae el nombre de usuario 
+  const [nombre, setNombre] = useState(""); 
+
+  useEffect(() => {
+    const storedNombre = localStorage.getItem("nombre");
+    if (storedNombre) {
+      setNombre(storedNombre);
+    }
+  }, []);
 
   useEffect(() => {
     const storedFoto = localStorage.getItem("fotoPerfil");
 
     if (storedFoto) {
-      setAvatar(`http://localhost:3000/uploads/${storedFoto}`);
+      setAvatar(`${backendUrl}/uploads/${storedFoto}`);
     } else {
       setAvatar(require("../backend/uploads/foto-perfil.jpg"));
     }
+    // eslint-disable-next-line
   }, []);
 
   const eliminarFoto = async () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("http://localhost:3000/eliminar/usuarios/foto", {
+      const res = await fetch(`${backendUrl}/eliminar/usuarios/foto`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -129,7 +133,7 @@ const HomeEmpleado = () => {
           </nav>
         </header>
         <section className="mayor">
-        <FontAwesomeIcon
+          <FontAwesomeIcon
             onClick={() => setBtnMenu(!BtnMenu)}
             className="menu-amburguesa"
             icon={faBars}
@@ -144,7 +148,7 @@ const HomeEmpleado = () => {
                 className="Btn_ocultar"
                 icon={faXmark}
               />
-            
+
               <div className="profile-container">
                 <img
                   id="profile-pic"
@@ -166,7 +170,7 @@ const HomeEmpleado = () => {
                   <i className="fa-solid fa-camera"></i>
                 </button>
               </div>
-            
+
               {avatar !== defaultAvatar && (
                 <Button
                   icon
@@ -374,6 +378,7 @@ const HomeEmpleado = () => {
     </div>
   );
 };
+
 const MenuItem = ({ title, icon, children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [color, setColor] = useState("");
@@ -387,9 +392,7 @@ const MenuItem = ({ title, icon, children }) => {
     <li onClick={toggleMenu} style={{ color }}>
       <i className={icon}></i> {title}
       <i
-        className={`fa-regular ${
-          isOpen ? "fa-square-minus" : "fa-square-plus"
-        }`}
+        className={`fa-regular ${isOpen ? "fa-square-minus" : "fa-square-plus"}`}
         style={{ float: "right" }}
       ></i>
       {isOpen && <ul className="submenu">{children}</ul>}

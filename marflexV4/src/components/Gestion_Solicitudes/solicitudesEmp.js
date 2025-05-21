@@ -5,6 +5,9 @@ import axios from "axios";
 import Pagination from "../Pagination";
 import "./styles/solicitudes.css";
 
+// Centraliza la URL del backend
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+
 const SolicitudEmp = () => {
   const [solicitudes, setSolicitudes] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
@@ -22,24 +25,24 @@ const SolicitudEmp = () => {
   const [itemsPerPage] = useState(8);
   const [searchTerm, setSearchTerm] = useState("");
   const usuarioLogueado = localStorage.getItem("nombre");
-const opcionesUsuario = [
-  {
-    key: 1,
-    text: usuarioLogueado,
-    value: usuarioLogueado, 
-  }
-];
-
+  const opcionesUsuario = [
+    {
+      key: 1,
+      text: usuarioLogueado,
+      value: usuarioLogueado,
+    }
+  ];
 
   useEffect(() => {
     mostrarSolicitudes();
     obtenerUsuarios();
     obtenerMateriasPrimas();
+    // eslint-disable-next-line
   }, []);
 
   const mostrarSolicitudes = () => {
     axios
-      .get("http://localhost:3000/solicitudes_materia_prima")
+      .get(`${backendUrl}/solicitudes_materia_prima`)
       .then((response) => {
         setSolicitudes(response.data);
       })
@@ -50,7 +53,7 @@ const opcionesUsuario = [
 
   const obtenerUsuarios = async () => {
     axios
-      .get("http://localhost:3000/api/usuarios")
+      .get(`${backendUrl}/api/usuarios`)
       .then((response) => {
         const opciones = response.data.map((usuario) => ({
           key: usuario.id,
@@ -64,7 +67,7 @@ const opcionesUsuario = [
 
   const obtenerMateriasPrimas = () => {
     axios
-      .get("http://localhost:3000/materia_prima")
+      .get(`${backendUrl}/materia_prima`)
       .then((response) => {
         const opciones = response.data.map((materia) => ({
           key: materia.ID,
@@ -83,52 +86,49 @@ const opcionesUsuario = [
     setFormularioDatos({ ...formularioDatos, [name]: value });
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // Obtén el ID del usuario logueado desde localStorage o donde lo tengas guardado
-  const userID = localStorage.getItem("userId");
+    // Obtén el ID del usuario logueado desde localStorage o donde lo tengas guardado
+    const userID = localStorage.getItem("userId");
 
-  if (!userID) {
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "No se encontró el usuario logueado.",
-    });
-    return;
-  }
+    if (!userID) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se encontró el usuario logueado.",
+      });
+      return;
+    }
 
-  const updatedData = {
-    ...formularioDatos,
-    ID_Usuario: userID
+    const updatedData = {
+      ...formularioDatos,
+      ID_Usuario: userID
+    };
+
+    const url = editandoID
+      ? `${backendUrl}/actualizar/solicitudes_materia_prima/${editandoID}`
+      : `${backendUrl}/agregar/solicitudes_materia_prima`;
+
+    const method = editandoID ? axios.put : axios.post;
+    try {
+      await method(url, updatedData);
+      setMostrarFormulario(false);
+      setEditandoID(null);
+      mostrarSolicitudes();
+
+      Swal.fire({
+        position: "top-center",
+        icon: "success",
+        title: editandoID ? "Registro actualizado con éxito." : "Registro guardado con éxito.",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      mostrarSolicitudes();
+    } catch (error) {
+      console.error("Error en el proceso:", error);
+    }
   };
-
-  const url = editandoID
-    ? `http://localhost:3000/actualizar/solicitudes_materia_prima/${editandoID}`
-    : "http://localhost:3000/agregar/solicitudes_materia_prima";
-
-  const method = editandoID ? axios.put : axios.post;
-  try {
-    await method(url, updatedData);
-    setMostrarFormulario(false);
-    setEditandoID(null);
-    mostrarSolicitudes();
-
-    Swal.fire({
-      position: "top-center",
-      icon: "success",
-      title: editandoID ? "Registro actualizado con éxito." : "Registro guardado con éxito.",
-      showConfirmButton: false,
-      timer: 1500,
-    });
-    mostrarSolicitudes();
-  } catch (error) {
-    console.error("Error en el proceso:", error);
-  }
-};
-  
-  
-  
 
   const handleEliminar = (id) => {
     Swal.fire({
@@ -143,7 +143,7 @@ const opcionesUsuario = [
       if (result.isConfirmed) {
         axios
           .delete(
-            `http://localhost:3000/eliminar/solicitudes_materia_prima/${id}`
+            `${backendUrl}/eliminar/solicitudes_materia_prima/${id}`
           )
           .then(() => {
             mostrarSolicitudes();
@@ -188,7 +188,7 @@ const opcionesUsuario = [
   };
 
   const filteredItems = solicitudes.filter(item =>
-    item.ID.toString().includes(searchTerm) 
+    item.ID.toString().includes(searchTerm)
   );
 
   const handlePageChange = (page) => setCurrentPage(page);

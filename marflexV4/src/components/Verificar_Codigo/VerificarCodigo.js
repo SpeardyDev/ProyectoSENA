@@ -7,6 +7,9 @@ import { InputOtp } from "primereact/inputotp";
 import "../styles/Login.css";
 import "./VerificarCodigo.css";
 
+// Centraliza la URL del backend
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+
 function VerificarCodigo() {
   const [username, setUsername] = useState("");
   const [otp, setOtp] = useState("");
@@ -25,7 +28,7 @@ function VerificarCodigo() {
 
   const handleVerificarCodigo = async () => {
     try {
-      await axios.post("http://localhost:3000/verificar-otp", {
+      await axios.post(`${backendUrl}/verificar-otp`, {
         username,
         otp,
       });
@@ -34,7 +37,6 @@ function VerificarCodigo() {
         icon: "success",
         draggable: true,
       });
-      // alert('✅ Código correcto. Ahora cambia tu contraseña.');
       setStep(2);
     } catch (error) {
       Swal.fire({
@@ -54,13 +56,12 @@ function VerificarCodigo() {
           `,
         },
       });
-      // alert('⚠️ Código incorrecto o expirado. Inténtalo de nuevo.');
     }
   };
 
   const handleRestablecerContraseña = async () => {
     try {
-      await axios.post("http://localhost:3000/reset-password", {
+      await axios.post(`${backendUrl}/reset-password`, {
         username,
         password,
       });
@@ -133,8 +134,7 @@ function VerificarCodigo() {
                   type="button"
                   onClick={handleVerificarCodigo}
                 >
-                  {" "}
-                  Verificar Código{" "}
+                  Verificar Código
                 </button>
               </div>
             </>

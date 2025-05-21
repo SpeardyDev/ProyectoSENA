@@ -5,6 +5,9 @@ import { InputMask } from "primereact/inputmask";
 import Pagination from "../Pagination";
 import Swal from "sweetalert2";
 
+// Centraliza la URL del backend
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+
 const Estados = [
   { value: 1, text: "Activo" },
   { value: 2, text: "Inactivo" },
@@ -36,11 +39,12 @@ function Usuarios() {
 
   useEffect(() => {
     obtenerUsuarios();
+    // eslint-disable-next-line
   }, []);
 
   const obtenerUsuarios = async () => {
     try {
-      const { data } = await axios.get("http://localhost:3000/api/usuarios");
+      const { data } = await axios.get(`${backendUrl}/api/usuarios`);
       setUsuarios(data);
     } catch (error) {
       console.error("Error al obtener los usuarios:", error);
@@ -70,12 +74,12 @@ function Usuarios() {
         const datosAEnviar = { ...formularioDatos };
         if (!formularioDatos.password.trim()) delete datosAEnviar.password;
         await axios.put(
-          `http://localhost:3000/api/editar/usuarios/${editarUsuario}`,
+          `${backendUrl}/api/editar/usuarios/${editarUsuario}`,
           datosAEnviar
         );
         Swal.fire("Éxito", "Usuario actualizado correctamente", "success");
       } else {
-        await axios.post("http://localhost:3000/registrar", formularioDatos);
+        await axios.post(`${backendUrl}/registrar`, formularioDatos);
         Swal.fire("Éxito", "Usuario registrado correctamente", "success");
       }
       cerrarFormulario();
@@ -119,7 +123,7 @@ function Usuarios() {
     });
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/api/eliminar/usuarios/${id}`);
+        await axios.delete(`${backendUrl}/api/eliminar/usuarios/${id}`);
         obtenerUsuarios();
         Swal.fire("Eliminado", "Usuario eliminado correctamente", "success");
       } catch (error) {

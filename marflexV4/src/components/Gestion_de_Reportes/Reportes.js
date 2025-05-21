@@ -1,4 +1,3 @@
-// ReportesCombinados.jsx
 import React, { useState, useEffect } from "react";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { Button } from "primereact/button";
@@ -22,6 +21,9 @@ import ProduccionFechaPDF from "./DocumentoReportes/ProduccionFechaPDF";
 import SalidasFechaPDF from "./DocumentoReportes/SalidasFechaPDF";
 import UltimaCompraPDF from "./DocumentoReportes/UltimaCompraPDF";
 import TodosPDF from "./DocumentoReportes/TodosPDF";
+
+// Centraliza la URL del backend
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
 
 function ReportesCombinados() {
   const [productos, setProductos] = useState([]);
@@ -52,7 +54,7 @@ function ReportesCombinados() {
 
     const MostrarUsuarios = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/api/usuarios", { signal: controller.signal });
+        const res = await axios.get(`${backendUrl}/api/usuarios`, { signal: controller.signal });
         setUsuarios(res.data);
       } catch (err) {
         if (err.name !== "CanceledError") console.error("Error al cargar usuarios:", err);
@@ -61,7 +63,7 @@ function ReportesCombinados() {
 
     const MostrarProveedores = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/proveedores", { signal: controller.signal });
+        const res = await axios.get(`${backendUrl}/proveedores`, { signal: controller.signal });
         setProveedores(res.data);
       } catch (err) {
         if (err.name !== "CanceledError") console.error("Error al cargar proveedores:", err);
@@ -70,7 +72,7 @@ function ReportesCombinados() {
 
     const MostrarMateriaPrima = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/materia_prima", { signal: controller.signal });
+        const res = await axios.get(`${backendUrl}/materia_prima`, { signal: controller.signal });
         setProductos(res.data);
       } catch (err) {
         if (err.name !== "CanceledError") console.error("Error al cargar materia prima:", err);
@@ -79,7 +81,7 @@ function ReportesCombinados() {
 
     const MostrarMovimientos = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/movimientos", { signal: controller.signal });
+        const res = await axios.get(`${backendUrl}/movimientos`, { signal: controller.signal });
         setMovimientos(res.data);
       } catch (err) {
         if (err.name !== "CanceledError") console.error("Error al cargar movimientos:", err);
@@ -94,6 +96,7 @@ function ReportesCombinados() {
     return () => {
       controller.abort();
     };
+    // eslint-disable-next-line
   }, []);
 
   const handleSelectChange = (e, { value }) => {
@@ -107,13 +110,13 @@ function ReportesCombinados() {
     try {
       let res;
       if (selectRep.value === "reporte-movimientos-materia-prima") {
-        res = await axios.post(`http://localhost:3000/${selectRep.value}`, { materiaPrimaID: ID });
+        res = await axios.post(`${backendUrl}/${selectRep.value}`, { materiaPrimaID: ID });
       } else if (
         selectRep.value === "reporte-entradas-por-fecha" ||
         selectRep.value === "reporte-salidas-por-fecha" ||
         selectRep.value === "reporte-produccion-fechas"
       ) {
-        res = await axios.post(`http://localhost:3000/${selectRep.value}`, {
+        res = await axios.post(`${backendUrl}/${selectRep.value}`, {
           fecha_inicio: fechaInicio,
           fecha_fin: fechaFin,
         });
@@ -123,7 +126,7 @@ function ReportesCombinados() {
         if (fechaFin) params.append("fechaFin", fechaFin);
         if (ID) params.append("nombreMateria", ID);
 
-        let url = `http://localhost:3000/${selectRep.value}`;
+        let url = `${backendUrl}/${selectRep.value}`;
         if (params.toString()) url += `?${params.toString()}`;
 
         res = await axios.get(url);

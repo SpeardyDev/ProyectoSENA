@@ -6,6 +6,9 @@ import axios from "axios";
 import Pagination from "../Pagination";
 import "./styles/colchones.css";
 
+// Centraliza la URL del backend
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+
 const Colchones = () => {
   const [colchones, setColchones] = useState([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
@@ -22,11 +25,12 @@ const Colchones = () => {
 
   useEffect(() => {
     mostrarProductos();
+    // eslint-disable-next-line
   }, []);
 
   const mostrarProductos = () => {
     axios
-      .get("http://localhost:3000/colchones")
+      .get(`${backendUrl}/colchones`)
       .then((response) => setColchones(response.data))
       .catch((error) => console.error("Error al obtener los datos:", error));
   };
@@ -39,8 +43,8 @@ const Colchones = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const url = editandoID
-      ? `http://localhost:3000/actualizar/colchones/${editandoID}`
-      : "http://localhost:3000/agregar/colchones";
+      ? `${backendUrl}/actualizar/colchones/${editandoID}`
+      : `${backendUrl}/agregar/colchones`;
 
     const method = editandoID ? axios.put : axios.post;
 
@@ -74,7 +78,7 @@ const Colchones = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`http://localhost:3000/eliminar/colchones/${id}`)
+          .delete(`${backendUrl}/eliminar/colchones/${id}`)
           .then(() => {
             mostrarProductos();
             Swal.fire(

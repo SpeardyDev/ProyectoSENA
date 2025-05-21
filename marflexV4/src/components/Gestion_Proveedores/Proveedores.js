@@ -6,6 +6,9 @@ import { Button, Form, Table, Search, Icon } from "semantic-ui-react";
 import { InputMask } from "primereact/inputmask";
 import Pagination from "../Pagination";
 
+// Centraliza la URL del backend
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+
 function Proveedores() {
   const [proveedores, setProveedores] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
@@ -18,10 +21,11 @@ function Proveedores() {
 
   useEffect(() => {
     fetchProveedores();
+    // eslint-disable-next-line
   }, []);
 
   const fetchProveedores = () => {
-    axios.get("http://localhost:3000/proveedores")
+    axios.get(`${backendUrl}/proveedores`)
       .then(({ data }) => setProveedores(data))
       .catch((error) => console.error("Error al obtener proveedores:", error));
   };
@@ -39,8 +43,8 @@ function Proveedores() {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const request = editingId
-      ? axios.put(`http://localhost:3000/actualizar/proveedores/${editingId}`, formData)
-      : axios.post("http://localhost:3000/agregar/proveedores", formData);
+      ? axios.put(`${backendUrl}/actualizar/proveedores/${editingId}`, formData)
+      : axios.post(`${backendUrl}/agregar/proveedores`, formData);
 
     request
       .then(() => {
@@ -76,7 +80,7 @@ function Proveedores() {
       cancelButtonColor: "#d33",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`http://localhost:3000/eliminar/proveedores/${id}`)
+        axios.delete(`${backendUrl}/eliminar/proveedores/${id}`)
           .then(() => {
             fetchProveedores();
             Swal.fire("Eliminado", "El proveedor fue eliminado exitosamente.", "success");
