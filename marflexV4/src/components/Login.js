@@ -1,43 +1,50 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers } from "@fortawesome/free-solid-svg-icons";
 import logo from "../img/LogoMarflex.png";
+import personaImg from "../img/persona-que-relaja-casa.png";
+import passwordIcon from "../img/password.png";
+import visibilityImg from "../img/visibility.png";
+import visibilityOffImg from "../img/visibility_off.png";
 import { useNavigate, Link } from "react-router-dom";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useCallback } from "react";
 import "./styles/Login.css"; 
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+
+const ROL_ROUTES = {
+  Administrador: "/HomeAdmin",
+  Empleado: "/HomeEmpleado",
+};
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
   const { isAuthenticated, login } = useContext(AuthContext);
 
   useEffect(() => {
     if (isAuthenticated) {
       const rol = localStorage.getItem("rol");
-      if (rol === "Administrador") {
-        navigate("/HomeAdmin", { replace: true });
-      } else if (rol === "Empleado") {
-        navigate("/HomeEmpleado", { replace: true });
+      if (rol && ROL_ROUTES[rol]) {
+        navigate(ROL_ROUTES[rol], { replace: true });
       }
     }
   }, [isAuthenticated, navigate]);
 
-  const IniciarLogin = async (e) => {
+  const IniciarLogin = useCallback(async (e) => {
     e.preventDefault();
+    setErrorMsg("");
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL;
-      const response = await axios.post(`${backendUrl}/login`, {
+      const { data } = await axios.post(`${backendUrl}/login`, {
         username: username.trim().toLowerCase(),
         password,
       });
 
-      // Extrae los datos de la respuesta
-      const { token, rol, userId, nombre, fotoPerfil, username: usuario } = response.data;
+      const { token, rol, userId, nombre, fotoPerfil, username: usuario } = data;
 
-      // Guardar en localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("username", usuario); 
       localStorage.setItem("userId", userId);
@@ -45,32 +52,27 @@ function Login() {
       localStorage.setItem("rol", rol);
       localStorage.setItem("fotoPerfil", fotoPerfil || "foto-perfil.jpg");
 
-      login(token); // Actualiza contexto
+      login(token);
 
-      if (rol === "Administrador") {
-        alert("Login exitoso administrador");
-        navigate("/HomeAdmin");
-      } else if (rol === "Empleado") {
-        alert("Login exitoso empleado");
-        navigate("/HomeEmpleado");
+      if (ROL_ROUTES[rol]) {
+        navigate(ROL_ROUTES[rol]);
       }
     } catch (error) {
-      console.error("Error en el login:", error);
-      alert("Usuario o contraseña incorrectos");
+      setErrorMsg("Usuario o contraseña incorrectos");
     }
-  };
+  }, [username, password, login, navigate]);
 
-  const PasswordVisibility = () => {
-    setPasswordVisible(!passwordVisible);
-  };
+  const togglePasswordVisibility = useCallback(() => {
+    setPasswordVisible(v => !v);
+  }, []);
 
   return (
     <div className="contenedor">
-      <form className="mi-app-formulario" onSubmit={IniciarLogin} method="post">
+      <form className="mi-app-formulario" onSubmit={IniciarLogin} method="post" autoComplete="on">
         <div className="img-presentacion">
           <img
             className="img_presentacion_login"
-            src="/img/persona-que-relaja-casa.png"
+            src={personaImg}
             alt="imagen de presentación"
           />
         </div>
@@ -95,6 +97,7 @@ function Login() {
                 type="email"
                 value={username}
                 required
+                autoComplete="username"
                 onChange={(e) => setUsername(e.target.value)}
               />
             </span>
@@ -102,7 +105,7 @@ function Login() {
             <span className="span password-container">
               <img
                 className="icon"
-                src="/img/password.png"
+                src={passwordIcon}
                 alt="icono de password"
               />
               <input
@@ -111,19 +114,23 @@ function Login() {
                 type={passwordVisible ? "text" : "password"}
                 value={password}
                 required
+                autoComplete="current-password"
                 onChange={(e) => setPassword(e.target.value)}
               />
               <img
                 className="visibility_off"
-                src={
-                  passwordVisible
-                    ? "/img/visibility.png"
-                    : "/img/visibility_off.png"
-                }
-                alt="icono del ojo"
-                onClick={PasswordVisibility}
+                src={passwordVisible ? visibilityImg : visibilityOffImg}
+                alt={passwordVisible ? "Ocultar contraseña" : "Mostrar contraseña"}
+                onClick={togglePasswordVisibility}
+                style={{ cursor: "pointer" }}
               />
             </span>
+
+            {errorMsg && (
+              <span className="span" style={{ color: "red", fontSize: "0.9em" }}>
+                {errorMsg}
+              </span>
+            )}
 
             <span className="span">
               <button className="btn-iniciar" type="submit">
