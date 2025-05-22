@@ -2,9 +2,7 @@ name: marflexV4
 
 services:
   mysql:
-    build:
-      context: ./src/backend/dockerfile
-      dockerfile: Dockerfile.mysql
+    image: vruizz9/mysql:1.0.0
     container_name: mysql
     stdin_open: true
     environment:
@@ -33,9 +31,7 @@ services:
       - marflexnet
 
   backend:
-    build:
-      context: ./src/backend
-      dockerfile: Dockerfile.backend
+    image: vruizz9/backend:1.0.0
     container_name: backend
     ports:
       - "3001:3001"
@@ -49,9 +45,7 @@ services:
       - marflexnet
 
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend
+    image: vruizz9/frontend:1.0.0
     container_name: frontend
     ports:
       - "3000:3000"

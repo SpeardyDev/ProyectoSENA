@@ -25,7 +25,7 @@ const puerto = process.env.PORT || 3001;
 
 // SOLO UNA configuración de CORS para Express (REST)
 app.use(cors({
-  origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+  origin: ["http://localhost:3001", "http://127.0.0.1:3001"],
   credentials: true,
 }));
 
@@ -38,7 +38,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 const servidor = http.createServer(app);
 const io = new Server(servidor, {
   cors: {
-    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+    origin: ["http://localhost:3001", "http://127.0.0.1:3001"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   },
