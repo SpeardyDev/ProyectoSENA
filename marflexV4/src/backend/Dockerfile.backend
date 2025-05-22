@@ -5,7 +5,7 @@ FROM node:18
 WORKDIR /usr/src/app
 
 # Copia los archivos de dependencias
-COPY ../package*.json ./
+COPY package*.json ./
 
 # Instala las dependencias
 RUN npm install

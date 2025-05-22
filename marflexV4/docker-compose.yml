@@ -35,7 +35,7 @@ services:
   backend:
     build:
       context: ./src/backend
-      dockerfile: dockerfile/Dockerfile.backend
+      dockerfile: Dockerfile.backend
     container_name: backend
     ports:
       - "3001:3001"
@@ -51,7 +51,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: dockerfile/Dockerfile.frontend
+      dockerfile: Dockerfile.frontend
     container_name: frontend
     ports:
       - "3000:3000"
