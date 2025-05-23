@@ -1,166 +1,216 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, Suspense, lazy, memo, useCallback } from "react";
 import logo from "../img/LogoMarflex.png";
 import icono from "../img/forklift_30dp_DA954B_FILL0_wght400_GRAD0_opsz24.png";
 import "./styles/HomeAdmin.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
-import Proveedores from "./Gestion_Proveedores/Proveedores";
-import Usuarios from "./Gestion_Usuarios/Usuarios";
 import MenuDePerfil from "./MenuDePerfil";
-import MateriasPrimas from "./Gestion_MateriaPrima/MateriaPrima";
-import Reportes from "./Gestion_de_Reportes/Reportes";
-import Movimientos from "./Gestion_Movimientos/Movimientos";
-import SolicitudesP from "./Gestion_Solicitudes/solicitudesPendientes";
-import Solicitudes from "./Gestion_Solicitudes/solicitudesAdmin";
 import NotificationIcon from "./Gestion_Solicitudes/NotificationIcon";
 import { Button } from "semantic-ui-react";
 import axios from "axios";
 import { io } from "socket.io-client";
 
+// Lazy load components for faster initial load
+const Proveedores = lazy(() => import("./Gestion_Proveedores/Proveedores"));
+const Usuarios = lazy(() => import("./Gestion_Usuarios/Usuarios"));
+const MateriasPrimas = lazy(() => import("./Gestion_MateriaPrima/MateriaPrima"));
+const Reportes = lazy(() => import("./Gestion_de_Reportes/Reportes"));
+const Movimientos = lazy(() => import("./Gestion_Movimientos/Movimientos"));
+const SolicitudesP = lazy(() => import("./Gestion_Solicitudes/solicitudesPendientes"));
+const Solicitudes = lazy(() => import("./Gestion_Solicitudes/solicitudesAdmin"));
+
 // Centraliza la URL del backend
 const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
-const socket = io(backendUrl);
+const defaultAvatar = `${backendUrl}/uploads/foto-perfil.jpg`;
 
-const HomeAdmin = () => {
-  const [visibleComponents, setVisibleComponents] = useState({
-    dashboard: true,
-    Proveedores: false,
-    Usuarios: false,
-    Mprima: false,
-    Reportes: false,
-    Movimientos: false,
-    Solicitudes: false,
-  });
+const MENU_ITEMS = [
+  { key: "dashboard", label: "Dashboard", icon: "fa-solid fa-chart-line" },
+  { key: "Reportes", label: "Reportes", icon: "fas fa-chart-bar" },
+  {
+    key: "gestionMaterias",
+    label: "Gestión de Materias Primas",
+    icon: "fas fa-cubes",
+    children: [
+      { key: "Mprima", label: "Materias Primas" },
+      { key: "Proveedores", label: "Proveedores" },
+    ],
+  },
+  {
+    key: "gestionMovimientos",
+    label: "Gestión de Movimientos",
+    icon: "fas fa-down-left-and-up-right-to-center",
+    children: [{ key: "Movimientos", label: "Movimientos" }],
+  },
+  {
+    key: "gestionSolicitudes",
+    label: "Gestión de Solicitudes",
+    icon: "fas fa-users",
+    children: [
+      { key: "SolicitudesP", label: "Solicitudes Pendientes" },
+      { key: "Solicitudes", label: "Solicitudes de Materia Prima" },
+    ],
+  },
+  {
+    key: "gestionUsuarios",
+    label: "Gestión de Usuarios",
+    icon: "fas fa-users",
+    children: [{ key: "Usuarios", label: "Usuarios" }],
+  },
+  {
+    key: "configuracion",
+    label: "Configuración",
+    icon: "fa-solid fa-gear",
+    children: [{ key: "cambiarPassword", label: "Cambiar contraseña" }],
+  },
+];
 
-  const [tieneNotificaciones, setTieneNotificaciones] = useState(false);
-  const [cantidadNotificaciones, setCantidadNotificaciones] = useState(0);
+const MenuItem = memo(function MenuItem({
+  title,
+  icon,
+  children,
+  isOpen,
+  onClick,
+  childrenList,
+  onChildClick,
+  selectedKey,
+}) {
+  const color = isOpen ? "#ff9f00" : "";
+  return (
+    <li onClick={onClick} style={{ color }}>
+      <i className={icon}></i> {title}
+      {childrenList && (
+        <i
+          className={`fa-regular ${
+            isOpen ? "fa-square-minus" : "fa-square-plus"
+          }`}
+          style={{ float: "right" }}
+        />
+      )}
+      {isOpen && childrenList && (
+        <ul className="submenu">
+          {childrenList.map((child) => (
+            <li
+              className="li-desplegable"
+              key={child.key}
+              onClick={(e) => {
+                e.stopPropagation();
+                onChildClick(child.key);
+              }}
+              style={{
+                fontWeight: selectedKey === child.key ? "bold" : "normal",
+                background: selectedKey === child.key ? "#f3f3f3" : "none",
+              }}
+            >
+              <a className="item">{child.label}</a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+});
 
-  const obtenerSolicitudesPendientes = () => {
-    axios
-      .get(`${backendUrl}/solicitudes/pendientes`)
-      .then((response) => {
-        const cantidad = response.data.length;
-        setCantidadNotificaciones(cantidad);
-        setTieneNotificaciones(cantidad > 0);
-      })
-      .catch((error) =>
-        console.error("Error al obtener las solicitudes pendientes:", error)
-      );
-  };
+function HomeAdmin() {
+  // Un solo estado para el componente visible
+  const [selectedComponent, setSelectedComponent] = useState("dashboard");
+  // Estado de menús desplegables
+  const [openMenus, setOpenMenus] = useState({});
+  // Estado para notificaciones
+  const [notificaciones, setNotificaciones] = useState({ cantidad: 0, tiene: false });
 
+  // Socket solo una vez
+  const socketRef = useRef();
+
+  // Avatar y nombre de usuario
+  const [avatar, setAvatar] = useState(defaultAvatar);
+  const [nombre, setNombre] = useState("");
+
+  // Menú hamburguesa responsive
+  const [BtnMenu, setBtnMenu] = useState(false);
+
+  // Inicializa socket y listeners solo una vez
   useEffect(() => {
-    // Al cargar, obtener solicitudes pendientes
+    socketRef.current = io(backendUrl);
     obtenerSolicitudesPendientes();
 
-    // Escuchar eventos en tiempo real para nuevas solicitudes
-    socket.on("nueva_solicitud", (nuevaSolicitud) => {
-      setCantidadNotificaciones((prev) => prev + 1);
-      setTieneNotificaciones(true);
+    socketRef.current.on("nueva_solicitud", () => {
+      setNotificaciones((prev) => ({
+        cantidad: prev.cantidad + 1,
+        tiene: true,
+      }));
     });
 
-    socket.on("solicitud_aprobada", () => {
-      obtenerSolicitudesPendientes();
-    });
+    // Si alguna solicitud cambia, vuelve a obtener pendientes
+    socketRef.current.on("solicitud_aprobada", obtenerSolicitudesPendientes);
+    socketRef.current.on("solicitud_rechazada", obtenerSolicitudesPendientes);
 
-    socket.on("solicitud_rechazada", () => {
-      obtenerSolicitudesPendientes();
-    });
-
-    // Limpia los listeners cuando el componente se desmonta
     return () => {
-      socket.off("nueva_solicitud");
-      socket.off("solicitud_aprobada");
-      socket.off("solicitud_rechazada");
+      socketRef.current.disconnect();
     };
     // eslint-disable-next-line
   }, []);
 
-  const handleButtonClick = (componentName) => {
-    setVisibleComponents((prevState) => ({
-      ...prevState,
-      dashboard: componentName === "dashboard",
-      Proveedores: componentName === "Proveedores",
-      Usuarios: componentName === "Usuarios",
-      Mprima: componentName === "Mprima",
-      Reportes: componentName === "Reportes",
-      Movimientos: componentName === "Movimientos",
-      SolicitudesP: componentName === "Solicitudes Pendientes",
-      Solicitudes: componentName === "Solicitudes de Materia Prima",
-    }));
-  };
-
-  const [BtnMenu, setBtnMenu] = useState(false);
-
-  const defaultAvatar = require("../backend/uploads/foto-perfil.jpg");
-  const [avatar, setAvatar] = useState(defaultAvatar);
-
-  const handleImageChange = async (event) => {
-    const file = event.target.files[0];
-
-    if (file) {
-      const formData = new FormData();
-      formData.append("fotoPerfil", file);
-
-      const token = localStorage.getItem("token");
-
-      try {
-        const res = await fetch(`${backendUrl}/usuarios/foto`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        });
-
-        const data = await res.json();
-
-        if (data.fotoPerfil) {
-          setAvatar(`${backendUrl}/uploads/${data.fotoPerfil}`);
-        } else {
-          console.error("No se recibió fotoPerfil:", data);
-        }
-      } catch (error) {
-        console.error("Error subiendo la foto:", error);
-      }
-    }
-  };
-
-  // trae el nombre de usuario 
-  const [nombre, setNombre] = useState(""); 
-
+  // Obtener nombre de usuario de localStorage
   useEffect(() => {
     const storedNombre = localStorage.getItem("nombre");
-    if (storedNombre) {
-      setNombre(storedNombre);
-    }
-  }, []);
-  
-  useEffect(() => {
-    const storedFoto = localStorage.getItem("fotoPerfil");
+    if (storedNombre) setNombre(storedNombre);
 
-    if (storedFoto) {
-      setAvatar(`${backendUrl}/uploads/${storedFoto}`);
-    } else {
-      setAvatar(require("../backend/uploads/foto-perfil.jpg"));
-    }
+    const storedFoto = localStorage.getItem("fotoPerfil");
+    setAvatar(storedFoto ? `${backendUrl}/uploads/${storedFoto}` : defaultAvatar);
     // eslint-disable-next-line
   }, []);
 
-  const eliminarFoto = async () => {
+  // Obtener solicitudes pendientes
+  const obtenerSolicitudesPendientes = useCallback(() => {
+    axios
+      .get(`${backendUrl}/solicitudes/pendientes`)
+      .then((response) => {
+        const cantidad = response.data.length;
+        setNotificaciones({ cantidad, tiene: cantidad > 0 });
+      })
+      .catch((error) =>
+        console.error("Error al obtener las solicitudes pendientes:", error)
+      );
+  }, []);
+
+  // Cambiar foto de perfil
+  const handleImageChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("fotoPerfil", file);
     const token = localStorage.getItem("token");
 
     try {
+      const res = await fetch(`${backendUrl}/usuarios/foto`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.fotoPerfil) {
+        setAvatar(`${backendUrl}/uploads/${data.fotoPerfil}`);
+        localStorage.setItem("fotoPerfil", data.fotoPerfil);
+      } else {
+        console.error("No se recibió fotoPerfil:", data);
+      }
+    } catch (error) {
+      console.error("Error subiendo la foto:", error);
+    }
+  };
+
+  // Eliminar foto de perfil
+  const eliminarFoto = async () => {
+    const token = localStorage.getItem("token");
+    try {
       const res = await fetch(`${backendUrl}/eliminar/usuarios/foto`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       if (res.ok) {
         localStorage.setItem("fotoPerfil", "foto-perfil.jpg");
-        setAvatar(require("../backend/uploads/foto-perfil.jpg"));
+        setAvatar(defaultAvatar);
         alert("Foto de perfil eliminada");
       } else {
         alert("No se pudo eliminar la foto");
@@ -168,6 +218,80 @@ const HomeAdmin = () => {
     } catch (error) {
       console.error("Error al eliminar foto:", error);
       alert("Error al eliminar la foto");
+    }
+  };
+
+  // Manejo de menú lateral (expandibles)
+  const handleMenuClick = (key) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
+  // Renderizado de componentes principales
+  const renderComponent = () => {
+    switch (selectedComponent) {
+      case "dashboard":
+        return <Dashboard />;
+      case "Proveedores":
+        return (
+          <Suspense fallback={<div>Cargando Proveedores...</div>}>
+            <section className="cont-productos">
+              <Proveedores />
+            </section>
+          </Suspense>
+        );
+      case "Usuarios":
+        return (
+          <Suspense fallback={<div>Cargando Usuarios...</div>}>
+            <section className="cont-productos">
+              <Usuarios />
+            </section>
+          </Suspense>
+        );
+      case "Reportes":
+        return (
+          <Suspense fallback={<div>Cargando Reportes...</div>}>
+            <section className="cont-productos">
+              <Reportes />
+            </section>
+          </Suspense>
+        );
+      case "Mprima":
+        return (
+          <Suspense fallback={<div>Cargando Materias Primas...</div>}>
+            <section className="cont-productos">
+              <MateriasPrimas />
+            </section>
+          </Suspense>
+        );
+      case "Movimientos":
+        return (
+          <Suspense fallback={<div>Cargando Movimientos...</div>}>
+            <section className="cont-productos">
+              <Movimientos />
+            </section>
+          </Suspense>
+        );
+      case "SolicitudesP":
+        return (
+          <Suspense fallback={<div>Cargando Solicitudes Pendientes...</div>}>
+            <section className="cont-productos">
+              <SolicitudesP />
+            </section>
+          </Suspense>
+        );
+      case "Solicitudes":
+        return (
+          <Suspense fallback={<div>Cargando Solicitudes de Materia Prima...</div>}>
+            <section className="cont-productos">
+              <Solicitudes />
+            </section>
+          </Suspense>
+        );
+      default:
+        return null;
     }
   };
 
@@ -185,14 +309,17 @@ const HomeAdmin = () => {
               <h1 className="h1-nav">Marflex</h1>
             </div>
             <div className="contenedor-user-notificacion">
-              <NotificationIcon count={cantidadNotificaciones} hasNotification={tieneNotificaciones} />
+              <NotificationIcon
+                count={notificaciones.cantidad}
+                hasNotification={notificaciones.tiene}
+              />
               <MenuDePerfil />
             </div>
           </nav>
         </header>
         <section className="mayor">
           <FontAwesomeIcon
-            onClick={() => setBtnMenu(!BtnMenu)}
+            onClick={() => setBtnMenu((prev) => !prev)}
             className="menu-amburguesa"
             icon={faBars}
           />
@@ -202,15 +329,14 @@ const HomeAdmin = () => {
           >
             <div className="contenido-usuario">
               <FontAwesomeIcon
-                onClick={() => setBtnMenu(!BtnMenu)}
+                onClick={() => setBtnMenu((prev) => !prev)}
                 className="Btn_ocultar"
                 icon={faXmark}
               />
-
               <div className="profile-container">
                 <img
                   id="profile-pic"
-                  src={avatar || require("../backend/uploads/foto-perfil.jpg")}
+                  src={avatar || defaultAvatar}
                   alt="Foto de perfil"
                   className="profile-pic"
                 />
@@ -228,7 +354,6 @@ const HomeAdmin = () => {
                   <i className="fa-solid fa-camera"></i>
                 </button>
               </div>
-
               {avatar !== defaultAvatar && (
                 <Button
                   icon
@@ -247,268 +372,140 @@ const HomeAdmin = () => {
                 <h6>NAVEGACIÓN PRINCIPAL</h6>
               </div>
             </div>
-
             <div className="sidebar">
               <ul>
-                <li onClick={() => handleButtonClick("dashboard")}>
-                  <i className="fa-solid fa-chart-line"></i>Dashboard
-                </li>
-                <li onClick={() => handleButtonClick("Reportes")}>
-                  <i className="fas fa-chart-bar"></i> Reportes
-                </li>
-
-                <MenuItem
-                  title="Gestión de Materias Primas"
-                  icon="fas fa-cubes"
-                >
-                  <li
-                    className="li-desplegable"
-                    onClick={() => handleButtonClick("Mprima")}
-                  >
-                    <a className="item">Materias Primas</a>
-                  </li>
-                  <li
-                    className="li-desplegable"
-                    onClick={() => handleButtonClick("Proveedores")}
-                  >
-                    <a className="item">Proveedores</a>
-                  </li>
-                </MenuItem>
-
-                <MenuItem
-                  title="Gestión de Movimientos"
-                  icon="fas fa-down-left-and-up-right-to-center"
-                >
-                  <li
-                    className="li-desplegable"
-                    onClick={() => handleButtonClick("Movimientos")}
-                  >
-                    <a className="item">Movimientos</a>
-                  </li>
-                </MenuItem>
-
-                <MenuItem title="Gestión de Solicitudes" icon="fas fa-users">
-                  <li
-                    className="li-desplegable"
-                    onClick={() => handleButtonClick("Solicitudes Pendientes")}
-                  >
-                    <a className="item">Solicitudes Pendientes</a>
-                  </li>
-                  <li
-                    className="li-desplegable"
-                    onClick={() =>
-                      handleButtonClick("Solicitudes de Materia Prima")
-                    }
-                  >
-                    <a className="item">Solicitudes de Materia Prima</a>
-                  </li>
-                </MenuItem>
-
-                <MenuItem title="Gestión de Usuarios" icon="fas fa-users">
-                  <li
-                    className="li-desplegable"
-                    onClick={() => handleButtonClick("Usuarios")}
-                  >
-                    <a className="item">Usuarios</a>
-                  </li>
-                </MenuItem>
-
-                <MenuItem title="Configuración" icon="fa-solid fa-gear">
-                  <li className="li-desplegable">
-                    <a className="item">Cambiar contraseña</a>
-                  </li>
-                </MenuItem>
+                {MENU_ITEMS.map((item) =>
+                  item.children ? (
+                    <MenuItem
+                      key={item.key}
+                      title={item.label}
+                      icon={item.icon}
+                      isOpen={!!openMenus[item.key]}
+                      onClick={() => handleMenuClick(item.key)}
+                      childrenList={item.children}
+                      onChildClick={(childKey) => setSelectedComponent(childKey)}
+                      selectedKey={selectedComponent}
+                    />
+                  ) : (
+                    <li
+                      key={item.key}
+                      onClick={() => setSelectedComponent(item.key)}
+                      style={{
+                        fontWeight: selectedComponent === item.key ? "bold" : "normal",
+                        background: selectedComponent === item.key ? "#f3f3f3" : "none",
+                      }}
+                    >
+                      <i className={item.icon}></i>
+                      {item.label}
+                    </li>
+                  )
+                )}
               </ul>
             </div>
           </section>
-
-          <section className="contenedor-universal">
-            {visibleComponents.dashboard && (
-              <article className="Dashboard">
-                <div className="titulo">
-                  <p>Dashboard</p>
-                </div>
-                <div className="card green">
-                  <div className="contenedor-icono users">
-                    <i id="icono" className="fa-solid fa-users"></i>
-                  </div>
-                  <div className="contenedor-span">
-                    <span className="label">Usuarios</span>
-                    <span className="numero">16</span>
-                  </div>
-                </div>
-                <div className="card orange">
-                  <div className="contenedor-icono dolly">
-                    <i id="icono" className="fa-solid fa-dolly"></i>
-                  </div>
-                  <div className="contenedor-span">
-                    <span className="label">Proveedores</span>
-                    <span className="numero">10</span>
-                  </div>
-                </div>
-                <div className="card red">
-                  <div className="contenedor-icono cajas">
-                    <i id="icono" className="fas fa-cubes"></i>
-                  </div>
-                  <div className="contenedor-span">
-                    <span className="label">Productos</span>
-                    <span className="numero">185</span>
-                  </div>
-                </div>
-                <div className="card purple">
-                  <div className="contenedor-icono Factura">
-                    <i
-                      id="icono"
-                      className="fa-solid fa-file-invoice-dollar"
-                    ></i>
-                  </div>
-                  <div className="contenedor-span">
-                    <span className="label">Facturas</span>
-                    <span className="numero">$ 413</span>
-                  </div>
-                </div>
-
-                <div className="card blue">
-                  <div className="contenedor-icono Caja">
-                    <i id="icono" className="fa-solid fa-cube"></i>
-                  </div>
-                  <div className="contenedor-span">
-                    <span className="label">Existencia total</span>
-                    <span className="numero">148</span>
-                  </div>
-                </div>
-                <div className="card pink">
-                  <div className="contenedor-icono Camion">
-                    <i id="icono" className="fa-solid fa-truck-fast"></i>
-                  </div>
-                  <div className="contenedor-span">
-                    <span className="label">Existencia vendida</span>
-                    <span className="numero">33</span>
-                  </div>
-                </div>
-                <div className="card teal">
-                  <div className="contenedor-icono Bodega">
-                    <i id="icono" className="fa-solid fa-warehouse"></i>
-                  </div>
-                  <div className="contenedor-span">
-                    <span className="label">Existencia actual</span>
-                    <span className="numero">115</span>
-                  </div>
-                </div>
-                <div className="card brown">
-                  <div className="contenedor-icono Cartera">
-                    <i id="icono" className="fa-solid fa-wallet"></i>
-                  </div>
-                  <div className="contenedor-span">
-                    <span className="label">Importe vendido</span>
-                    <span className="numero">$ 413</span>
-                  </div>
-                </div>
-
-                <div className="card blue-2">
-                  <div className="contenedor-icono signo-dolar">
-                    <i id="icono" className="fa-solid fa-dollar-sign"></i>
-                  </div>
-                  <div className="contenedor-span">
-                    <span className="label">Importe pago</span>
-                    <span className="numero">$ 413</span>
-                  </div>
-                </div>
-                <div className="card pink-2">
-                  <div className="contenedor-icono Mano">
-                    <i
-                      id="icono"
-                      className="fa-solid fa-hand-holding-dollar"
-                    ></i>
-                  </div>
-                  <div className="contenedor-span">
-                    <span className="label">Importe restante</span>
-                    <span className="numero">$ 0</span>
-                  </div>
-                </div>
-                <div className="card teal-2">
-                  <div className="contenedor-icono Billete">
-                    <i id="icono" className="fa-solid fa-money-bill-1"></i>
-                  </div>
-                  <div className="contenedor-span">
-                    <span className="label">Beneficio bruto</span>
-                    <span className="numero">115</span>
-                  </div>
-                </div>
-                <div className="card blue-cielo">
-                  <div className="contenedor-icono Monedas">
-                    <i id="icono" className="fa-solid fa-coins"></i>
-                  </div>
-                  <div className="contenedor-span">
-                    <span className="label">Beneficio neto</span>
-                    <span className="numero">$413</span>
-                  </div>
-                </div>
-              </article>
-            )}
-            {visibleComponents.Proveedores && (
-              <section className="cont-productos">
-                <Proveedores />
-              </section>
-            )}
-            {visibleComponents.Usuarios && (
-              <section className="cont-productos">
-                <Usuarios />
-              </section>
-            )}
-            {visibleComponents.Reportes && (
-              <section className="cont-productos">
-                <Reportes />
-              </section>
-            )}
-            {visibleComponents.Mprima && (
-              <section className="cont-productos">
-                <MateriasPrimas />
-              </section>
-            )}
-            {visibleComponents.Movimientos && (
-              <section className="cont-productos">
-                <Movimientos />
-              </section>
-            )}
-            {visibleComponents.SolicitudesP && (
-              <section className="cont-productos">
-                <SolicitudesP />
-              </section>
-            )}
-            {visibleComponents.Solicitudes && (
-              <section className="cont-productos">
-                <Solicitudes />
-              </section>
-            )}
-          </section>
+          <section className="contenedor-universal">{renderComponent()}</section>
         </section>
       </div>
     </div>
   );
-};
+}
 
-const MenuItem = ({ title, icon, children }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [color, setColor] = useState("");
-
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-    setColor(isOpen ? "" : "#ff9f00");
-  };
+// Dashboard card layout extraído a componente para claridad (puedes moverlo a su propio archivo si lo prefieres)
+function Dashboard() {
+  // Puedes obtener estos datos de tu backend si lo deseas
+  const cards = [
+    {
+      color: "green",
+      icon: "fa-solid fa-users",
+      label: "Usuarios",
+      numero: 16,
+    },
+    {
+      color: "orange",
+      icon: "fa-solid fa-dolly",
+      label: "Proveedores",
+      numero: 10,
+    },
+    {
+      color: "red",
+      icon: "fas fa-cubes",
+      label: "Productos",
+      numero: 185,
+    },
+    {
+      color: "purple",
+      icon: "fa-solid fa-file-invoice-dollar",
+      label: "Facturas",
+      numero: "$ 413",
+    },
+    {
+      color: "blue",
+      icon: "fa-solid fa-cube",
+      label: "Existencia total",
+      numero: 148,
+    },
+    {
+      color: "pink",
+      icon: "fa-solid fa-truck-fast",
+      label: "Existencia vendida",
+      numero: 33,
+    },
+    {
+      color: "teal",
+      icon: "fa-solid fa-warehouse",
+      label: "Existencia actual",
+      numero: 115,
+    },
+    {
+      color: "brown",
+      icon: "fa-solid fa-wallet",
+      label: "Importe vendido",
+      numero: "$ 413",
+    },
+    {
+      color: "blue-2",
+      icon: "fa-solid fa-dollar-sign",
+      label: "Importe pago",
+      numero: "$ 413",
+    },
+    {
+      color: "pink-2",
+      icon: "fa-solid fa-hand-holding-dollar",
+      label: "Importe restante",
+      numero: "$ 0",
+    },
+    {
+      color: "teal-2",
+      icon: "fa-solid fa-money-bill-1",
+      label: "Beneficio bruto",
+      numero: 115,
+    },
+    {
+      color: "blue-cielo",
+      icon: "fa-solid fa-coins",
+      label: "Beneficio neto",
+      numero: "$413",
+    },
+  ];
 
   return (
-    <li onClick={toggleMenu} style={{ color }}>
-      <i className={icon}></i> {title}
-      <i
-        className={`fa-regular ${
-          isOpen ? "fa-square-minus" : "fa-square-plus"
-        }`}
-        style={{ float: "right" }}
-      ></i>
-      {isOpen && <ul className="submenu">{children}</ul>}
-    </li>
+    <article className="Dashboard">
+      <div className="titulo">
+        <p>Dashboard</p>
+      </div>
+      {cards.map((card, idx) => (
+        <div key={idx} className={`card ${card.color}`}>
+          <div className={`contenedor-icono ${card.label.replace(/\s/g, "")}`}>
+            <i id="icono" className={card.icon}></i>
+          </div>
+          <div className="contenedor-span">
+            <span className="label">{card.label}</span>
+            <span className="numero">{card.numero}</span>
+          </div>
+        </div>
+      ))}
+    </article>
   );
-};
+}
 
 export default HomeAdmin;
