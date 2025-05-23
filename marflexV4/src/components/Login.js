@@ -144,7 +144,7 @@ const Login = React.memo(() => {
                 id="login-username"
                 name="username"
                 placeholder="Correo electrónico"
-                type="text"
+                type="email"
                 inputMode="email"
                 pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
                 value={username}
@@ -157,66 +157,66 @@ const Login = React.memo(() => {
               />
             </span>
             <span className="span password-container">
-  <label htmlFor="login-password" className="sr-only">
-    Contraseña
-  </label>
-  {/* Botón de visibilidad a la izquierda */}
-  <button
-    type="button"
-    className="visibility_off"
-    onClick={togglePasswordVisibility}
-    aria-label={
-      passwordVisible ? "Ocultar contraseña" : "Mostrar contraseña"
-    }
-    tabIndex={0}
-    style={{
-      cursor: "pointer",
-      background: "none",
-      border: "none",
-      padding: 0,
-      marginRight: 6,
-    }}
-  >
-    <img
-      src={passwordVisible ? visibilityImg : visibilityOffImg}
-      alt={
-        passwordVisible
-          ? "Ocultar contraseña"
-          : "Mostrar contraseña"
-      }
-      width={24}
-      height={24}
-      loading="lazy"
-    />
-  </button>
-  {/* Icono de la contraseña */}
-  <img
-    className="icon"
-    src={passwordIcon}
-    alt="Icono de contraseña"
-    width={26}
-    height={26}
-    loading="lazy"
-    aria-hidden="true"
-    style={{ marginRight: 5 }}
-  />
-  <input
-    className="input_login"
-    id="login-password"
-    name="password"
-    placeholder="Contraseña"
-    type={passwordVisible ? "text" : "password"}
-    value={password}
-    required
-    autoComplete="current-password"
-    minLength={6}
-    maxLength={64}
-    onChange={(e) => setPassword(e.target.value)}
-    aria-required="true"
-    aria-label="Contraseña"
-    style={{ paddingLeft: "30px" }} 
-  />
-</span>
+              <label htmlFor="login-password" className="sr-only">
+                Contraseña
+              </label>
+              {/* Botón de visibilidad a la izquierda */}
+              <button
+                type="button"
+                className="visibility_off"
+                onClick={togglePasswordVisibility}
+                aria-label={
+                  passwordVisible ? "Ocultar contraseña" : "Mostrar contraseña"
+                }
+                tabIndex={0}
+                style={{
+                  cursor: "pointer",
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  marginRight: 6,
+                }}
+              >
+                <img
+                  src={passwordVisible ? visibilityImg : visibilityOffImg}
+                  alt={
+                    passwordVisible
+                      ? "Ocultar contraseña"
+                      : "Mostrar contraseña"
+                  }
+                  width={24}
+                  height={24}
+                  loading="lazy"
+                />
+              </button>
+              {/* Icono de la contraseña */}
+              <img
+                className="icon"
+                src={passwordIcon}
+                alt="Icono de contraseña"
+                width={26}
+                height={26}
+                loading="lazy"
+                aria-hidden="true"
+                style={{ marginRight: 5 }}
+              />
+              <input
+                className="input_login"
+                id="login-password"
+                name="password"
+                placeholder="Contraseña"
+                type={passwordVisible ? "text" : "password"}
+                value={password}
+                required
+                autoComplete="current-password"
+                minLength={6}
+                maxLength={64}
+                onChange={(e) => setPassword(e.target.value)}
+                aria-required="true"
+                aria-label="Contraseña"
+                style={{ paddingLeft: "30px" }}
+              />
+            </span>
             <span className="span">
               <button
                 className="btn-iniciar"
