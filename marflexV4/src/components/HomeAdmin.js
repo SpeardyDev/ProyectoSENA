@@ -410,9 +410,8 @@ function HomeAdmin() {
   );
 }
 
-// Dashboard card layout extraído a componente para claridad (puedes moverlo a su propio archivo si lo prefieres)
+// Dashboard card layout extraído a componente para claridad 
 function Dashboard() {
-  // Puedes obtener estos datos de tu backend si lo deseas
   const cards = [
     {
       color: "green",
