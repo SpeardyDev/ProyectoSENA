@@ -481,6 +481,28 @@ input[type="text"]:focus {
     font-family: "Times New Roman", Times, serif;
   }
 }
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+/* Botón OJO dentro del input */
+.password-container .visibility_off {
+  position: absolute;
+  top: 50%;
+  left: 63px;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
 
 /* Estilos para pantallas medianas (de 769px a 1024px) */
 @media screen and (min-width: 769px) and (max-width: 1024px) {
