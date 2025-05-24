@@ -68,26 +68,37 @@ function Usuarios() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (editarUsuario) {
-        const datosAEnviar = { ...formularioDatos };
-        if (!formularioDatos.password.trim()) delete datosAEnviar.password;
-        await axios.put(
-          `${backendUrl}/api/editar/usuarios/${editarUsuario}`,
-          datosAEnviar
-        );
-        Swal.fire("Éxito", "Usuario actualizado correctamente", "success");
-      } else {
-        await axios.post(`${backendUrl}/registrar`, formularioDatos);
-        Swal.fire("Éxito", "Usuario registrado correctamente", "success");
-      }
-      cerrarFormulario();
-      obtenerUsuarios();
-    } catch (error) {
-      console.error("Error al procesar la solicitud:", error);
+  e.preventDefault();
+  try {
+    if (editarUsuario) {
+      const datosAEnviar = { ...formularioDatos };
+      if (!formularioDatos.password.trim()) delete datosAEnviar.password;
+      await axios.put(
+        `${backendUrl}/api/editar/usuarios/${editarUsuario}`,
+        datosAEnviar
+      );
+      Swal.fire("Éxito", "Usuario actualizado correctamente", "success");
+    } else {
+      await axios.post(`${backendUrl}/registrar`, formularioDatos);
+      Swal.fire("Éxito", "Usuario registrado correctamente", "success");
     }
-  };
+    cerrarFormulario();
+    obtenerUsuarios();
+  } catch (error) {
+    if (error.response) {
+      if (error.response.data?.errors) {
+        const msg = error.response.data.errors.map(err => err.msg).join("<br>");
+        Swal.fire("Error", msg, "error");
+      } else if (error.response.data?.message) {
+        Swal.fire("Error", error.response.data.message, "error");
+      } else {
+        Swal.fire("Error", "Ocurrió un error inesperado", "error");
+      }
+    } else {
+      Swal.fire("Error", "No se pudo conectar con el servidor", "error");
+    }
+  }
+};
 
   const cerrarFormulario = () => {
     setFormularioDatos(initialFormState);

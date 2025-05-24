@@ -25,6 +25,7 @@ const Login = React.memo(() => {
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
   const navigate = useNavigate();
   const { isAuthenticated, login } = useContext(AuthContext);
 
@@ -38,22 +39,59 @@ const Login = React.memo(() => {
     }
   }, [isAuthenticated, navigate]);
 
+  // Muestra los errores enviados por el backend
+ // Muestra los errores enviados por el backend, incluyendo rate limit y mensajes personalizados
+const showBackendErrors = (error) => {
+  if (error?.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+    // Si el backend manda un array de errores de validación, los mostramos todos como toast
+    error.response.data.errors.forEach((err) => {
+      toast.error(err.msg || "Error en los datos ingresados");
+    });
+  } else if (error?.response?.data?.message) {
+    // Si el mensaje es de rate limiting, lo mostramos personalizado
+    if (
+      typeof error.response.data.message === "string" &&
+      error.response.data.message.toLowerCase().includes("demasiados intentos")
+    ) {
+      toast.error(
+        "Has excedido el número máximo de intentos. Por favor, espera unos minutos antes de volver a intentarlo."
+      );
+    } else {
+      toast.error(error.response.data.message);
+    }
+  } else if (error?.message === "Network Error") {
+    toast.error("No se pudo conectar con el servidor. Inténtalo más tarde.");
+  } else if (error?.code === "ECONNABORTED") {
+    toast.error("La solicitud ha tardado demasiado. Intenta de nuevo.");
+  } else {
+    toast.error("Ocurrió un error inesperado. Inténtalo más tarde.");
+  }
+};
+
+  const validateFields = () => {
+    const errors = {};
+    if (!validateEmail(username.trim())) {
+      errors.username = "Por favor, introduce un email válido.";
+    }
+    if (password.length < 8) {
+      errors.password = "La contraseña debe tener al menos 8 caracteres.";
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const IniciarLogin = useCallback(
     async (e) => {
       e.preventDefault();
 
-      if (!validateEmail(username.trim())) {
-        toast.error("Por favor, introduce un email válido.");
-        return;
-      }
-      if (password.length < 6) {
-        toast.warn("La contraseña debe tener al menos 6 caracteres.");
+      if (!validateFields()) {
+        Object.values(formErrors).forEach((msg) => toast.error(msg));
         return;
       }
 
       setLoading(true);
       try {
-        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
         const { data } = await axios.post(
           `${backendUrl}/login`,
           {
@@ -74,14 +112,15 @@ const Login = React.memo(() => {
         toast.success("¡Bienvenido!", { autoClose: 1500 });
         setTimeout(() => {
           if (ROL_ROUTES[rol]) navigate(ROL_ROUTES[rol]);
-        }, 1700); // delay para que se vea el toast
+        }, 1700);
       } catch (error) {
-        toast.error("Credenciales inválidas. Intenta de nuevo.");
+        showBackendErrors(error);
       } finally {
         setLoading(false);
       }
     },
-    [username, password, login, navigate]
+    // eslint-disable-next-line
+    [username, password, login, navigate, formErrors]
   );
 
   const togglePasswordVisibility = useCallback(() => {
@@ -154,13 +193,18 @@ const Login = React.memo(() => {
                 aria-required="true"
                 aria-label="Correo electrónico"
                 maxLength={80}
+                style={formErrors.username ? { borderColor: "red" } : {}}
               />
+              {formErrors.username && (
+                <small className="error-msg" style={{ color: "red" }}>
+                  {formErrors.username}
+                </small>
+              )}
             </span>
             <span className="span password-container">
               <label htmlFor="login-password" className="sr-only">
                 Contraseña
               </label>
-              {/* Botón de visibilidad a la izquierda */}
               <button
                 type="button"
                 className="visibility_off"
@@ -189,7 +233,6 @@ const Login = React.memo(() => {
                   loading="lazy"
                 />
               </button>
-              {/* Icono de la contraseña */}
               <img
                 className="icon"
                 src={passwordIcon}
@@ -209,12 +252,15 @@ const Login = React.memo(() => {
                 value={password}
                 required
                 autoComplete="current-password"
-                minLength={6}
+                minLength={8}
                 maxLength={64}
                 onChange={(e) => setPassword(e.target.value)}
                 aria-required="true"
                 aria-label="Contraseña"
-                style={{ paddingLeft: "30px" }}
+                style={{
+                  paddingLeft: "30px",
+                  borderColor: formErrors.password ? "red" : undefined,
+                }}
               />
             </span>
             <span className="span">

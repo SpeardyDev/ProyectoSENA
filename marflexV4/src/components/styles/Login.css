@@ -10,9 +10,9 @@
   height: 100vh;
   background-image: radial-gradient(
     circle at 50.65% 42.56%,
-    #ffe347 0,
-    #ffcd41 25%,
-    #f2b53c 50%,
+    #eba91c 0,
+    #f5be26 25%,
+    #e2a52b 50%,
     #e29e38 75%,
     #d38a36 100%
   );
@@ -491,7 +491,7 @@ input[type="text"]:focus {
 .password-container .visibility_off {
   position: absolute;
   top: 50%;
-  left: 63px;
+  left: 66px;
   transform: translateY(-50%);
   z-index: 2;
   width: 22px;

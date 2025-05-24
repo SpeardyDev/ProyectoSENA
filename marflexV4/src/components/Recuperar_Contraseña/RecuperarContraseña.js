@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -8,44 +8,91 @@ import personaImg from "../../img/persona-que-relaja-casa.png";
 import "../styles/Login.css";
 import "../styles/Recuperar_contraseña.css";
 
-const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+// Usa el puerto correcto de tu backend
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
 
 function RecuperarContraseña() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
+  const [counter, setCounter] = useState(0); // segundos restantes para reenviar
+  const intervalRef = useRef(null);
   const navigate = useNavigate();
 
-  const handleEnviarCodigo = useCallback(async (e) => {
-    e.preventDefault();
-    setMessage({ type: "", text: "" });
+  // SEO y accesibilidad mejorados
+  const pageTitle = "Recuperar Contraseña | Marflex";
+  const pageDescription =
+    "Recupera el acceso a tu cuenta Marflex fácilmente. Ingresa tu correo para recibir el código de recuperación.";
 
-    if (!username.trim() || username.length < 3) {
-      setMessage({ type: "error", text: "Introduce un correo o usuario válido." });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await axios.post(`${backendUrl}/recuperar-password`, { username: username.trim() });
-      localStorage.setItem("username", username.trim());
-      setMessage({ type: "success", text: "Código enviado. Verifica tu correo o revisa tu spam." });
-      setTimeout(() => navigate("/VerificarCodigo"), 1500);
-    } catch (error) {
-      setMessage({
-        type: "error",
-        text: error?.response?.data?.msg || "Error al enviar el código. Intenta de nuevo.",
+  // Función para iniciar contador de espera antes de reenviar
+  const startCounter = useCallback(() => {
+    setCounter(60);
+    intervalRef.current = setInterval(() => {
+      setCounter(prev => {
+        if (prev <= 1) {
+          clearInterval(intervalRef.current);
+          return 0;
+        }
+        return prev - 1;
       });
-    } finally {
-      setLoading(false);
-    }
-  }, [username, navigate]);
+    }, 1000);
+  }, []);
+
+  // Validar email simple
+  const validateEmail = email =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  // Maneja envío de código
+  const handleEnviarCodigo = useCallback(
+    async (e) => {
+      e.preventDefault();
+      setMessage({ type: "", text: "" });
+
+      if (!username.trim() || !validateEmail(username.trim())) {
+        setMessage({ type: "error", text: "Introduce un correo electrónico válido." });
+        return;
+      }
+      setLoading(true);
+      try {
+        const { data } = await axios.post(`${backendUrl}/recuperar-password`, { username: username.trim() });
+        localStorage.setItem("username", username.trim());
+        setMessage({ type: "success", text: data.message || "Código enviado. Verifica tu correo o revisa tu spam." });
+        startCounter();
+        setTimeout(() => navigate("/VerificarCodigo"), 1800);
+      } catch (error) {
+        if (error.response) {
+          if (error.response.data?.errors) {
+            // Mensaje de validación de backend
+            const msg = error.response.data.errors.map(err => err.msg).join(" ");
+            setMessage({ type: "error", text: msg });
+          } else if (error.response.data?.message) {
+            setMessage({ type: "error", text: error.response.data.message });
+          } else {
+            setMessage({ type: "error", text: "Error desconocido. Intenta de nuevo." });
+          }
+        } else {
+          setMessage({ type: "error", text: "No se pudo conectar con el servidor." });
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [username, navigate, startCounter]
+  );
+
+  // Limpiar intervalos al desmontar
+  React.useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   return (
     <main className="contenedor" role="main" aria-label="Recuperar contraseña">
       <Helmet>
-        <title>Recuperar Contraseña | Marflex</title>
-        <meta name="description" content="Recupera el acceso a tu cuenta Marflex fácilmente. Ingresa tu correo o usuario para recibir el código de recuperación." />
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <link rel="canonical" href="https://www.marflex.com/recuperar-contraseña" />
       </Helmet>
       <form
         className="mi-app-formulario"
@@ -72,7 +119,7 @@ function RecuperarContraseña() {
               background: "none",
               border: "none",
               padding: 0,
-              fontSize:"25px"
+              fontSize: "25px",
             }}
           >
             <FontAwesomeIcon icon={faArrowLeft} />
@@ -80,7 +127,7 @@ function RecuperarContraseña() {
           <img
             className="img_presentacion_login"
             src={personaImg}
-            alt="Persona relajada en casa"
+            alt="Recuperación de contraseña"
             loading="lazy"
             width={220}
             height={220}
@@ -94,7 +141,7 @@ function RecuperarContraseña() {
           </div>
           <div className="content-input">
             <label htmlFor="recuperar-email" className="sr-only">
-              Correo o usuario
+              Correo electrónico
             </label>
             <span className="span-R">
               <FontAwesomeIcon
@@ -107,15 +154,15 @@ function RecuperarContraseña() {
               <input
                 id="recuperar-email"
                 className="input_login"
-                placeholder="Correo o usuario"
-                type="text"
+                placeholder="Correo electrónico"
+                type="email"
                 value={username}
                 required
                 onChange={e => setUsername(e.target.value)}
                 autoComplete="username"
-                minLength={3}
+                minLength={5}
                 aria-required="true"
-                aria-label="Correo o usuario"
+                aria-label="Correo electrónico"
                 maxLength={80}
                 spellCheck="false"
                 inputMode="email"
@@ -128,25 +175,34 @@ function RecuperarContraseña() {
                 aria-live={message.type === "error" ? "assertive" : "polite"}
                 style={{
                   color: message.type === "error" ? "#c00" : "#2e7d32",
-                  fontSize: "0.97em",
+                  fontSize: "0.98em",
                   margin: "6px 0 2px 0",
                   minHeight: "18px",
                   textAlign: "center",
+                  fontWeight: 500,
+                  letterSpacing: "0.03em"
                 }}
               >
                 {message.text}
               </div>
             )}
-            <span className="span">
+            <span className="span" style={{ marginBottom: "0.5rem" }}>
               <button
                 className="btn-iniciar"
                 type="submit"
-                disabled={loading}
-                aria-disabled={loading}
+                disabled={loading || counter > 0}
+                aria-disabled={loading || counter > 0}
                 aria-busy={loading}
               >
-                {loading ? "Enviando..." : "Enviar Código"}
+                {loading
+                  ? "Enviando..."
+                  : counter > 0
+                  ? `Reenviar código en ${counter}s`
+                  : "Enviar Código"}
               </button>
+            </span>
+            <span className="span" style={{ fontSize: "0.9em", color: "#595959" }}>
+              ¿No llega el correo? Revisa tu bandeja de spam.
             </span>
           </div>
         </div>

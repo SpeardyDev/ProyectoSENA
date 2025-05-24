@@ -25,7 +25,13 @@ const puerto = process.env.PORT || 3001;
 
 // SOLO UNA configuración de CORS para Express (REST)
 app.use(cors({
-  origin: ["http://localhost:3001", "http://127.0.0.1:3001"],
+  origin: [
+    "http://localhost:3000",      // <--- AGREGA ESTA
+    "http://127.0.0.1:3000",      // <--- Y ESTA
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+    "http://frontend:3000"        // <--- PARA DOCKER COMPOSE
+  ],
   credentials: true,
 }));
 
@@ -38,12 +44,18 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 const servidor = http.createServer(app);
 const io = new Server(servidor, {
   cors: {
-    origin: ["http://localhost:3001", "http://127.0.0.1:3001"],
+    origin: [
+      "http://localhost:3000",     
+      "http://127.0.0.1:3000",     
+      "http://localhost:3001",
+      "http://127.0.0.1:3001",
+      "http://frontend:3000"       // <--- PARA DOCKER COMPOSE
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   },
   connectionStateRecovery: {
-    maxDisconnectionDuration: 2 * 60 * 1000, // 2 minutos
+    maxDisconnectionDuration: 2 * 60 * 1000,
     skipMiddlewares: true,
   },
 });
