@@ -195,11 +195,6 @@ const showBackendErrors = (error) => {
                 maxLength={80}
                 style={formErrors.username ? { borderColor: "red" } : {}}
               />
-              {formErrors.username && (
-                <small className="error-msg" style={{ color: "red" }}>
-                  {formErrors.username}
-                </small>
-              )}
             </span>
             <span className="span password-container">
               <label htmlFor="login-password" className="sr-only">
