@@ -21,7 +21,7 @@ const SolicitudesP = lazy(() => import("./Gestion_Solicitudes/solicitudesPendien
 const Solicitudes = lazy(() => import("./Gestion_Solicitudes/solicitudesAdmin"));
 
 // Centraliza la URL del backend
-const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
 const defaultAvatar = `${backendUrl}/uploads/foto-perfil.jpg`;
 
 const MENU_ITEMS = [
