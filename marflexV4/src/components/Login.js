@@ -91,7 +91,7 @@ const showBackendErrors = (error) => {
 
       setLoading(true);
       try {
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://marflex.duckdns.org:3001";
         const { data } = await axios.post(
           `${backendUrl}/login`,
           {

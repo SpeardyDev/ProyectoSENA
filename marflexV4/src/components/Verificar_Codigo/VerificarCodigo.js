@@ -9,7 +9,7 @@ import { Helmet } from "react-helmet-async";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://marflex.duckdns.org:3001";
 
 function VerificarCodigo() {
   const [username, setUsername] = useState("");

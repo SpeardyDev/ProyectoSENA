@@ -26,11 +26,13 @@ const puerto = process.env.PORT || 3001;
 // SOLO UNA configuración de CORS para Express (REST)
 app.use(cors({
   origin: [
-    "http://localhost:3000",      // <--- AGREGA ESTA
-    "http://127.0.0.1:3000",      // <--- Y ESTA
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
     "http://localhost:3001",
     "http://127.0.0.1:3001",
-    "http://frontend:3000"        // <--- PARA DOCKER COMPOSE
+    "http://frontend:3000",       // <--- PARA DOCKER COMPOSE
+    "http://marflex.duckdns.org:3000", 
+    "http://marflex.duckdns.org:3001"        
   ],
   credentials: true,
 }));
@@ -49,7 +51,9 @@ const io = new Server(servidor, {
       "http://127.0.0.1:3000",     
       "http://localhost:3001",
       "http://127.0.0.1:3001",
-      "http://frontend:3000"       // <--- PARA DOCKER COMPOSE
+      "http://frontend:3000",       // <--- PARA DOCKER COMPOSE
+      "http://marflex.duckdns.org:3000",
+      "http://marflex.duckdns.org:3001"
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,

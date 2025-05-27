@@ -9,7 +9,7 @@ import "../styles/Login.css";
 import "../styles/Recuperar_contraseña.css";
 
 // Usa el puerto correcto de tu backend
-const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://marflex.duckdns.org:3001";
 
 function RecuperarContraseña() {
   const [username, setUsername] = useState("");

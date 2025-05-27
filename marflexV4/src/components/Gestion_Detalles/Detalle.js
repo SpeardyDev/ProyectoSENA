@@ -7,7 +7,7 @@ import Pagination from "../Pagination";
 import "./styles/detalles.css";
 
 // Centraliza la URL del backend
-const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://marflex.duckdns.org:3000";
 
 const Detalle = () => {
   const [detalles, setDetalles] = useState([]);

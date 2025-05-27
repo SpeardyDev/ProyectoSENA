@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import { io } from "socket.io-client";
 
 // Centraliza la URL del backend
-const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://marflex.duckdns.org:3000";
 const socket = io(backendUrl);
 
 const SolicitudPendientes = () => {

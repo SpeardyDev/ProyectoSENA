@@ -7,7 +7,7 @@ import 'primeicons/primeicons.css';
 import { Avatar } from 'primereact/avatar';
 
 // Centraliza la URL del backend
-const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://marflex.duckdns.org:3000";
 
 const SolicitudAdmin = () => {
   const [solicitudes, setSolicitudes] = useState([]);

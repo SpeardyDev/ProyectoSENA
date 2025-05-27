@@ -6,7 +6,7 @@ import Pagination from "../Pagination";
 import Swal from "sweetalert2";
 
 // Centraliza la URL del backend
-const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://marflex.duckdns.org:3000";
 
 const Estados = [
   { value: 1, text: "Activo" },

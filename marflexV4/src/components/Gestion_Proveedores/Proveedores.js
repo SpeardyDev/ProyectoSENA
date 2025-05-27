@@ -7,7 +7,7 @@ import { InputMask } from "primereact/inputmask";
 import Pagination from "../Pagination";
 
 // Centraliza la URL del backend
-const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://marflex.duckdns.org:3000";
 
 function Proveedores() {
   const [proveedores, setProveedores] = useState([]);

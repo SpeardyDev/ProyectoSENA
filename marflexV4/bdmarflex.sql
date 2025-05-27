@@ -395,7 +395,7 @@ INSERT INTO `users` (`id`, `username`, `password`, `rol`, `documento`, `ID_Estad
 (1, 'ivanalejandroperez2005@gmail.com', '$2b$10$h.beaDtz3t45hP0Kybge.ulDZW/Ga8e4aWPsisk0QCMz5muSrdm4u', 'Empleado', '987654321', 1, 'Ivan Pérez Castañeda', '(312) 351-0076', '1745021072565.jpg', '2025-05-20 01:35:43', '2025-05-20 03:45:07'),
 (2, 'frbsfrbs1@gmail.com', '$2b$10$9mr4oXvOV1VYVA15PXEyGuGR5vYsXOSjkaxV97NXrn1w3DEMTmaNO', 'Administrador', '103456789', 1, 'Reynaldo Martínez Fuentes', '(310) 350-4442', '1744070269169.jpg', '2025-05-20 01:36:49', '2025-05-20 01:36:49'),
 (9, 'andrea.paula0127@gmail.com', '$2b$10$RzoK6b6eeZE25uBEBM7Eze3BxOQ4uFHNkUsjdYqit/U57/hpZ5pny', 'Empleado', '456123789', 2, 'Paula Andrea Garcia Cifuentes', '(311) 534-5560', '1745016963902.jpg', '2025-05-20 03:20:42', '2025-05-20 03:44:09'),
-(11, 'sandritha1000@gmail.com', '$2b$10$k2D2FxzRVTmIokdZ0jrJk.6nIkiVaPjjeUAtwe5b5ufYAT2KGE0WW', 'Administrador', '321987654', 1, 'Sandra Viviana Ruiz', '(315) 049-9050', '1743896358402.jpg', '2025-05-20 03:34:14', '2025-05-20 03:44:43'),
+(11, 'sandritha1000@gmail.com', '$2b$10$k2D2FxzRVTmIokdZ0jrJk.6nIkiVaPjjeUAtwe5b5ufYAT2KGE0WW', 'Administrador', '321987654', 1, 'Sandra Viviana Ruiz', '(315) 049-9050', '1747710440597.jpeg', '2025-05-20 03:34:14', '2025-05-20 03:44:43'),
 (12, 'nicolasmahechamartinez@gmail.com', '$2b$10$QMcwM/F8572saEpFkee56.He7UO08fq2.Pqe2wzQKISTlvEbg66Z6', 'Empleado', '789123456', 1, 'Nicolas Mahecha Martínez', '(302) 315-6653', '1747712846223.jpg', '2025-05-20 03:35:33', '2025-05-20 03:47:26');
 
 --

@@ -12,7 +12,7 @@ import Reportes from "./Gestion_de_Reportes/Reportes.js";
 import { Button } from "semantic-ui-react";
 
 // Centraliza la URL del backend
-const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://marflex.duckdns.org:3000";
 
 const HomeEmpleado = () => {
   const [visibleComponents, setVisibleComponents] = useState({

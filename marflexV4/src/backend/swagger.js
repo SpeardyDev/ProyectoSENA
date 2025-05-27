@@ -14,7 +14,7 @@ const swaggerOptions = {
       contact: {
         name: "Grupo de proyecto",
       },
-      servers: ["http://localhost:3001"],
+      servers: ["http://marflex.duckdns.org:3001"],
     },
   },
    apis: ["./routes/*.js"],
@@ -41,7 +41,7 @@ const swaggerDocs = (app, port) => {
   });
 
   console.log(
-    `Documentación versión 1 está disponible en http://localhost:${port}/api/docs`
+    `Documentación versión 1 está disponible en http://marflex.duckdns.org:${port}/api/docs`
   );
 };
 
