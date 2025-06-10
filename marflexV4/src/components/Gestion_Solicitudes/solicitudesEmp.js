@@ -206,7 +206,7 @@ const SolicitudEmp = () => {
         <Form className="RegistroNuevo_Solicitud" onSubmit={handleSubmit}>
           <Form.Group widths="equal">
             <Form.Field>
-              <label>Usuario</label>
+              <label><input type="text" />Usuario</label>
               <Dropdown
                 placeholder="Seleccionar Usuario"
                 fluid
@@ -219,7 +219,7 @@ const SolicitudEmp = () => {
             </Form.Field>
 
             <Form.Field>
-              <label>Materia Prima</label>
+              <label><input type="text" />Materia Prima</label>
               <Dropdown
                 placeholder="Seleccionar Materia Prima"
                 fluid

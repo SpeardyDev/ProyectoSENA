@@ -7,7 +7,8 @@ import {
   StyleSheet,
   Image,
 } from "@react-pdf/renderer";
-import logoUrl from "./img/LogoMarflexPDF.png"; // Asegúrate que la ruta sea correcta
+import logoUrl from "./img/LogoMarflexPDF.png";
+import PropTypes from "prop-types";
 
 const styles = StyleSheet.create({
   page: {
@@ -147,6 +148,33 @@ const TodosPDF = ({ usuarios, proveedores, productos }) => {
       </Page>
     </Document>
   );
+};
+
+TodosPDF.propTypes = {
+  usuarios: PropTypes.arrayOf(
+    PropTypes.shape({
+      nombre: PropTypes.string.isRequired,
+      username: PropTypes.string.isRequired,
+      rol: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+
+  proveedores: PropTypes.arrayOf(
+    PropTypes.shape({
+      ID: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      Nombre: PropTypes.string.isRequired,
+      Telefono: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    })
+  ).isRequired,
+
+  productos: PropTypes.arrayOf(
+    PropTypes.shape({
+      ID: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      Nombre: PropTypes.string.isRequired,
+      Stock: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      Unidad: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
 export default TodosPDF;

@@ -8,6 +8,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import logoUrl from "./img/LogoMarflexPDF.png";
+import PropTypes from "prop-types";
 
 const styles = StyleSheet.create({
   page: {
@@ -116,6 +117,17 @@ const SalidasFechaPDF = ({ data }) => {
       </Page>
     </Document>
   );
+};
+
+SalidasFechaPDF.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      ID_Movimiento: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+      Nombre_MateriaPrima: PropTypes.string.isRequired,
+      Cantidad: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+      Fecha: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
 export default SalidasFechaPDF;

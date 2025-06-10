@@ -8,6 +8,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import logoUrl from "./img/LogoMarflexPDF.png";
+import PropTypes from "prop-types";
 
 const styles = StyleSheet.create({
   page: {
@@ -111,6 +112,15 @@ const UltimaCompraPDF = ({ data }) => {
       </Page>
     </Document>
   );
+};
+
+UltimaCompraPDF.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      Proveedor: PropTypes.string.isRequired,
+      UltimaCompra: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
 export default UltimaCompraPDF;

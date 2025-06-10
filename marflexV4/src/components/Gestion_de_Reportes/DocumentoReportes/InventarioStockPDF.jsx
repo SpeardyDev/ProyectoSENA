@@ -8,6 +8,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import logoUrl from "./img/LogoMarflexPDF.png";
+import PropTypes from "prop-types";
 
 const styles = StyleSheet.create({
   page: {
@@ -115,6 +116,17 @@ const InventarioStockPDF = ({ data }) => {
       </Page>
     </Document>
   );
+};
+
+InventarioStockPDF.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      ID_MateriaPrima: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      Nombre_MateriaPrima: PropTypes.string.isRequired,
+      Cantidad_Disponible: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      Unidad: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
 export default InventarioStockPDF;

@@ -8,6 +8,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import logoUrl from "./img/LogoMarflexPDF.png";
+import PropTypes from "prop-types";
 
 const styles = StyleSheet.create({
   page: {
@@ -115,4 +116,16 @@ const MateriaUsadaPDF = ({ data }) => {
     </Document>
   );
 };
+
+MateriaUsadaPDF.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      Modelo_Colchon: PropTypes.string.isRequired,
+      Nombre_MateriaPrima: PropTypes.string.isRequired,
+      Cantidad_Usada: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      Fecha_Fabricacion: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+};
+
 export default MateriaUsadaPDF;

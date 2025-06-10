@@ -207,7 +207,7 @@ function Usuarios() {
               onChange={handleChange}
             />
             <Form.Field required>
-              <label>Teléfono</label>
+              <label><input type="text" />Teléfono</label>
               <InputMask
                 mask="(999) 999-9999"
                 name="telefono"
@@ -217,7 +217,7 @@ function Usuarios() {
               />
             </Form.Field>
             <Form.Field>
-              <label>Estado</label>
+              <label><input type="text" />Estado</label>
               <Select
                 options={Estados}
                 name="ID_Estado"
@@ -227,7 +227,7 @@ function Usuarios() {
               />
             </Form.Field>
             <Form.Field>
-              <label>Rol</label>
+              <label><input type="text" />Rol</label>
               <Select
                 options={Roles}
                 name="rol"
