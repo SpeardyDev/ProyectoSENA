@@ -185,7 +185,7 @@ function ReportesCombinados() {
           <Form>
             <FormGroup className="formulario-grupo">
               <FormField>
-                <label>Reporte</label>
+                <label><input type="text" />Reporte</label>
                 <Select
                   placeholder="Selecciona un reporte"
                   options={Filtro}
@@ -196,21 +196,21 @@ function ReportesCombinados() {
 
               {inputsVisibles.includes("fechaInicio") && (
                 <FormField>
-                  <label>Fecha Inicio</label>
+                  <label><input type="text" />Fecha Inicio</label>
                   <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} />
                 </FormField>
               )}
 
               {inputsVisibles.includes("fechaFin") && (
                 <FormField>
-                  <label>Fecha Fin</label>
+                  <label><input type="text" />Fecha Fin</label>
                   <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} />
                 </FormField>
               )}
 
               {inputsVisibles.includes("nombreMateria") && (
                 <FormField>
-                  <label>Materia Prima</label>
+                  <label><input type="text" />Materia Prima</label>
                   <Select
                     placeholder="Selecciona una materia prima"
                     options={productos.map((p) => ({ value: p.ID, text: p.Nombre }))}
@@ -221,10 +221,10 @@ function ReportesCombinados() {
               )}
 
               <div className="botones-container">
-                <span className="boton-reporte" onClick={GenerateReport} disabled={loading}>
+                <button className="boton-reporte" onClick={GenerateReport} disabled={loading}>
                   <i className="icono-generar" style={{ fontSize: "1.5rem" }}></i>
-                  <span>Generar Reporte</span>
-                </span>
+                  <button>Generar Reporte</button>
+                </button>
 
                 {datosReporte && (
                   <PDFDownloadLink

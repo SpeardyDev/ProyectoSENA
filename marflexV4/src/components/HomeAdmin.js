@@ -10,6 +10,7 @@ import NotificationIcon from "./Gestion_Solicitudes/NotificationIcon";
 import { Button } from "semantic-ui-react";
 import axios from "axios";
 import { io } from "socket.io-client";
+import PropTypes from "prop-types";
 
 // Lazy load components for faster initial load
 const Proveedores = lazy(() => import("./Gestion_Proveedores/Proveedores"));
@@ -110,6 +111,17 @@ const MenuItem = memo(function MenuItem({
     </li>
   );
 });
+
+MenuItem.propTypes = {
+  title: PropTypes.string.isRequired,
+  icon: PropTypes.string.isRequired,
+  children: PropTypes.node,
+  isOpen: PropTypes.bool.isRequired,
+  onClick: PropTypes.func.isRequired,
+  childrenList: PropTypes.array,
+  onChildClick: PropTypes.func.isRequired,
+  selectedKey: PropTypes.string.isRequired,
+};
 
 function HomeAdmin() {
   // Un solo estado para el componente visible
