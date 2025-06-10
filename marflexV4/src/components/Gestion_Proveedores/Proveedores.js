@@ -123,7 +123,7 @@ function Proveedores() {
                 required
               />
               <Form.Field required>
-                <label>Teléfono</label>
+                <label><input type="text" />Teléfono</label>
                 <InputMask
                   mask="(999) 999-9999"
                   name="Telefono"

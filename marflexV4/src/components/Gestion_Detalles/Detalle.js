@@ -190,7 +190,7 @@ const Detalle = () => {
         <Form className="RegistroNuevo_Colchon" onSubmit={handleSubmit}>
           <Form.Group widths="equal">
             <Form.Field>
-              <label>ID Colchón</label>
+              <label><input type="text" />ID Colchón</label>
               <Dropdown
                 placeholder="Seleccionar Colchón"
                 fluid
@@ -204,7 +204,7 @@ const Detalle = () => {
               />
             </Form.Field>
             <Form.Field>
-              <label>ID Materia Prima</label>
+              <label><input type="text" />ID Materia Prima</label>
               <Dropdown
                 placeholder="Seleccionar Materia Prima"
                 fluid

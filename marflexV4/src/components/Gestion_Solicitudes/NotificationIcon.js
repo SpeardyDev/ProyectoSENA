@@ -2,6 +2,7 @@ import React from "react";
 import { Badge } from "primereact/badge";
 import 'primeicons/primeicons.css';   
 import "./styles/NotificationIcon.css";
+import PropTypes from "prop-types";
 
 const NotificationIcon = ({ count }) => {
   return (
@@ -16,6 +17,10 @@ const NotificationIcon = ({ count }) => {
       )}
     </div>
   );
+};
+
+NotificationIcon.propTypes = {
+  count: PropTypes.node.isRequired,
 };
 
 export default NotificationIcon;

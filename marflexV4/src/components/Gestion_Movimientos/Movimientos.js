@@ -160,7 +160,7 @@ const Movimientos = () => {
         <Form className="RegistroNuevo_Movimiento" onSubmit={handleSubmit}>
           <Form.Group widths="equal">
             <Form.Field>
-              <label>Materia Prima</label>
+              <label><input type="text" />Materia Prima</label>
               <Dropdown
                 placeholder="Selecciona Materia Prima"
                 fluid
@@ -177,7 +177,7 @@ const Movimientos = () => {
               />
             </Form.Field>
             <Form.Field>
-              <label>Tipo Movimiento</label>
+              <label><input type="text" />Tipo Movimiento</label>
               <Dropdown
                 placeholder="Tipo de Movimiento"
                 fluid
@@ -203,7 +203,7 @@ const Movimientos = () => {
               required
             />
             <Form.Field>
-              <label>Proveedor</label>
+              <label><input type="text" />Proveedor</label>
               <Dropdown
                 placeholder="Selecciona Proveedor"
                 fluid
