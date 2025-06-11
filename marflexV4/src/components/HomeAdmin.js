@@ -78,7 +78,15 @@ const MenuItem = memo(function MenuItem({
 }) {
   const color = isOpen ? "#ff9f00" : "";
   return (
-    <li onClick={onClick} style={{ color }}>
+    <li
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') onClick(e);
+      }}
+      role="button"
+      tabIndex={0}
+      style={{ color }}
+    >
       <i className={icon}></i> {title}
       {childrenList && (
         <i
@@ -91,20 +99,25 @@ const MenuItem = memo(function MenuItem({
       {isOpen && childrenList && (
         <ul className="submenu">
           {childrenList.map((child) => (
-            <li
-              className="li-desplegable"
-              key={child.key}
-              onClick={(e) => {
-                e.stopPropagation();
-                onChildClick(child.key);
-              }}
-              style={{
-                fontWeight: selectedKey === child.key ? "bold" : "normal",
-                background: selectedKey === child.key ? "#f3f3f3" : "none",
-              }}
-            
-            >
-              <a className="item">{child.label}</a>
+            <li className="li-desplegable" key={child.key}>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChildClick(child.key);
+                }}
+                style={{
+                  fontWeight: selectedKey === child.key ? "bold" : "normal",
+                  background: selectedKey === child.key ? "#f3f3f3" : "none",
+                  border: "none",
+                  backgroundColor: "transparent",
+                  cursor: "pointer",
+                  width: "100%",
+                  textAlign: "left"
+                }}
+                className="button-desplegable"
+              >
+                <a className="item">{child.label}</a>
+              </button>
             </li>
           ))}
         </ul>
@@ -400,17 +413,23 @@ function HomeAdmin() {
                       selectedKey={selectedComponent}
                     />
                   ) : (
-                    <li
-                      key={item.key}
-                      onClick={() => setSelectedComponent(item.key)}
-                      style={{
-                        fontWeight: selectedComponent === item.key ? "bold" : "normal",
-                        background: selectedComponent === item.key ? "#f3f3f3" : "none",
-                      }}
-                    
-                    >
-                      <i className={item.icon}></i>
-                      {item.label}
+                    <li key={item.key}>
+                      <button
+                        onClick={() => setSelectedComponent(item.key)}
+                        style={{
+                          fontWeight: selectedComponent === item.key ? "bold" : "normal",
+                          background: selectedComponent === item.key ? "#f3f3f3" : "none",
+                          border: "none",
+                          backgroundColor: "transparent",
+                          cursor: "pointer",
+                          width: "100%",
+                          textAlign: "left",
+                          padding: "0.5rem", // opcional, mejora UX
+                        }}
+                      >
+                        <i className={item.icon}></i>
+                        {item.label}
+                      </button>
                     </li>
                   )
                 )}

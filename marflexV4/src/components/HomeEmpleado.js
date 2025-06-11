@@ -200,43 +200,77 @@ const HomeEmpleado = () => {
                   </button>
                 </li>
                 <MenuItem title="Gestión de Colchones" icon="fas fa-cubes">
-                  <li
-                    className="li-desplegable"
-                    onClick={() => handleButtonClick("colchones")}
-                  
-                  >
-                    <a href className="item">
-                      Colchones
-                    </a>
+                  <li className="li-desplegable">
+                    <button
+                      onClick={() => handleButtonClick("colchones")}
+                      className="btn-desplegable"
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        width: "100%",
+                        textAlign: "left",
+                        padding: "0.5rem", // opcional
+                      }}
+                    >
+                      <a href className="item">
+                        Colchones
+                      </a>
+                    </button>
                   </li>
-                  <li
-                    className="li-desplegable"
-                    onClick={() => handleButtonClick("detalle")}
-                  
-                  >
-                    <a href className="item">
-                      Detalle Colchones
-                    </a>
+                  <li className="li-desplegable">
+                    <button
+                      onClick={() => handleButtonClick("detalle")}
+                      className="btn-desplegable"
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        textAlign: "left",
+                        width: "100%",
+                        padding: "0.5rem", // opcional para mejorar UX
+                      }}
+                    >
+                      <a href className="item">
+                        Detalle Colchoness
+                      </a>
+                    </button>
                   </li>
                 </MenuItem>
                 <MenuItem
                   title="Gestión de Solicitudes"
                   icon="fa-solid fa-bullhorn"
                 >
-                  <li
-                    className="li-desplegable"
-                    onClick={() => handleButtonClick("solicitud")}
-                  
-                  >
-                    <a href className="item">
-                      Mis Solicitudes
-                    </a>
+                  <li className="li-desplegable">
+                    <button
+                      onClick={() => handleButtonClick("solicitud")}
+                      className="btn-desplegable"
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        width: "100%",
+                        textAlign: "left",
+                        padding: "0.5rem",
+                      }}
+                    >
+                      <a href className="item">
+                        Mis Solicitudes
+                      </a>
+                    </button>
                   </li>
                 </MenuItem>
-                <li>
+                <li style={{ color }}>
                   <button
-                    onClick={() => handleButtonClick("reportes")}
-                    className="li-button"
+                    onClick={toggleMenu}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color,
+                      cursor: "pointer",
+                      width: "100%",
+                      textAlign: "left",
+                    }}
                   >
                     Reportes
                   </button>
@@ -410,7 +444,6 @@ const MenuItem = ({ title, icon, children }) => {
           toggleMenu();
         }
       }}
-      role="listitem"
       style={{ color }}
     >
       <i className={icon}></i> {title}
