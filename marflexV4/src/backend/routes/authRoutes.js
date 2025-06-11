@@ -97,18 +97,13 @@ router.post(
         username,
         password,
         telefono = null,
-        ID_Estado = 1,
+        ID_Estado,
         rol = "Empleado",
       } = req.body;
 
-      if (
-        !ID_Estado ||
-        isNaN(ID_Estado) ||
-        ![1, 2].includes(Number(ID_Estado))
-      ) {
+      ID_Estado = Number(ID_Estado);
+      if (![1, 2].includes(ID_Estado)) {
         ID_Estado = 1;
-      } else {
-        ID_Estado = Number(ID_Estado);
       }
 
       // Consulta si el username ya existe
@@ -249,7 +244,10 @@ router.post("/cerrarsesion", (req, res) => {
   try {
     res.send({ message: "Sesión cerrada exitosamente" });
   } catch (error) {
-    res.status(500).send({ message: "Error del servidor" });
+    console.error(`[ERROR] Fallo al cerrar sesión: ${error.message}`, error);
+    res.status(500).json({
+      message: "Ocurrió un error al cerrar la sesión. Inténtelo más tarde."
+    });
   }
 });
 
@@ -284,7 +282,10 @@ router.post(
       await transporter.sendMail(mailOptions);
       res.json({ message: "Código enviado al correo." });
     } catch (error) {
-      res.status(500).json({ message: "Error del servidor." });
+      console.error(`[ERROR] Fallo en /recuperar-password para ${req.body?.username}: ${error.message}`, error);
+      res.status(500).json({
+        message: "Ocurrió un error al procesar la recuperación de contraseña. Intente nuevamente más tarde."
+      });
     }
   }
 );
@@ -442,7 +443,10 @@ router.post(
       ]);
       res.json({ message: "Contraseña restablecida con éxito." });
     } catch (error) {
-      res.status(500).json({ message: "Error del servidor." });
+      console.error(`[ERROR] Fallo en /reset-password para ${req.body?.username}: ${error.message}`, error);
+      res.status(500).json({
+        message: "Ocurrió un error al restablecer la contraseña. Intente nuevamente más tarde."
+      });
     }
   }
 );
@@ -507,7 +511,11 @@ router.post(
       ]);
       res.json({ message: "Foto actualizada", fotoPerfil: req.file.filename });
     } catch (error) {
-      res.status(500).json({ error: "Error actualizando foto" });
+      console.error(
+        `[ERROR] Fallo en /usuarios/foto para userID=${req.user?.id}: ${error.message}`,
+        error
+      );
+      res.status(500).json({ error: "Error actualizando foto. Intente más tarde." });
     }
   }
 );
@@ -549,6 +557,10 @@ router.delete("/eliminar/usuarios/foto", auth, async (req, res) => {
     }
     res.json({ message: "Foto eliminada con éxito" });
   } catch (error) {
+    console.error(
+      `[ERROR] Fallo en DELETE /eliminar/usuarios/foto para userID=${req.user?.id}: ${error.message}`,
+      error
+    );
     res.status(500).json({ error: "Error al eliminar la foto" });
   }
 });

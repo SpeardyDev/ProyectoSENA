@@ -172,8 +172,9 @@ const SolicitudPendientes = () => {
   };
 
   const filteredItems = solicitudes.filter(
-    (item) => item.ID && item.ID.toString().includes(searchTerm)
+    (item) => item.ID?.toString().includes(searchTerm)
   );
+
 
   const handlePageChange = (page) => setCurrentPage(page);
 

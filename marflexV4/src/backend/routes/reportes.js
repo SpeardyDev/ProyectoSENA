@@ -249,7 +249,7 @@ router.get("/reporte-bajo-stock", async (req, res) => {
  *         description: Error del servidor
  */
 
-// Endpoint para obtener todo el inventario de las materias primas con stock actual
+// Endpoint para obtener el inventario de las materias primas con stock actual
 router.get("/reporte-inventario-stock", async (req, res) => {
   try {
     const [rows] = await db.query("CALL ReporteInventarioStockActual()");
