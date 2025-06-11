@@ -410,7 +410,7 @@ const MenuItem = ({ title, icon, children }) => {
           toggleMenu();
         }
       }}
-      role="button"
+      role="listitem"
       tabIndex={0}
       style={{ color }}
     >

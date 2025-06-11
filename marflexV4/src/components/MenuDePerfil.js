@@ -43,7 +43,17 @@ const MenuDePerfil = ({ avatar }) => {
 
       {isOpen && (
         <div className="menu-perfil">
-          <div className="menu-item" onClick={() => toggleDropdown("profile")}>
+          <div
+          className="menu-item"
+          onClick={() => toggleDropdown("profile")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              toggleDropdown("profile");
+            }
+          }}
+          role="button"
+          tabIndex={0}
+        >
             <FiInfo className="menu-icon" />
             Configuración de Perfil
             {activeDropdown === "profile" ? <FiChevronUp /> : <FiChevronDown />}
@@ -54,7 +64,18 @@ const MenuDePerfil = ({ avatar }) => {
             </div>
           )}
 
-          <div className="menu-item" onClick={() => toggleDropdown("account")}>
+          <div
+          className="menu-item"
+          onClick={() => toggleDropdown("account")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              toggleDropdown("account");
+            }
+          }}
+          role="button"
+          tabIndex={0}
+        >
             <FiInfo className="menu-icon" />
             Información de Cuenta
             {activeDropdown === "account" ? <FiChevronUp /> : <FiChevronDown />}
@@ -65,7 +86,18 @@ const MenuDePerfil = ({ avatar }) => {
             </div>
           )}
 
-          <div className="menu-item" onClick={CerrarSesion}>
+          <div
+            className="menu-item"
+            onClick={CerrarSesion}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                CerrarSesion();
+              }
+            }}
+            role="button"
+            tabIndex={0}
+          >
             <FiLogOut className="menu-icon" />
             Cerrar sesión
           </div>

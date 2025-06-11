@@ -137,7 +137,7 @@ function RecuperarContraseña() {
         </div>
         <div className="formulario">
           <div className="titulo-login">
-            <h1 className="h1-Rcontraseña" tabIndex={0}>Recuperar Contraseña</h1>
+            <h1 className="h1-Rcontraseña">Recuperar Contraseña</h1>
           </div>
           <div className="content-input">
             <label htmlFor="recuperar-email" className="sr-only">
