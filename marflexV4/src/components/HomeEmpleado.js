@@ -191,14 +191,14 @@ const HomeEmpleado = () => {
             </div>
             <div className="sidebar">
               <ul>
-                <li onClick={() => handleButtonClick("dashboard")} role="listitem">
+                <li onClick={() => handleButtonClick("dashboard")}>
                   <i className="fa-solid fa-chart-line"></i>Dashboard
                 </li>
                 <MenuItem title="Gestión de Colchones" icon="fas fa-cubes">
                   <li
                     className="li-desplegable"
                     onClick={() => handleButtonClick("colchones")}
-                    role="listitem"
+                  
                   >
                     <a href className="item">
                       Colchones
@@ -207,7 +207,7 @@ const HomeEmpleado = () => {
                   <li
                     className="li-desplegable"
                     onClick={() => handleButtonClick("detalle")}
-                    role="listitem"
+                  
                   >
                     <a href className="item">
                       Detalle Colchones
@@ -221,14 +221,14 @@ const HomeEmpleado = () => {
                   <li
                     className="li-desplegable"
                     onClick={() => handleButtonClick("solicitud")}
-                    role="listitem"
+                  
                   >
                     <a href className="item">
                       Mis Solicitudes
                     </a>
                   </li>
                 </MenuItem>
-                <li onClick={() => handleButtonClick("reportes")} role="listitem">
+                <li onClick={() => handleButtonClick("reportes")}>
                   <i className="fas fa-chart-bar"></i> Reportes
                 </li>
               </ul>
@@ -393,7 +393,7 @@ const MenuItem = ({ title, icon, children }) => {
   };
 
   return (
-    <li onClick={toggleMenu} style={{ color }} role="listitem">
+    <li onClick={toggleMenu} style={{ color }}>
       <i className={icon}></i> {title}
       <i
         className={`fa-regular ${isOpen ? "fa-square-minus" : "fa-square-plus"}`}
