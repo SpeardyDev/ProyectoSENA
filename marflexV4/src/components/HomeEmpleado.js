@@ -411,7 +411,6 @@ const MenuItem = ({ title, icon, children }) => {
         }
       }}
       role="listitem"
-      tabIndex={0}
       style={{ color }}
     >
       <i className={icon}></i> {title}
