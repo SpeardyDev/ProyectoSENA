@@ -10,6 +10,7 @@ import MenuDePerfil from "./MenuDePerfil.js";
 import Solicitud from "./Gestion_Solicitudes/solicitudesEmp.js";
 import Reportes from "./Gestion_de_Reportes/Reportes.js";
 import { Button } from "semantic-ui-react";
+import PropTypes from "prop-types";
 
 // Centraliza la URL del backend
 const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://marflex.duckdns.org:3000";
@@ -190,13 +191,14 @@ const HomeEmpleado = () => {
             </div>
             <div className="sidebar">
               <ul>
-                <li onClick={() => handleButtonClick("dashboard")}>
+                <li onClick={() => handleButtonClick("dashboard")} role="listitem">
                   <i className="fa-solid fa-chart-line"></i>Dashboard
                 </li>
                 <MenuItem title="Gestión de Colchones" icon="fas fa-cubes">
                   <li
                     className="li-desplegable"
                     onClick={() => handleButtonClick("colchones")}
+                    role="listitem"
                   >
                     <a href className="item">
                       Colchones
@@ -205,6 +207,7 @@ const HomeEmpleado = () => {
                   <li
                     className="li-desplegable"
                     onClick={() => handleButtonClick("detalle")}
+                    role="listitem"
                   >
                     <a href className="item">
                       Detalle Colchones
@@ -218,13 +221,14 @@ const HomeEmpleado = () => {
                   <li
                     className="li-desplegable"
                     onClick={() => handleButtonClick("solicitud")}
+                    role="listitem"
                   >
                     <a href className="item">
                       Mis Solicitudes
                     </a>
                   </li>
                 </MenuItem>
-                <li onClick={() => handleButtonClick("reportes")}>
+                <li onClick={() => handleButtonClick("reportes")} role="listitem">
                   <i className="fas fa-chart-bar"></i> Reportes
                 </li>
               </ul>
@@ -389,7 +393,7 @@ const MenuItem = ({ title, icon, children }) => {
   };
 
   return (
-    <li onClick={toggleMenu} style={{ color }}>
+    <li onClick={toggleMenu} style={{ color }} role="listitem">
       <i className={icon}></i> {title}
       <i
         className={`fa-regular ${isOpen ? "fa-square-minus" : "fa-square-plus"}`}
@@ -398,6 +402,12 @@ const MenuItem = ({ title, icon, children }) => {
       {isOpen && <ul className="submenu">{children}</ul>}
     </li>
   );
+};
+
+MenuItem.propTypes = {
+  title: PropTypes.string.isRequired,
+  icon: PropTypes.string,
+  children: PropTypes.node,
 };
 
 export default HomeEmpleado;

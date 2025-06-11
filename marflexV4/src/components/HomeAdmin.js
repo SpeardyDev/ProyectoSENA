@@ -78,7 +78,7 @@ const MenuItem = memo(function MenuItem({
 }) {
   const color = isOpen ? "#ff9f00" : "";
   return (
-    <li onClick={onClick} style={{ color }}>
+    <li onClick={onClick} style={{ color }} role="listitem">
       <i className={icon}></i> {title}
       {childrenList && (
         <i
@@ -102,6 +102,7 @@ const MenuItem = memo(function MenuItem({
                 fontWeight: selectedKey === child.key ? "bold" : "normal",
                 background: selectedKey === child.key ? "#f3f3f3" : "none",
               }}
+              role="listitem"
             >
               <a className="item">{child.label}</a>
             </li>
@@ -406,6 +407,7 @@ function HomeAdmin() {
                         fontWeight: selectedComponent === item.key ? "bold" : "normal",
                         background: selectedComponent === item.key ? "#f3f3f3" : "none",
                       }}
+                      role="listitem"
                     >
                       <i className={item.icon}></i>
                       {item.label}

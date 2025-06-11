@@ -162,7 +162,7 @@ const showBackendErrors = (error) => {
               height={50}
               loading="lazy"
             />
-            <h1 className="h1-login" tabIndex={0}>
+            <h1 className="h1-login">
               Iniciar sesión
             </h1>
           </div>
