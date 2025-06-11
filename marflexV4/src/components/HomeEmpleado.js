@@ -191,8 +191,13 @@ const HomeEmpleado = () => {
             </div>
             <div className="sidebar">
               <ul>
-                <li onClick={() => handleButtonClick("dashboard")}>
-                  <i className="fa-solid fa-chart-line"></i>Dashboard
+                <li>
+                  <button
+                    onClick={() => handleButtonClick("dashboard")}
+                    className="li-button"
+                  >
+                    Dashboard
+                  </button>
                 </li>
                 <MenuItem title="Gestión de Colchones" icon="fas fa-cubes">
                   <li
@@ -228,8 +233,13 @@ const HomeEmpleado = () => {
                     </a>
                   </li>
                 </MenuItem>
-                <li onClick={() => handleButtonClick("reportes")}>
-                  <i className="fas fa-chart-bar"></i> Reportes
+                <li>
+                  <button
+                    onClick={() => handleButtonClick("reportes")}
+                    className="li-button"
+                  >
+                    Reportes
+                  </button>
                 </li>
               </ul>
             </div>
@@ -393,7 +403,17 @@ const MenuItem = ({ title, icon, children }) => {
   };
 
   return (
-    <li onClick={toggleMenu} style={{ color }}>
+    <li
+      onClick={toggleMenu}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          toggleMenu();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      style={{ color }}
+    >
       <i className={icon}></i> {title}
       <i
         className={`fa-regular ${isOpen ? "fa-square-minus" : "fa-square-plus"}`}
