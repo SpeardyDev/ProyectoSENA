@@ -79,12 +79,12 @@ const MenuItem = memo(function MenuItem({
   const color = isOpen ? "#ff9f00" : "";
   return (
     <li
+      role="button" // ✅ Lo marcamos como interactivo
+      tabIndex={0}  //
       onClick={onClick}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') onClick(e);
       }}
-      role= "listitem"
-      tabIndex={0}
       style={{ color }}
     >
       <i className={icon}></i> {title}
