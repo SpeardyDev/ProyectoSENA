@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import PropTypes from 'prop-types';
 import "./styles/Paginacion.css";
 
 const Pagination = ({ currentPage, totalPages, handlePageChange }) => {
