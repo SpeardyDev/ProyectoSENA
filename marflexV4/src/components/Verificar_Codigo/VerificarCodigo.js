@@ -8,6 +8,7 @@ import "./VerificarCodigo.css";
 import { Helmet } from "react-helmet-async";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PropTypes from 'prop-types';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://marflex.duckdns.org:3001";
 
@@ -325,5 +326,18 @@ function VerificarCodigo() {
     </div>
   );
 }
+
+const CodigoInput = ({ id }) => {
+  return (
+    <input
+      autoFocus={id === 0}
+      aria-label={`Dígito ${id + 1} del código`}
+    />
+  );
+};
+
+CodigoInput.propTypes = {
+  id: PropTypes.number.isRequired,
+};
 
 export default VerificarCodigo;
