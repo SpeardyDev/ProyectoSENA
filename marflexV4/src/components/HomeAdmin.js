@@ -77,15 +77,22 @@ const MenuItem = memo(function MenuItem({
   selectedKey,
 }) {
   const color = isOpen ? "#ff9f00" : "";
-  return (
-    <li
-      role="button" // ✅ Lo marcamos como interactivo
-      tabIndex={0}  //
+
+return (
+  <li role="none">
+    <button
       onClick={onClick}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') onClick(e);
       }}
-      style={{ color }}
+      style={{
+        all: "unset",
+        color,
+        cursor: "pointer",
+        display: "block",
+        width: "100%",
+        textAlign: "left"
+      }}
     >
       <i className={icon}></i> {title}
       {childrenList && (
@@ -96,34 +103,35 @@ const MenuItem = memo(function MenuItem({
           style={{ float: "right" }}
         />
       )}
-      {isOpen && childrenList && (
-        <ul className="submenu">
-          {childrenList.map((child) => (
-            <li className="li-desplegable" key={child.key}>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onChildClick(child.key);
-                }}
-                style={{
-                  fontWeight: selectedKey === child.key ? "bold" : "normal",
-                  background: selectedKey === child.key ? "#f3f3f3" : "none",
-                  border: "none",
-                  backgroundColor: "transparent",
-                  cursor: "pointer",
-                  width: "100%",
-                  textAlign: "left"
-                }}
-                className="button-desplegable"
-              >
-                <a className="item">{child.label}</a>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </li>
-  );
+    </button>
+  {isOpen && childrenList && (
+    <ul className="submenu">
+      {childrenList.map((child) => (
+        <li className="li-desplegable" key={child.key}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onChildClick(child.key);
+            }}
+            style={{
+              fontWeight: selectedKey === child.key ? "bold" : "normal",
+              background: selectedKey === child.key ? "#f3f3f3" : "none",
+              border: "none",
+              backgroundColor: "transparent",
+              cursor: "pointer",
+              width: "100%",
+              textAlign: "left"
+            }}
+            className="button-desplegable"
+          >
+            <a className="item">{child.label}</a>
+          </button>
+        </li>
+      ))}
+    </ul>
+  )}
+</li>
+);
 });
 
 MenuItem.propTypes = {
