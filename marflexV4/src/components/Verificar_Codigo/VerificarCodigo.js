@@ -327,15 +327,6 @@ function VerificarCodigo() {
   );
 }
 
-const CodigoInput = ({ id }) => {
-  return (
-    <input
-      autoFocus={id === 0}
-      aria-label={`Dígito ${id + 1} del código`}
-    />
-  );
-};
-
 CodigoInput.propTypes = {
   id: PropTypes.number.isRequired,
 };
