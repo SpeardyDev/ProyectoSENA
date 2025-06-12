@@ -59,4 +59,10 @@ const Pagination = ({ currentPage, totalPages, handlePageChange }) => {
   );
 };
 
+Pagination.propTypes = {
+  currentPage: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
+  handlePageChange: PropTypes.func.isRequired,
+};
+
 export default Pagination;
