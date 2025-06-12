@@ -41,68 +41,67 @@ const MenuDePerfil = ({ avatar }) => {
         <span className="sr-only">Open user menu</span>
       </button>
 
-      {isOpen && (
-        <div className="menu-perfil">
-          <div
-          className="menu-item"
-          onClick={() => toggleDropdown("profile")}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              toggleDropdown("profile");
-            }
-          }}
-          role="button"
-          tabIndex={0}
-        >
-            <FiInfo className="menu-icon" />
-            Configuración de Perfil
-            {activeDropdown === "profile" ? <FiChevronUp /> : <FiChevronDown />}
-          </div>
-          {activeDropdown === "profile" && (
-            <div className="dropdown-content">
-              <p>Configuración de perfil contenido</p>
-            </div>
-          )}
+{isOpen && (
+  <div className="menu-dropdown">
+    <button
+      className="menu-item"
+      onClick={() => toggleDropdown("profile")}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          toggleDropdown("profile");
+        }
+      }}
+      style={{ all: "unset", cursor: "pointer" }}
+    >
+      <FiInfo className="menu-icon" />
+      Configuración de Perfil
+      {activeDropdown === "profile" ? <FiChevronUp /> : <FiChevronDown />}
+    </button>
+    {activeDropdown === "profile" && (
+      <div className="dropdown-content">
+        <p>Configuración de perfil contenido</p>
+      </div>
+    )}
 
-          <div
-          className="menu-item"
-          onClick={() => toggleDropdown("account")}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              toggleDropdown("account");
-            }
-          }}
-          role="button"
-          tabIndex={0}
-        >
-            <FiInfo className="menu-icon" />
-            Información de Cuenta
-            {activeDropdown === "account" ? <FiChevronUp /> : <FiChevronDown />}
-          </div>
-          {activeDropdown === "account" && (
-            <div className="dropdown-content">
-              <p>Los detalles de la cuenta</p>
-            </div>
-          )}
+    <div
+      className="menu-item"
+      onClick={() => toggleDropdown("account")}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggleDropdown("account");
+        }
+      }}
+      role="button"
+      tabIndex={0}
+    >
+      <FiInfo className="menu-icon" />
+      Información de Cuenta
+      {activeDropdown === "account" ? <FiChevronUp /> : <FiChevronDown />}
+    </div>
+    {activeDropdown === "account" && (
+      <div className="dropdown-content">
+        <p>Los detalles de la cuenta</p>
+      </div>
+    )}
 
-          <div
-            className="menu-item"
-            onClick={CerrarSesion}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                CerrarSesion();
-              }
-            }}
-            role="button"
-            tabIndex={0}
-          >
-            <FiLogOut className="menu-icon" />
-            Cerrar sesión
-          </div>
-        </div>
-      )}
+    <div
+      className="menu-item"
+      onClick={CerrarSesion}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          CerrarSesion();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+    >
+      <FiLogOut className="menu-icon" />
+      Cerrar sesión
+    </div>
+  </div>
+)}
     </div>
   );
 };
