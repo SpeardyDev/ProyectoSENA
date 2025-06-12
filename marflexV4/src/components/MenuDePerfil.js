@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import defaultAvatar from "../backend/uploads/foto-perfil.jpg";
 import "./styles/menuPerfil.css";
+import PropTypes from 'prop-types';
 
 const MenuDePerfil = ({ avatar }) => {
   const { logout } = useContext(AuthContext);
@@ -99,6 +100,10 @@ const MenuDePerfil = ({ avatar }) => {
       )}
     </div>
   );
+};
+
+MenuDePerfil.propTypes = {
+  avatar: PropTypes.string.isRequired, // o PropTypes.string si no es obligatorio
 };
 
 export default MenuDePerfil;
