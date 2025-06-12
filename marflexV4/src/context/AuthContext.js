@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from "react";
+import PropTypes from "prop-types"; // Importación de PropTypes
 import { jwtDecode } from "jwt-decode";
 
 export const AuthContext = createContext();
@@ -7,30 +8,32 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  console.log("TOKEN EN LOCALSTORAGE:", token);
-  if (token) {
-    try {
-      const decoded = jwtDecode(token);
-      console.log("DECODED TOKEN:", decoded);
-      if (decoded.exp * 1000 > Date.now()) {
-        setIsAuthenticated(true);
-        console.log("Token válido, autenticado!");
-      } else {
+    const token = localStorage.getItem("token");
+    console.log("TOKEN EN LOCALSTORAGE:", token);
+
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        console.log("DECODED TOKEN:", decoded);
+
+        if (decoded.exp * 1000 > Date.now()) {
+          setIsAuthenticated(true);
+          console.log("Token válido, autenticado!");
+        } else {
+          setIsAuthenticated(false);
+          localStorage.removeItem("token");
+          console.log("Token expirado.");
+        }
+      } catch (e) {
         setIsAuthenticated(false);
         localStorage.removeItem("token");
-        console.log("Token expirado.");
+        console.log("Token inválido.");
       }
-    } catch (e) {
+    } else {
       setIsAuthenticated(false);
-      localStorage.removeItem("token");
-      console.log("Token inválido.");
+      console.log("No hay token.");
     }
-  } else {
-    setIsAuthenticated(false);
-    console.log("No hay token.");
-  }
-}, []);
+  }, []);
 
   const login = () => setIsAuthenticated(true);
 
@@ -44,4 +47,9 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+// Validación de props
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
