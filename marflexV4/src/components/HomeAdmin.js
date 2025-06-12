@@ -83,7 +83,7 @@ const MenuItem = memo(function MenuItem({
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') onClick(e);
       }}
-      role="button"
+      role= "listitem"
       tabIndex={0}
       style={{ color }}
     >
